@@ -1,8 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function AdminDashboard() {
+  const router = useRouter()
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [gameState, setGameState] = useState<'waiting' | 'showing_question' | 'accepting_answers' | 'showing_results' | 'finished'>('waiting')
   const [participantCount, setParticipantCount] = useState(0)
@@ -25,12 +27,31 @@ export default function AdminDashboard() {
     setGameState('showing_results')
   }
 
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/admin', {
+        method: 'DELETE',
+      })
+      router.push('/admin')
+    } catch (error) {
+      console.error('Logout error:', error)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-800 mb-8">
-          クイズ管理ダッシュボード
-        </h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-800">
+            クイズ管理ダッシュボード
+          </h1>
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+          >
+            ログアウト
+          </button>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow p-6">

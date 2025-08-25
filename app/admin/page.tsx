@@ -6,20 +6,39 @@ import { useRouter } from 'next/navigation'
 export default function AdminLoginPage() {
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!password.trim()) return
+    if (!password.trim()) {
+      setError('パスワードを入力してください')
+      return
+    }
 
     setIsLoading(true)
+    setError('')
+    
     try {
-      // TODO: Validate password against environment variable
-      // For now, just redirect
+      const response = await fetch('/api/auth/admin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setError(data.error || 'ログインに失敗しました')
+        return
+      }
+
       router.push('/admin/dashboard')
     } catch (error) {
-      console.error('Error:', error)
-      alert('パスワードが間違っています')
+      console.error('Login error:', error)
+      setError('ネットワークエラーが発生しました')
     } finally {
       setIsLoading(false)
     }
@@ -47,6 +66,12 @@ export default function AdminLoginPage() {
               disabled={isLoading}
             />
           </div>
+
+          {error && (
+            <div className="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg">
+              {error}
+            </div>
+          )}
 
           <button
             type="submit"

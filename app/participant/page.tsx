@@ -6,20 +6,39 @@ import { useRouter } from 'next/navigation'
 export default function ParticipantPage() {
   const [qrCode, setQrCode] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!qrCode.trim()) return
+    if (!qrCode.trim()) {
+      setError('QRコードまたはIDを入力してください')
+      return
+    }
 
     setIsLoading(true)
+    setError('')
+    
     try {
-      // TODO: Validate QR code with Supabase
-      // For now, redirect to waiting room
-      router.push(`/participant/waiting?qr=${qrCode}`)
+      const response = await fetch('/api/auth/participant', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ qrCode }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setError(data.error || '認証に失敗しました')
+        return
+      }
+
+      router.push('/participant/waiting')
     } catch (error) {
-      console.error('Error:', error)
-      alert('QRコードが無効です')
+      console.error('Auth error:', error)
+      setError('ネットワークエラーが発生しました')
     } finally {
       setIsLoading(false)
     }
@@ -47,6 +66,12 @@ export default function ParticipantPage() {
               disabled={isLoading}
             />
           </div>
+
+          {error && (
+            <div className="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg">
+              {error}
+            </div>
+          )}
 
           <button
             type="submit"
