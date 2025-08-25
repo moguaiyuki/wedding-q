@@ -100,6 +100,31 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
+    const searchParams = request.nextUrl.searchParams
+    const questionId = searchParams.get('question_id')
+    const countOnly = searchParams.get('count') === 'true'
+    
+    const supabase = await createClient()
+
+    // If count is requested, return count of answers for the question
+    if (countOnly && questionId) {
+      const { count, error } = await supabase
+        .from('answers')
+        .select('*', { count: 'exact', head: true })
+        .eq('question_id', questionId)
+
+      if (error) {
+        console.error('Count answers error:', error)
+        return NextResponse.json(
+          { error: '回答数の取得に失敗しました' },
+          { status: 500 }
+        )
+      }
+
+      return NextResponse.json({ count: count || 0 })
+    }
+
+    // Otherwise, get answers for the current user
     const user = await getCurrentUser()
     
     if (!user) {
@@ -108,11 +133,6 @@ export async function GET(request: NextRequest) {
         { status: 401 }
       )
     }
-
-    const searchParams = request.nextUrl.searchParams
-    const questionId = searchParams.get('question_id')
-    
-    const supabase = await createClient()
 
     if (questionId) {
       const { data: answer, error } = await supabase

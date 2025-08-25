@@ -118,3 +118,5 @@ Required in `.env.local`:
 - **Always verify browser applications with Playwright**: After implementing any browser-based application features, use Playwright to perform automated browser testing and verify the functionality works correctly
 - Test critical user flows and interactions
 - Verify cross-browser compatibility when needed
+
+- @IMPLEMENTATION_PLAN.md に従って実行した場合、進捗を更新するようにしてください

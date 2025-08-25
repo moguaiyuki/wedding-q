@@ -61,14 +61,18 @@ export default function AdminLoginPage() {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:ring-offset-2 min-h-[44px]"
               placeholder="パスワードを入力"
               disabled={isLoading}
+              aria-label="管理者パスワード"
+              aria-invalid={error ? 'true' : 'false'}
+              aria-errormessage={error ? 'admin-login-error' : undefined}
             />
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg">
+            <div id="admin-login-error" className="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg" role="alert" aria-live="assertive">
+              <span className="sr-only">エラー:</span>
               {error}
             </div>
           )}
@@ -76,7 +80,9 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={isLoading || !password.trim()}
-            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 min-h-[44px]"
+            aria-label={isLoading ? 'ログイン中' : '管理者としてログイン'}
+            aria-busy={isLoading}
           >
             {isLoading ? 'ログイン中...' : 'ログイン'}
           </button>

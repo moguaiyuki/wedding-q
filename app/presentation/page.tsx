@@ -1,34 +1,216 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
+import Image from 'next/image'
+import { getRealtimeManager } from '@/lib/supabase/realtime'
+
+interface GameState {
+  id: string
+  current_state: 'waiting' | 'showing_question' | 'accepting_answers' | 'showing_results' | 'finished'
+  current_question_id: string | null
+  current_question_number: number
+}
+
+interface Question {
+  id: string
+  question_number: number
+  question_text: string
+  question_type: 'multiple_choice' | 'free_text'
+  image_url?: string
+  time_limit_seconds: number
+  points: number
+  choices?: Array<{
+    id: string
+    choice_text: string
+    display_order: number
+    is_correct: boolean
+  }>
+}
+
+interface AnswerStats {
+  choice_id: string
+  count: number
+  percentage: number
+}
+
+interface LeaderboardEntry {
+  user_id: string
+  name: string
+  total_score: number
+  correct_count: number
+}
 
 export default function PresentationPage() {
-  const [gameState, setGameState] = useState<'waiting' | 'showing_question' | 'accepting_answers' | 'showing_results' | 'finished'>('waiting')
-  const [currentQuestion, setCurrentQuestion] = useState<any>(null)
-  const [answerStats, setAnswerStats] = useState<any[]>([])
+  const [gameState, setGameState] = useState<GameState | null>(null)
+  const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null)
   const [participantCount, setParticipantCount] = useState(0)
+  const [answerStats, setAnswerStats] = useState<AnswerStats[]>([])
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
+  const [timeLeft, setTimeLeft] = useState<number>(0)
+  const [answerCount, setAnswerCount] = useState(0)
 
   useEffect(() => {
-    // TODO: Connect to Supabase Realtime
-    // Simulate data
-    setParticipantCount(45)
+    fetchGameState()
+    fetchParticipantCount()
+    
+    // Set up realtime subscriptions
+    const realtimeManager = getRealtimeManager()
+    
+    // Subscribe to game state changes
+    const unsubscribeGameState = realtimeManager.subscribeToGameState((payload) => {
+      if (payload.eventType === 'UPDATE' || payload.eventType === 'INSERT') {
+        fetchGameState()
+      }
+    })
+    
+    // Subscribe to participant count changes
+    const unsubscribeParticipants = realtimeManager.subscribeToParticipants((count) => {
+      setParticipantCount(count)
+    })
+    
+    return () => {
+      unsubscribeGameState()
+      unsubscribeParticipants()
+    }
   }, [])
 
-  if (gameState === 'waiting') {
+  useEffect(() => {
+    if (gameState?.current_question_id) {
+      fetchQuestion(gameState.current_question_id)
+      
+      if (gameState.current_state === 'accepting_answers') {
+        // Subscribe to answers for real-time updates
+        const realtimeManager = getRealtimeManager()
+        const unsubscribe = realtimeManager.subscribeToAnswers(
+          gameState.current_question_id,
+          () => {
+            fetchAnswerStats(gameState.current_question_id!)
+          }
+        )
+        
+        // Initial fetch
+        fetchAnswerStats(gameState.current_question_id)
+        
+        return () => {
+          unsubscribe()
+        }
+      } else if (gameState.current_state === 'showing_results') {
+        fetchAnswerStats(gameState.current_question_id)
+        fetchLeaderboard()
+      }
+    }
+  }, [gameState?.current_question_id, gameState?.current_state])
+
+  useEffect(() => {
+    if (currentQuestion && gameState?.current_state === 'accepting_answers') {
+      setTimeLeft(currentQuestion.time_limit_seconds)
+      const timer = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer)
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+      return () => clearInterval(timer)
+    }
+  }, [currentQuestion, gameState?.current_state])
+
+  const fetchGameState = async () => {
+    try {
+      const response = await fetch('/api/game-state')
+      if (response.ok) {
+        const data = await response.json()
+        setGameState(data)
+      }
+    } catch (error) {
+      console.error('Failed to fetch game state:', error)
+    }
+  }
+
+  const fetchQuestion = async (questionId: string) => {
+    try {
+      const response = await fetch(`/api/questions?id=${questionId}`)
+      if (response.ok) {
+        const data = await response.json()
+        setCurrentQuestion(data)
+      }
+    } catch (error) {
+      console.error('Failed to fetch question:', error)
+    }
+  }
+
+  const fetchParticipantCount = async () => {
+    try {
+      const response = await fetch('/api/stats/participants')
+      if (response.ok) {
+        const data = await response.json()
+        setParticipantCount(data.count || 0)
+      }
+    } catch (error) {
+      console.error('Failed to fetch participant count:', error)
+    }
+  }
+
+  const fetchAnswerStats = async (questionId: string) => {
+    try {
+      const response = await fetch(`/api/stats/answers?question_id=${questionId}`)
+      if (response.ok) {
+        const data = await response.json()
+        setAnswerStats(data.stats || [])
+        setAnswerCount(data.total || 0)
+      }
+    } catch (error) {
+      console.error('Failed to fetch answer stats:', error)
+    }
+  }
+
+  const fetchLeaderboard = async () => {
+    try {
+      const response = await fetch('/api/stats/leaderboard?limit=10')
+      if (response.ok) {
+        const data = await response.json()
+        setLeaderboard(data)
+      }
+    } catch (error) {
+      console.error('Failed to fetch leaderboard:', error)
+    }
+  }
+
+  if (!gameState) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-wedding-pink to-wedding-gold flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-pink to-wedding-white">
         <div className="text-center">
-          <h1 className="text-6xl font-bold text-white mb-8 animate-pulse">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-wedding-pink mx-auto mb-4"></div>
+          <p className="text-2xl text-gray-600">接続中...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Waiting state
+  if (gameState.current_state === 'waiting') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-pink to-wedding-white">
+        <div className="text-center">
+          <h1 className="text-6xl font-bold mb-8 text-gray-800">
             結婚式クイズ
           </h1>
-          <p className="text-3xl text-white mb-4">まもなく開始します</p>
-          <p className="text-2xl text-white">参加者: {participantCount}名</p>
-          
-          <div className="mt-12">
-            <div className="inline-flex space-x-2">
-              <div className="w-6 h-6 bg-white rounded-full animate-bounce"></div>
-              <div className="w-6 h-6 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-              <div className="w-6 h-6 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+          <div className="bg-white rounded-2xl shadow-2xl p-12 mb-8">
+            <p className="text-3xl mb-4 text-gray-700">まもなく開始します</p>
+            <p className="text-5xl font-bold text-wedding-pink mb-4">
+              参加者: {participantCount}名
+            </p>
+            <p className="text-2xl text-gray-600">
+              QRコードを読み取って参加してください
+            </p>
+          </div>
+          <div className="flex justify-center">
+            <div className="animate-pulse flex space-x-4">
+              <div className="w-4 h-4 bg-wedding-pink rounded-full"></div>
+              <div className="w-4 h-4 bg-wedding-pink rounded-full animation-delay-200"></div>
+              <div className="w-4 h-4 bg-wedding-pink rounded-full animation-delay-400"></div>
             </div>
           </div>
         </div>
@@ -36,40 +218,170 @@ export default function PresentationPage() {
     )
   }
 
-  if (gameState === 'showing_question' || gameState === 'accepting_answers') {
+  // Showing question
+  if (gameState.current_state === 'showing_question' && currentQuestion) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center p-8">
-        <div className="max-w-4xl w-full">
-          <div className="bg-white rounded-2xl shadow-2xl p-12">
-            <div className="text-center mb-8">
-              <p className="text-2xl text-gray-600 mb-2">第1問</p>
-              <h2 className="text-4xl font-bold text-gray-800">
-                新郎の好きな食べ物は？
-              </h2>
-            </div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-pink to-wedding-white p-8">
+        <div className="bg-white rounded-2xl shadow-2xl p-12 max-w-4xl w-full">
+          <div className="text-center">
+            <h2 className="text-5xl font-bold mb-8 text-gray-800">
+              第{currentQuestion.question_number}問
+            </h2>
+            <p className="text-3xl mb-8 text-gray-700">
+              {currentQuestion.question_text}
+            </p>
+            {currentQuestion.image_url && (
+              <div className="relative w-full h-96 mb-8">
+                <Image 
+                  src={currentQuestion.image_url} 
+                  alt="問題画像" 
+                  fill
+                  className="object-contain rounded-lg"
+                  sizes="(max-width: 1024px) 100vw, 1024px"
+                  priority
+                />
+              </div>
+            )}
+            {currentQuestion.question_type === 'multiple_choice' && currentQuestion.choices && (
+              <div className="grid grid-cols-2 gap-4 mt-8">
+                {currentQuestion.choices
+                  .sort((a, b) => a.display_order - b.display_order)
+                  .map((choice, index) => (
+                    <div
+                      key={choice.id}
+                      className="bg-gray-100 p-6 rounded-lg text-2xl"
+                    >
+                      {['A', 'B', 'C', 'D'][index]}. {choice.choice_text}
+                    </div>
+                  ))}
+              </div>
+            )}
+            <p className="text-2xl text-gray-600 mt-8">
+              まもなく回答開始です...
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
-            <div className="grid grid-cols-2 gap-6 mt-12">
-              <div className="bg-blue-100 rounded-xl p-6 text-center">
-                <p className="text-3xl font-bold">A. ラーメン</p>
-              </div>
-              <div className="bg-green-100 rounded-xl p-6 text-center">
-                <p className="text-3xl font-bold">B. カレー</p>
-              </div>
-              <div className="bg-yellow-100 rounded-xl p-6 text-center">
-                <p className="text-3xl font-bold">C. 寿司</p>
-              </div>
-              <div className="bg-red-100 rounded-xl p-6 text-center">
-                <p className="text-3xl font-bold">D. パスタ</p>
-              </div>
+  // Accepting answers
+  if (gameState.current_state === 'accepting_answers' && currentQuestion) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-pink to-wedding-white p-8">
+        <div className="bg-white rounded-2xl shadow-2xl p-12 max-w-4xl w-full">
+          <div className="text-center">
+            <h2 className="text-5xl font-bold mb-8 text-gray-800">
+              第{currentQuestion.question_number}問
+            </h2>
+            <p className="text-3xl mb-8 text-gray-700">
+              {currentQuestion.question_text}
+            </p>
+            <div className="text-6xl font-bold text-wedding-pink mb-8">
+              残り時間: {timeLeft}秒
             </div>
+            <div className="bg-gray-100 rounded-lg p-8">
+              <p className="text-3xl text-gray-700">
+                回答受付中
+              </p>
+              <p className="text-5xl font-bold text-gray-800 mt-4">
+                {answerCount} / {participantCount} 名
+              </p>
+            </div>
+            {currentQuestion.question_type === 'multiple_choice' && answerStats.length > 0 && (
+              <div className="mt-8 space-y-4">
+                {currentQuestion.choices?.map((choice) => {
+                  const stat = answerStats.find(s => s.choice_id === choice.id)
+                  const percentage = stat ? stat.percentage : 0
+                  return (
+                    <div key={choice.id} className="relative bg-gray-200 rounded-lg overflow-hidden">
+                      <div 
+                        className="absolute inset-0 bg-wedding-pink opacity-30"
+                        style={{ width: `${percentage}%` }}
+                      />
+                      <div className="relative p-4 flex justify-between items-center">
+                        <span className="text-xl">{choice.choice_text}</span>
+                        <span className="text-xl font-bold">{stat?.count || 0}名</span>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
 
-            {gameState === 'accepting_answers' && (
-              <div className="mt-8 text-center">
-                <p className="text-2xl text-gray-600">回答受付中...</p>
-                <div className="mt-4">
-                  <div className="inline-block bg-gray-200 rounded-full px-6 py-3">
-                    <p className="text-xl font-medium">回答者: 32/{participantCount}名</p>
-                  </div>
+  // Showing results
+  if (gameState.current_state === 'showing_results' && currentQuestion) {
+    const correctChoice = currentQuestion.choices?.find(c => c.is_correct)
+    
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-pink to-wedding-white p-8">
+        <div className="bg-white rounded-2xl shadow-2xl p-12 max-w-5xl w-full">
+          <div className="text-center">
+            <h2 className="text-5xl font-bold mb-8 text-gray-800">
+              第{currentQuestion.question_number}問 結果発表
+            </h2>
+            {correctChoice && (
+              <div className="bg-green-100 rounded-lg p-6 mb-8">
+                <p className="text-2xl text-gray-700 mb-2">正解</p>
+                <p className="text-4xl font-bold text-green-600">
+                  {correctChoice.choice_text}
+                </p>
+              </div>
+            )}
+            {currentQuestion.question_type === 'multiple_choice' && answerStats.length > 0 && (
+              <div className="space-y-4 mb-8">
+                {currentQuestion.choices?.map((choice) => {
+                  const stat = answerStats.find(s => s.choice_id === choice.id)
+                  const percentage = stat ? stat.percentage : 0
+                  const isCorrect = choice.is_correct
+                  return (
+                    <div 
+                      key={choice.id} 
+                      className={`relative rounded-lg overflow-hidden ${
+                        isCorrect ? 'bg-green-100' : 'bg-gray-200'
+                      }`}
+                    >
+                      <div 
+                        className={`absolute inset-0 ${
+                          isCorrect ? 'bg-green-500' : 'bg-gray-400'
+                        } opacity-30`}
+                        style={{ width: `${percentage}%` }}
+                      />
+                      <div className="relative p-4 flex justify-between items-center">
+                        <span className="text-xl font-semibold">
+                          {choice.choice_text}
+                          {isCorrect && ' ✓'}
+                        </span>
+                        <div className="text-right">
+                          <span className="text-xl font-bold block">{stat?.count || 0}名</span>
+                          <span className="text-lg text-gray-600">({percentage.toFixed(1)}%)</span>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+            {leaderboard.length > 0 && (
+              <div className="mt-8">
+                <h3 className="text-3xl font-bold mb-4 text-gray-800">上位ランキング</h3>
+                <div className="space-y-2">
+                  {leaderboard.slice(0, 5).map((entry, index) => (
+                    <div key={entry.user_id} className="flex justify-between items-center bg-gray-100 rounded-lg p-4">
+                      <div className="flex items-center">
+                        <span className="text-2xl font-bold mr-4 text-wedding-pink">
+                          {index + 1}位
+                        </span>
+                        <span className="text-xl">{entry.name}</span>
+                      </div>
+                      <span className="text-2xl font-bold">{entry.total_score}点</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -79,65 +391,52 @@ export default function PresentationPage() {
     )
   }
 
-  if (gameState === 'showing_results') {
+  // Finished state
+  if (gameState.current_state === 'finished') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-600 to-blue-600 flex items-center justify-center p-8">
-        <div className="max-w-4xl w-full">
-          <div className="bg-white rounded-2xl shadow-2xl p-12">
-            <h2 className="text-4xl font-bold text-center text-gray-800 mb-8">
-              結果発表！
-            </h2>
-
-            <div className="space-y-4">
-              <div className="flex items-center">
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xl font-medium">A. ラーメン</span>
-                    <span className="text-xl font-bold text-green-600">正解！</span>
-                  </div>
-                  <div className="bg-gray-200 rounded-full h-8">
-                    <div className="bg-green-600 h-8 rounded-full" style={{ width: '60%' }}></div>
-                  </div>
-                  <p className="text-right mt-1 text-gray-600">24名 (60%)</p>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-pink to-wedding-white p-8">
+        <div className="bg-white rounded-2xl shadow-2xl p-12 max-w-5xl w-full">
+          <div className="text-center">
+            <h1 className="text-6xl font-bold mb-8 text-gray-800">
+              クイズ終了！
+            </h1>
+            <p className="text-3xl mb-8 text-gray-700">
+              ご参加ありがとうございました
+            </p>
+            {leaderboard.length > 0 && (
+              <div className="mt-8">
+                <h2 className="text-4xl font-bold mb-6 text-gray-800">最終ランキング</h2>
+                <div className="space-y-3">
+                  {leaderboard.map((entry, index) => (
+                    <div 
+                      key={entry.user_id} 
+                      className={`flex justify-between items-center rounded-lg p-6 ${
+                        index === 0 ? 'bg-yellow-100' :
+                        index === 1 ? 'bg-gray-100' :
+                        index === 2 ? 'bg-orange-100' :
+                        'bg-gray-50'
+                      }`}
+                    >
+                      <div className="flex items-center">
+                        <span className={`text-3xl font-bold mr-6 ${
+                          index === 0 ? 'text-yellow-600' :
+                          index === 1 ? 'text-gray-600' :
+                          index === 2 ? 'text-orange-600' :
+                          'text-gray-500'
+                        }`}>
+                          {index + 1}位
+                        </span>
+                        <span className="text-2xl">{entry.name}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-3xl font-bold block">{entry.total_score}点</span>
+                        <span className="text-lg text-gray-600">正解: {entry.correct_count}問</span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-
-              <div className="flex items-center">
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xl font-medium">B. カレー</span>
-                  </div>
-                  <div className="bg-gray-200 rounded-full h-8">
-                    <div className="bg-blue-600 h-8 rounded-full" style={{ width: '20%' }}></div>
-                  </div>
-                  <p className="text-right mt-1 text-gray-600">8名 (20%)</p>
-                </div>
-              </div>
-
-              <div className="flex items-center">
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xl font-medium">C. 寿司</span>
-                  </div>
-                  <div className="bg-gray-200 rounded-full h-8">
-                    <div className="bg-blue-600 h-8 rounded-full" style={{ width: '15%' }}></div>
-                  </div>
-                  <p className="text-right mt-1 text-gray-600">6名 (15%)</p>
-                </div>
-              </div>
-
-              <div className="flex items-center">
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xl font-medium">D. パスタ</span>
-                  </div>
-                  <div className="bg-gray-200 rounded-full h-8">
-                    <div className="bg-blue-600 h-8 rounded-full" style={{ width: '5%' }}></div>
-                  </div>
-                  <p className="text-right mt-1 text-gray-600">2名 (5%)</p>
-                </div>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
