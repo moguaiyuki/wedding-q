@@ -113,3 +113,8 @@ Required in `.env.local`:
 - Verify UNDO operations work correctly
 - Ensure duplicate answer prevention works across devices
 - use gh command to operate github
+
+## Browser Testing Rule
+- **Always verify browser applications with Playwright**: After implementing any browser-based application features, use Playwright to perform automated browser testing and verify the functionality works correctly
+- Test critical user flows and interactions
+- Verify cross-browser compatibility when needed
