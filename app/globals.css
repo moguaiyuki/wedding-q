@@ -26,6 +26,62 @@ body {
     rgb(var(--background-start-rgb));
 }
 
+@layer base {
+  /* モバイルファーストのフォントサイズ調整 */
+  html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+  }
+  
+  @media (max-width: 640px) {
+    html {
+      font-size: 14px;
+    }
+  }
+  
+  /* タッチデバイス用のホバー効果を無効化 */
+  @media (hover: none) {
+    button:hover {
+      opacity: 1 !important;
+    }
+  }
+}
+
+@layer components {
+  /* ボタンの最小タッチターゲットサイズ（44x44px） */
+  .btn-touch {
+    @apply min-h-[44px] px-4 py-2;
+  }
+  
+  /* モバイル用の安全なパディング */
+  .safe-padding {
+    @apply px-4 pt-4 pb-4;
+  }
+  
+  /* カード用のレスポンシブシャドウ */
+  .card-shadow {
+    @apply shadow-lg hover:shadow-xl transition-shadow duration-200;
+  }
+  
+  /* アニメーション用のスムーズな変化 */
+  .smooth-transition {
+    @apply transition-all duration-300 ease-in-out;
+  }
+}
+
+@layer utilities {
+  /* スクロールの改善 */
+  .smooth-scroll {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* フォーカス表示の改善 */
+  .focus-visible-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wedding-pink focus-visible:ring-offset-2;
+  }
+}
+
 @keyframes delayedPulse {
   0%, 100% {
     opacity: 1;
