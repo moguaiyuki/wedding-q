@@ -90,7 +90,6 @@ export async function POST(request: NextRequest) {
       question_text,
       question_type,
       image_url,
-      time_limit_seconds,
       points,
       choices
     } = body
@@ -104,7 +103,6 @@ export async function POST(request: NextRequest) {
         question_text,
         question_type,
         image_url,
-        time_limit_seconds: time_limit_seconds || 30,
         points: points || 10
       })
       .select()

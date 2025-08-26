@@ -17,7 +17,6 @@ interface Question {
   question_text: string
   question_type: 'multiple_choice' | 'free_text'
   image_url?: string
-  time_limit_seconds: number
   points: number
   choices?: Array<{
     id: string
@@ -46,7 +45,6 @@ export default function PresentationPage() {
   const [participantCount, setParticipantCount] = useState(0)
   const [answerStats, setAnswerStats] = useState<AnswerStats[]>([])
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
-  const [timeLeft, setTimeLeft] = useState<number>(0)
   const [answerCount, setAnswerCount] = useState(0)
 
   useEffect(() => {
@@ -101,21 +99,6 @@ export default function PresentationPage() {
     }
   }, [gameState?.current_question_id, gameState?.current_state])
 
-  useEffect(() => {
-    if (currentQuestion && gameState?.current_state === 'accepting_answers') {
-      setTimeLeft(currentQuestion.time_limit_seconds)
-      const timer = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer)
-            return 0
-          }
-          return prev - 1
-        })
-      }, 1000)
-      return () => clearInterval(timer)
-    }
-  }, [currentQuestion, gameState?.current_state])
 
   const fetchGameState = async () => {
     try {
@@ -277,9 +260,6 @@ export default function PresentationPage() {
             <p className="text-3xl mb-8 text-gray-700">
               {currentQuestion.question_text}
             </p>
-            <div className="text-6xl font-bold text-wedding-pink mb-8">
-              残り時間: {timeLeft}秒
-            </div>
             <div className="bg-gray-100 rounded-lg p-8">
               <p className="text-3xl text-gray-700">
                 回答受付中

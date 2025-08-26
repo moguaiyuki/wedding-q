@@ -15,7 +15,6 @@ interface Question {
   question_text: string
   question_type: 'multiple_choice' | 'free_text'
   image_url?: string
-  time_limit_seconds: number
   points: number
   choices?: Array<{
     id: string
@@ -38,7 +37,6 @@ export default function QuestionsManagementPage() {
     question_text: '',
     question_type: 'multiple_choice' as 'multiple_choice' | 'free_text',
     image_url: '',
-    time_limit_seconds: 30,
     points: 10,
     explanation_text: '',
     explanation_image_url: '',
@@ -142,7 +140,6 @@ export default function QuestionsManagementPage() {
           question_text: '',
           question_type: 'multiple_choice',
           image_url: '',
-          time_limit_seconds: 30,
           points: 10,
           explanation_text: '',
           explanation_image_url: '',
@@ -227,21 +224,6 @@ export default function QuestionsManagementPage() {
                     <option value="multiple_choice">選択式</option>
                     <option value="free_text">自由記述</option>
                   </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    制限時間（秒）
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.time_limit_seconds}
-                    onChange={(e) => setFormData({ ...formData, time_limit_seconds: parseInt(e.target.value) })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    min="10"
-                    max="300"
-                    required
-                  />
                 </div>
 
                 <div>
@@ -382,9 +364,6 @@ export default function QuestionsManagementPage() {
                       </span>
                       <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-sm">
                         {question.points}点
-                      </span>
-                      <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-sm">
-                        {question.time_limit_seconds}秒
                       </span>
                     </div>
                   </div>

@@ -19,7 +19,6 @@ CREATE TABLE questions (
   question_text TEXT NOT NULL,
   question_type VARCHAR(20) NOT NULL CHECK (question_type IN ('multiple_choice', 'free_text')),
   image_url TEXT,
-  time_limit_seconds INTEGER DEFAULT 30,
   points INTEGER DEFAULT 10,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP

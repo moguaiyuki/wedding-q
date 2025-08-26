@@ -10,7 +10,6 @@ interface Question {
   question_text: string
   question_type: 'multiple_choice' | 'free_text'
   image_url?: string
-  time_limit_seconds: number
   choices?: Array<{
     id: string
     choice_text: string
@@ -32,7 +31,6 @@ export default function QuizPage() {
   const [freeTextAnswer, setFreeTextAnswer] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [hasAnswered, setHasAnswered] = useState(false)
-  const [timeLeft, setTimeLeft] = useState<number>(30)
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -48,21 +46,6 @@ export default function QuizPage() {
     }
   }, [gameState?.current_question_id])
 
-  useEffect(() => {
-    if (question && !hasAnswered && gameState?.current_state === 'accepting_answers') {
-      setTimeLeft(question.time_limit_seconds)
-      const timer = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer)
-            return 0
-          }
-          return prev - 1
-        })
-      }, 1000)
-      return () => clearInterval(timer)
-    }
-  }, [question, hasAnswered, gameState?.current_state])
 
   useEffect(() => {
     if (gameState?.current_state === 'showing_results') {
@@ -212,12 +195,6 @@ export default function QuizPage() {
             <h2 className="text-xl font-bold text-gray-800">
               第{question.question_number}問
             </h2>
-            {!hasAnswered && (
-              <div className="text-lg font-semibold text-wedding-pink" role="timer" aria-live="polite" aria-atomic="true">
-                <span className="sr-only">回答時間</span>
-                残り時間: {timeLeft}秒
-              </div>
-            )}
           </div>
 
           <p className="text-lg text-gray-700 mb-6">{question.question_text}</p>
@@ -251,7 +228,7 @@ export default function QuizPage() {
                       <button
                         key={choice.id}
                         onClick={() => setSelectedChoice(choice.id)}
-                        disabled={isSubmitting || timeLeft === 0}
+                        disabled={isSubmitting}
                         className={`w-full p-4 text-left rounded-lg border-2 transition-all ${
                           selectedChoice === choice.id
                             ? 'border-wedding-pink bg-pink-50'
@@ -273,7 +250,7 @@ export default function QuizPage() {
                   <textarea
                     value={freeTextAnswer}
                     onChange={(e) => setFreeTextAnswer(e.target.value)}
-                    disabled={isSubmitting || timeLeft === 0}
+                    disabled={isSubmitting}
                     className="w-full p-4 border-2 border-gray-300 rounded-lg focus:border-wedding-pink focus:outline-none disabled:opacity-50 focus:ring-2 focus:ring-wedding-pink focus:ring-offset-2"
                     rows={4}
                     placeholder="回答を入力してください"
@@ -292,12 +269,7 @@ export default function QuizPage() {
                 </div>
               )}
 
-              {timeLeft === 0 ? (
-                <div className="text-center text-red-600 font-semibold">
-                  時間切れです
-                </div>
-              ) : (
-                <button
+              <button
                   onClick={handleSubmit}
                   disabled={isSubmitting || 
                     (question.question_type === 'multiple_choice' && !selectedChoice) ||
@@ -308,7 +280,6 @@ export default function QuizPage() {
                 >
                   {isSubmitting ? '送信中...' : '回答を送信'}
                 </button>
-              )}
             </>
           )}
         </div>

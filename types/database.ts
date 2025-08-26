@@ -14,7 +14,6 @@ export interface Question {
   question_text: string
   question_type: 'multiple_choice' | 'free_text'
   image_url?: string
-  time_limit_seconds: number
   points: number
   created_at: string
   updated_at: string
