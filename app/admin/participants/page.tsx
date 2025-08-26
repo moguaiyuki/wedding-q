@@ -176,7 +176,7 @@ export default function ParticipantsManagementPage() {
             <div className="flex gap-2">
               <button
                 onClick={() => router.push('/admin/dashboard')}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700"
               >
                 ダッシュボードに戻る
               </button>
@@ -261,7 +261,7 @@ export default function ParticipantsManagementPage() {
                   <button
                     type="button"
                     onClick={resetForm}
-                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700"
                   >
                     キャンセル
                   </button>
@@ -346,7 +346,7 @@ export default function ParticipantsManagementPage() {
                 </button>
                 <button
                   onClick={() => setShowQRCodes(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700"
                 >
                   閉じる
                 </button>

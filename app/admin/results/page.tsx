@@ -148,7 +148,7 @@ export default function FinalResultsPage() {
               </button>
               <button
                 onClick={() => router.push('/admin/dashboard')}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700"
               >
                 ダッシュボードに戻る
               </button>

@@ -54,7 +54,7 @@ vercel env add NEXT_PUBLIC_SUPABASE_URL
 vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY
 vercel env add SUPABASE_SERVICE_ROLE_KEY
 vercel env add ADMIN_PASSWORD
-vercel env add NEXT_PUBLIC_APP_URL
+vercel env add NEXT_PUBLIC_APP_URL # https://wedding-q.vercel.app またはカスタムドメイン
 
 # デプロイ
 vercel --prod
@@ -68,7 +68,7 @@ vercel --prod
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `SUPABASE_SERVICE_ROLE_KEY`
    - `ADMIN_PASSWORD`
-   - `NEXT_PUBLIC_APP_URL`
+   - `NEXT_PUBLIC_APP_URL` (例: https://wedding-q.vercel.app)
 4. 「Deploy」をクリック
 
 ### 3. 本番環境の初期設定
@@ -82,7 +82,8 @@ https://your-domain.vercel.app/admin
 #### 3.2 参加者登録
 1. 管理者ダッシュボード → 参加者管理
 2. CSVで一括登録またはひとりずつ登録
-3. QRコードを印刷
+3. QRコードを生成（URL形式: `https://wedding-q.vercel.app/participant?qr=XXXX`）
+4. QRコードを印刷して座席カードに貼り付け
 
 #### 3.3 問題登録
 1. 管理者ダッシュボード → 問題管理
@@ -123,6 +124,8 @@ npm run test:e2e
 **接続できない場合:**
 - WiFiパスワードを確認
 - QRコードが正しく読み取れているか確認
+  - QRコードを読み取ると自動的にURLに移動し、ログインされる
+  - 手動入力の場合は、QRコードのID部分だけを入力
 - ブラウザのキャッシュをクリア
 
 **画面が更新されない場合:**

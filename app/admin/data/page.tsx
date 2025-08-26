@@ -103,7 +103,7 @@ export default function DataManagementPage() {
             <h1 className="text-2xl font-bold text-gray-900">データ管理</h1>
             <button
               onClick={() => router.push('/admin/dashboard')}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700"
             >
               ダッシュボードに戻る
             </button>
@@ -195,7 +195,7 @@ export default function DataManagementPage() {
               </button>
               <button
                 onClick={() => router.push('/presentation')}
-                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700"
               >
                 プレゼンテーション画面
               </button>

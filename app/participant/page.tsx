@@ -1,17 +1,28 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 export default function ParticipantPage() {
   const [qrCode, setQrCode] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [autoLoginAttempted, setAutoLoginAttempted] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!qrCode.trim()) {
+  // URLパラメータからQRコードを取得して自動ログイン
+  useEffect(() => {
+    const qrParam = searchParams.get('qr')
+    if (qrParam && !autoLoginAttempted) {
+      setQrCode(qrParam)
+      setAutoLoginAttempted(true)
+      handleLogin(qrParam)
+    }
+  }, [searchParams, autoLoginAttempted])
+
+  const handleLogin = async (code: string) => {
+    if (!code.trim()) {
       setError('QRコードまたはIDを入力してください')
       return
     }
@@ -25,7 +36,7 @@ export default function ParticipantPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ qrCode }),
+        body: JSON.stringify({ qrCode: code }),
       })
 
       const data = await response.json()
@@ -42,6 +53,11 @@ export default function ParticipantPage() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    handleLogin(qrCode)
   }
 
   return (

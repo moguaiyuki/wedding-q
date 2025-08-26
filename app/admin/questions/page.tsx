@@ -31,6 +31,7 @@ export default function QuestionsManagementPage() {
   const [questions, setQuestions] = useState<Question[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [showAddForm, setShowAddForm] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
   
   const [formData, setFormData] = useState({
     question_number: 1,
@@ -98,6 +99,77 @@ export default function QuestionsManagementPage() {
     }))
   }
 
+  const handleEdit = (question: Question) => {
+    setEditingId(question.id)
+    setShowAddForm(true)
+    setFormData({
+      question_number: question.question_number,
+      question_text: question.question_text,
+      question_type: question.question_type,
+      image_url: question.image_url || '',
+      points: question.points,
+      explanation_text: question.explanation_text || '',
+      explanation_image_url: question.explanation_image_url || '',
+      choices: question.question_type === 'multiple_choice' && question.choices
+        ? question.choices.map(c => ({ text: c.choice_text, is_correct: c.is_correct }))
+        : [
+            { text: '', is_correct: false },
+            { text: '', is_correct: false },
+            { text: '', is_correct: false },
+            { text: '', is_correct: false }
+          ]
+    })
+  }
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('この問題を削除してもよろしいですか？')) {
+      return
+    }
+
+    try {
+      console.log('Deleting question with ID:', id) // デバッグログ
+      
+      const response = await fetch(`/api/questions?id=${id}`, {
+        method: 'DELETE',
+      })
+
+      const data = await response.json()
+      console.log('Delete response:', response.status, data) // デバッグログ
+
+      if (response.ok) {
+        // 削除成功後、即座にリストから削除
+        setQuestions(prevQuestions => prevQuestions.filter(q => q.id !== id))
+        console.log('Question deleted successfully')
+      } else {
+        alert(data.error || '問題の削除に失敗しました')
+      }
+    } catch (error) {
+      console.error('Failed to delete question:', error)
+      alert('問題の削除中にエラーが発生しました')
+    }
+  }
+
+  const resetForm = () => {
+    setShowAddForm(false)
+    setEditingId(null)
+    const maxNumber = Math.max(...questions.map(q => q.question_number), 0)
+    setFormData({
+      question_number: maxNumber + 1,
+      question_text: '',
+      question_type: 'multiple_choice',
+      image_url: '',
+      points: 10,
+      explanation_text: '',
+      explanation_image_url: '',
+      choices: [
+        { text: '', is_correct: false },
+        { text: '', is_correct: false },
+        { text: '', is_correct: false },
+        { text: '', is_correct: false }
+      ]
+    })
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
@@ -119,8 +191,11 @@ export default function QuestionsManagementPage() {
     }
 
     try {
-      const response = await fetch('/api/questions', {
-        method: 'POST',
+      const url = editingId ? `/api/questions?id=${editingId}` : '/api/questions'
+      const method = editingId ? 'PUT' : 'POST'
+      
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -133,30 +208,15 @@ export default function QuestionsManagementPage() {
       })
 
       if (response.ok) {
-        setShowAddForm(false)
+        resetForm()
         fetchQuestions()
-        setFormData({
-          question_number: formData.question_number + 1,
-          question_text: '',
-          question_type: 'multiple_choice',
-          image_url: '',
-          points: 10,
-          explanation_text: '',
-          explanation_image_url: '',
-          choices: [
-            { text: '', is_correct: false },
-            { text: '', is_correct: false },
-            { text: '', is_correct: false },
-            { text: '', is_correct: false }
-          ]
-        })
       } else {
         const data = await response.json()
-        alert(data.error || '問題の追加に失敗しました')
+        alert(data.error || `問題の${editingId ? '更新' : '追加'}に失敗しました`)
       }
     } catch (error) {
-      console.error('Failed to add question:', error)
-      alert('問題の追加中にエラーが発生しました')
+      console.error(`Failed to ${editingId ? 'update' : 'add'} question:`, error)
+      alert(`問題の${editingId ? '更新' : '追加'}中にエラーが発生しました`)
     }
   }
 
@@ -194,7 +254,9 @@ export default function QuestionsManagementPage() {
 
         {showAddForm && (
           <div className="bg-white rounded-lg shadow p-6 mb-8">
-            <h2 className="text-xl font-bold text-gray-800 mb-4">新しい問題を追加</h2>
+            <h2 className="text-xl font-bold text-gray-800 mb-4">
+              {editingId ? '問題を編集' : '新しい問題を追加'}
+            </h2>
             
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -329,7 +391,7 @@ export default function QuestionsManagementPage() {
               <div className="flex justify-end space-x-4">
                 <button
                   type="button"
-                  onClick={() => setShowAddForm(false)}
+                  onClick={resetForm}
                   className="px-6 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 transition-colors"
                 >
                   キャンセル
@@ -338,7 +400,7 @@ export default function QuestionsManagementPage() {
                   type="submit"
                   className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
-                  問題を追加
+                  {editingId ? '更新' : '問題を追加'}
                 </button>
               </div>
             </form>
@@ -390,6 +452,21 @@ export default function QuestionsManagementPage() {
                         ))}
                     </div>
                   )}
+                  
+                  <div className="mt-4 flex space-x-2">
+                    <button
+                      onClick={() => handleEdit(question)}
+                      className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm"
+                    >
+                      編集
+                    </button>
+                    <button
+                      onClick={() => handleDelete(question.id)}
+                      className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors text-sm"
+                    >
+                      削除
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
