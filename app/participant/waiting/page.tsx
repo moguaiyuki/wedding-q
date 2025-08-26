@@ -51,7 +51,7 @@ export default function WaitingPage() {
   }, [])
 
   useEffect(() => {
-    if (gameState?.current_state === 'showing_question' || gameState?.current_state === 'accepting_answers') {
+    if (gameState?.current_state === 'accepting_answers') {
       router.push('/participant/quiz')
     } else if (gameState?.current_state === 'showing_results') {
       router.push('/participant/results')

@@ -190,15 +190,7 @@ export default function AdminDashboard() {
       setError('問題が登録されていません')
       return
     }
-    updateGameState('showing_question', 1)
-  }
-
-  const showQuestion = () => {
-    updateGameState('showing_question')
-  }
-
-  const startAcceptingAnswers = () => {
-    updateGameState('accepting_answers')
+    updateGameState('accepting_answers', 1)
   }
 
   const closeAnswers = () => {
@@ -212,7 +204,7 @@ export default function AdminDashboard() {
     const nextExists = questions.some(q => q.question_number === nextNumber)
     
     if (nextExists) {
-      updateGameState('showing_question', nextNumber)
+      updateGameState('accepting_answers', nextNumber)
     } else {
       updateGameState('finished')
     }
@@ -350,15 +342,6 @@ export default function AdminDashboard() {
               </button>
             )}
 
-            {gameState?.current_state === 'showing_question' && (
-              <button
-                onClick={startAcceptingAnswers}
-                disabled={isLoading}
-                className="bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                回答受付開始
-              </button>
-            )}
 
             {gameState?.current_state === 'accepting_answers' && (
               <button

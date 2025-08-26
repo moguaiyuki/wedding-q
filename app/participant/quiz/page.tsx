@@ -159,33 +159,6 @@ export default function QuizPage() {
     )
   }
 
-  if (gameState.current_state === 'showing_question') {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-pink to-wedding-white p-4">
-        <div className="bg-white rounded-lg shadow-xl p-8 max-w-2xl w-full">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">
-              第{question.question_number}問
-            </h2>
-            <p className="text-lg text-gray-700 mb-6">{question.question_text}</p>
-            {question.image_url && (
-              <div className="relative w-full h-64 mb-6">
-                <Image 
-                  src={question.image_url} 
-                  alt="問題画像" 
-                  fill
-                  className="object-contain rounded-lg"
-                  sizes="(max-width: 768px) 100vw, 768px"
-                  priority
-                />
-              </div>
-            )}
-            <p className="text-gray-600">まもなく回答開始です...</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-wedding-pink to-wedding-white p-4">

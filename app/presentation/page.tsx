@@ -201,52 +201,6 @@ export default function PresentationPage() {
     )
   }
 
-  // Showing question
-  if (gameState.current_state === 'showing_question' && currentQuestion) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-pink to-wedding-white p-8">
-        <div className="bg-white rounded-2xl shadow-2xl p-12 max-w-4xl w-full">
-          <div className="text-center">
-            <h2 className="text-5xl font-bold mb-8 text-gray-800">
-              第{currentQuestion.question_number}問
-            </h2>
-            <p className="text-3xl mb-8 text-gray-700">
-              {currentQuestion.question_text}
-            </p>
-            {currentQuestion.image_url && (
-              <div className="relative w-full h-96 mb-8">
-                <Image 
-                  src={currentQuestion.image_url} 
-                  alt="問題画像" 
-                  fill
-                  className="object-contain rounded-lg"
-                  sizes="(max-width: 1024px) 100vw, 1024px"
-                  priority
-                />
-              </div>
-            )}
-            {currentQuestion.question_type === 'multiple_choice' && currentQuestion.choices && (
-              <div className="grid grid-cols-2 gap-4 mt-8">
-                {currentQuestion.choices
-                  .sort((a, b) => a.display_order - b.display_order)
-                  .map((choice, index) => (
-                    <div
-                      key={choice.id}
-                      className="bg-gray-100 p-6 rounded-lg text-2xl"
-                    >
-                      {['A', 'B', 'C', 'D'][index]}. {choice.choice_text}
-                    </div>
-                  ))}
-              </div>
-            )}
-            <p className="text-2xl text-gray-600 mt-8">
-              まもなく回答開始です...
-            </p>
-          </div>
-        </div>
-      </div>
-    )
-  }
 
   // Accepting answers
   if (gameState.current_state === 'accepting_answers' && currentQuestion) {
