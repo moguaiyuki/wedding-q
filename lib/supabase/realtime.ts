@@ -29,13 +29,15 @@ class RealtimeManager {
             handler(payload)
           }
         )
-        .subscribe((status) => {
-          console.log('Game state subscription status:', status)
+        .subscribe((status, error) => {
+          console.log('Game state subscription status:', status, error)
           
           // Handle reconnection on error
-          if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
             console.log('Reconnecting game state subscription...')
             this.scheduleReconnect(channelName, subscribe)
+          } else if (status === 'SUBSCRIBED') {
+            console.log('Successfully subscribed to game state changes')
           }
         })
 

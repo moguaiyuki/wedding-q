@@ -54,16 +54,23 @@ export default function ResultsPage() {
     // Set up realtime subscription for game state changes
     const realtimeManager = getRealtimeManager()
     const unsubscribe = realtimeManager.subscribeToGameState((payload) => {
-      if (payload.eventType === 'UPDATE' || payload.eventType === 'INSERT') {
-        fetchGameState()
-        fetchResults() // Refresh results when state changes
-        fetchRanking() // Refresh ranking
-        fetchLeaderboard() // Refresh leaderboard
-      }
+      console.log('Results page received game state change:', payload)
+      fetchGameState()
+      fetchResults() // Refresh results when state changes
+      fetchRanking() // Refresh ranking
+      fetchLeaderboard() // Refresh leaderboard
     })
+    
+    // Also set up polling as fallback (every 2 seconds)
+    const interval = setInterval(() => {
+      fetchGameState()
+      fetchRanking()
+      fetchLeaderboard()
+    }, 2000)
     
     return () => {
       unsubscribe()
+      clearInterval(interval)
     }
   }, [])
 

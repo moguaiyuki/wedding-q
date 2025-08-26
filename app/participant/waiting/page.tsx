@@ -34,9 +34,8 @@ export default function WaitingPage() {
     
     // Subscribe to game state changes
     const unsubscribeGameState = realtimeManager.subscribeToGameState((payload) => {
-      if (payload.eventType === 'UPDATE' || payload.eventType === 'INSERT') {
-        fetchGameState()
-      }
+      console.log('Waiting page received game state change:', payload)
+      fetchGameState()
     })
     
     // Subscribe to participant count changes
@@ -44,9 +43,16 @@ export default function WaitingPage() {
       setParticipantCount(count)
     })
     
+    // Also set up polling as fallback (every 2 seconds)
+    const interval = setInterval(() => {
+      fetchGameState()
+      fetchParticipantCount()
+    }, 2000)
+    
     return () => {
       unsubscribeGameState()
       unsubscribeParticipants()
+      clearInterval(interval)
     }
   }, [])
 

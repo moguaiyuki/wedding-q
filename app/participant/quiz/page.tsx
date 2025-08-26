@@ -40,13 +40,18 @@ export default function QuizPage() {
     // Set up realtime subscription for game state changes
     const realtimeManager = getRealtimeManager()
     const unsubscribe = realtimeManager.subscribeToGameState((payload) => {
-      if (payload.eventType === 'UPDATE' || payload.eventType === 'INSERT') {
-        fetchGameState()
-      }
+      console.log('Quiz page received game state change:', payload)
+      fetchGameState()
     })
+    
+    // Also set up polling as fallback (every 2 seconds)
+    const interval = setInterval(() => {
+      fetchGameState()
+    }, 2000)
     
     return () => {
       unsubscribe()
+      clearInterval(interval)
     }
   }, [])
 
