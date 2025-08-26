@@ -318,7 +318,7 @@ export default function AdminDashboard() {
 
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-sm font-medium text-gray-600 mb-2">状態</h2>
-            <p className="text-xl font-bold">
+            <p className="text-xl font-bold text-gray-800">
               {gameState?.current_state === 'waiting' && '待機中'}
               {gameState?.current_state === 'showing_question' && '問題表示中'}
               {gameState?.current_state === 'accepting_answers' && '回答受付中'}
