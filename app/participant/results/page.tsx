@@ -22,6 +22,14 @@ interface GameState {
   current_question_number: number
 }
 
+interface LeaderboardEntry {
+  user_id: string
+  name: string
+  nickname?: string
+  total_score: number
+  correct_count: number
+}
+
 export default function ResultsPage() {
   const router = useRouter()
   const [totalScore, setTotalScore] = useState(0)
@@ -30,6 +38,7 @@ export default function ResultsPage() {
   const [rank, setRank] = useState<number | null>(null)
   const [gameState, setGameState] = useState<GameState | null>(null)
   const [lastAnswer, setLastAnswer] = useState<LastAnswer | null>(null)
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -38,6 +47,7 @@ export default function ResultsPage() {
       await fetchGameState()
       await fetchResults()
       await fetchRanking()
+      await fetchLeaderboard()
     }
     init()
     
@@ -48,6 +58,7 @@ export default function ResultsPage() {
         fetchGameState()
         fetchResults() // Refresh results when state changes
         fetchRanking() // Refresh ranking
+        fetchLeaderboard() // Refresh leaderboard
       }
     })
     
@@ -119,6 +130,18 @@ export default function ResultsPage() {
     }
   }
 
+  const fetchLeaderboard = async () => {
+    try {
+      const response = await fetch('/api/stats/leaderboard?limit=10')
+      if (response.ok) {
+        const data = await response.json()
+        setLeaderboard(data)
+      }
+    } catch (error) {
+      console.error('Failed to fetch leaderboard:', error)
+    }
+  }
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-pink to-wedding-white">
@@ -186,6 +209,46 @@ export default function ResultsPage() {
               <p className="text-sm text-gray-600 mt-1">位</p>
             </div>
           </div>
+
+          {/* ランキング表 */}
+          {leaderboard.length > 0 && (
+            <div className="mb-6">
+              <h2 className="text-xl font-bold mb-4 text-gray-800">現在のランキング</h2>
+              <div className="bg-gray-50 rounded-lg p-4">
+                <div className="space-y-2">
+                  {leaderboard.slice(0, 10).map((entry, index) => (
+                    <div 
+                      key={entry.user_id} 
+                      className={`flex justify-between items-center p-3 rounded-lg ${
+                        index === 0 ? 'bg-yellow-100' :
+                        index === 1 ? 'bg-gray-100' :
+                        index === 2 ? 'bg-orange-100' :
+                        'bg-white'
+                      }`}
+                    >
+                      <div className="flex items-center">
+                        <span className={`font-bold mr-3 text-lg ${
+                          index === 0 ? 'text-yellow-600' :
+                          index === 1 ? 'text-gray-600' :
+                          index === 2 ? 'text-orange-600' :
+                          'text-gray-500'
+                        }`}>
+                          {index + 1}位
+                        </span>
+                        <span className="text-sm">
+                          {entry.nickname || entry.name}
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        <span className="font-bold text-lg">{entry.total_score}点</span>
+                        <span className="text-xs text-gray-500 ml-2">正解: {entry.correct_count}問</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
 
           {!isFinished && (
             <div className="text-center">
