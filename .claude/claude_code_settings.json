@@ -1,0 +1,76 @@
+{
+  "commands": [
+    {
+      "name": "deploy",
+      "description": "Deploy the Wedding Quiz app to Vercel production",
+      "command": "npm run deploy"
+    },
+    {
+      "name": "deploy:quick",
+      "description": "Quick deploy without confirmation prompts",
+      "command": "npm run deploy:quick"
+    },
+    {
+      "name": "deploy:preview",
+      "description": "Deploy to Vercel preview environment",
+      "command": "npm run deploy:preview"
+    },
+    {
+      "name": "build",
+      "description": "Build the Next.js application",
+      "command": "npm run build"
+    },
+    {
+      "name": "test",
+      "description": "Run E2E tests with Playwright",
+      "command": "npm run test:e2e"
+    },
+    {
+      "name": "dev",
+      "description": "Start the development server",
+      "command": "npm run dev"
+    },
+    {
+      "name": "supabase:migrate",
+      "description": "Run Supabase database migrations",
+      "command": "npm run supabase:migrate"
+    },
+    {
+      "name": "logs",
+      "description": "View Vercel deployment logs",
+      "command": "vercel logs --follow"
+    },
+    {
+      "name": "env:list",
+      "description": "List Vercel environment variables",
+      "command": "vercel env ls"
+    },
+    {
+      "name": "rollback",
+      "description": "Rollback to previous deployment",
+      "command": "vercel rollback"
+    }
+  ],
+  "hooks": {
+    "pre-deploy": {
+      "description": "Run before deployment",
+      "commands": [
+        "npm run lint",
+        "npm run typecheck",
+        "npm run build"
+      ]
+    },
+    "post-deploy": {
+      "description": "Run after successful deployment",
+      "commands": [
+        "echo '✅ Deployment successful!'",
+        "echo '🌐 View your app at: https://wedding-q.vercel.app'"
+      ]
+    }
+  },
+  "aliases": {
+    "/d": "/deploy",
+    "/dq": "/deploy:quick",
+    "/dp": "/deploy:preview"
+  }
+}

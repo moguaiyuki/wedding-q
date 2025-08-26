@@ -280,8 +280,8 @@ export default function PresentationPage() {
                         style={{ width: `${percentage}%` }}
                       />
                       <div className="relative p-4 flex justify-between items-center">
-                        <span className="text-xl">{choice.choice_text}</span>
-                        <span className="text-xl font-bold">{stat?.count || 0}名</span>
+                        <span className="text-xl text-gray-800">{choice.choice_text}</span>
+                        <span className="text-xl font-bold text-gray-900">{stat?.count || 0}名</span>
                       </div>
                     </div>
                   )

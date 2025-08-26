@@ -231,8 +231,8 @@ export default function QuizPage() {
                         disabled={isSubmitting}
                         className={`w-full p-4 text-left rounded-lg border-2 transition-all ${
                           selectedChoice === choice.id
-                            ? 'border-wedding-pink bg-pink-50'
-                            : 'border-gray-300 hover:border-gray-400'
+                            ? 'border-wedding-pink bg-pink-50 text-gray-800'
+                            : 'border-gray-300 hover:border-gray-400 text-gray-700 hover:bg-gray-50'
                         } disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-wedding-pink focus:ring-offset-2`}
                         aria-label={`選択肢${choice.display_order}: ${choice.choice_text}`}
                         aria-pressed={selectedChoice === choice.id}

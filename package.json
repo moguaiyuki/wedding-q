@@ -13,7 +13,11 @@
     "test:e2e:debug": "playwright test --debug",
     "test:stress": "playwright test tests/e2e/concurrent-stress.spec.ts",
     "supabase:migrate": "node scripts/migrate.js",
-    "vercel:deploy": "vercel --prod"
+    "vercel:deploy": "vercel --prod",
+    "deploy": "./scripts/deploy.sh",
+    "deploy:quick": "vercel --prod --yes",
+    "deploy:preview": "vercel",
+    "claude": "node scripts/claude-commands.js"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.3",
