@@ -219,29 +219,29 @@ export default function ResultsPage() {
                   {leaderboard.slice(0, 10).map((entry, index) => (
                     <div 
                       key={entry.user_id} 
-                      className={`flex justify-between items-center p-3 rounded-lg ${
-                        index === 0 ? 'bg-yellow-100' :
-                        index === 1 ? 'bg-gray-100' :
-                        index === 2 ? 'bg-orange-100' :
-                        'bg-white'
+                      className={`flex justify-between items-center p-3 rounded-lg border ${
+                        index === 0 ? 'bg-yellow-50 border-yellow-300' :
+                        index === 1 ? 'bg-gray-50 border-gray-300' :
+                        index === 2 ? 'bg-orange-50 border-orange-300' :
+                        'bg-white border-gray-200'
                       }`}
                     >
                       <div className="flex items-center">
                         <span className={`font-bold mr-3 text-lg ${
-                          index === 0 ? 'text-yellow-600' :
-                          index === 1 ? 'text-gray-600' :
-                          index === 2 ? 'text-orange-600' :
-                          'text-gray-500'
+                          index === 0 ? 'text-yellow-700' :
+                          index === 1 ? 'text-gray-700' :
+                          index === 2 ? 'text-orange-700' :
+                          'text-gray-700'
                         }`}>
                           {index + 1}位
                         </span>
-                        <span className="text-sm">
+                        <span className="text-sm text-gray-800 font-medium">
                           {entry.nickname || entry.name}
                         </span>
                       </div>
                       <div className="text-right">
-                        <span className="font-bold text-lg">{entry.total_score}点</span>
-                        <span className="text-xs text-gray-500 ml-2">正解: {entry.correct_count}問</span>
+                        <span className="font-bold text-lg text-gray-900">{entry.total_score}点</span>
+                        <span className="text-xs text-gray-600 ml-2 font-medium">正解: {entry.correct_count}問</span>
                       </div>
                     </div>
                   ))}

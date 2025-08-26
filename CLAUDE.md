@@ -120,3 +120,4 @@ Required in `.env.local`:
 - Verify cross-browser compatibility when needed
 
 - @IMPLEMENTATION_PLAN.md に従って実行した場合、進捗を更新するようにしてください
+- 文字色はアクセシビリティを意識して
