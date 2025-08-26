@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { getRealtimeManager } from '@/lib/supabase/realtime'
 
 interface Question {
   id: string
@@ -35,8 +36,18 @@ export default function QuizPage() {
 
   useEffect(() => {
     fetchGameState()
-    const interval = setInterval(fetchGameState, 2000)
-    return () => clearInterval(interval)
+    
+    // Set up realtime subscription for game state changes
+    const realtimeManager = getRealtimeManager()
+    const unsubscribe = realtimeManager.subscribeToGameState((payload) => {
+      if (payload.eventType === 'UPDATE' || payload.eventType === 'INSERT') {
+        fetchGameState()
+      }
+    })
+    
+    return () => {
+      unsubscribe()
+    }
   }, [])
 
   useEffect(() => {

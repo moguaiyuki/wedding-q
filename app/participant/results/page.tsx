@@ -2,12 +2,19 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { getRealtimeManager } from '@/lib/supabase/realtime'
 
 interface UserAnswer {
   question_id: string
   is_correct: boolean
   points_earned: number
   answered_at: string
+}
+
+interface LastAnswer {
+  is_correct: boolean
+  question_number: number
+  points_earned: number
 }
 
 interface GameState {
@@ -22,13 +29,25 @@ export default function ResultsPage() {
   const [totalQuestions, setTotalQuestions] = useState(0)
   const [rank, setRank] = useState<number | null>(null)
   const [gameState, setGameState] = useState<GameState | null>(null)
+  const [lastAnswer, setLastAnswer] = useState<LastAnswer | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     fetchResults()
     fetchGameState()
-    const interval = setInterval(fetchGameState, 2000)
-    return () => clearInterval(interval)
+    
+    // Set up realtime subscription for game state changes
+    const realtimeManager = getRealtimeManager()
+    const unsubscribe = realtimeManager.subscribeToGameState((payload) => {
+      if (payload.eventType === 'UPDATE' || payload.eventType === 'INSERT') {
+        fetchGameState()
+        fetchResults() // Refresh results when state changes
+      }
+    })
+    
+    return () => {
+      unsubscribe()
+    }
   }, [])
 
   useEffect(() => {
@@ -51,6 +70,16 @@ export default function ResultsPage() {
         setTotalScore(total)
         setCorrectCount(correct)
         setTotalQuestions(answers.length)
+        
+        // 最新の回答を取得（最後の要素）
+        if (answers.length > 0 && gameState?.current_question_number) {
+          const lastAnswerData = answers[answers.length - 1]
+          setLastAnswer({
+            is_correct: lastAnswerData.is_correct,
+            question_number: gameState.current_question_number,
+            points_earned: lastAnswerData.points_earned
+          })
+        }
       }
     } catch (error) {
       console.error('Failed to fetch results:', error)
@@ -91,6 +120,29 @@ export default function ResultsPage() {
           <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">
             {isFinished ? '最終結果' : `第${gameState?.current_question_number}問 結果`}
           </h1>
+
+          {/* 直前の回答結果表示 */}
+          {lastAnswer && !isFinished && (
+            <div className={`rounded-lg p-6 mb-6 text-center ${
+              lastAnswer.is_correct 
+                ? 'bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-300' 
+                : 'bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-300'
+            }`}>
+              <div className="text-5xl mb-3">
+                {lastAnswer.is_correct ? '⭕' : '❌'}
+              </div>
+              <p className={`text-2xl font-bold mb-2 ${
+                lastAnswer.is_correct ? 'text-green-700' : 'text-red-700'
+              }`}>
+                {lastAnswer.is_correct ? '正解！' : '残念...'}
+              </p>
+              {lastAnswer.is_correct && (
+                <p className="text-lg text-green-600">
+                  +{lastAnswer.points_earned}ポイント獲得
+                </p>
+              )}
+            </div>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-6 text-center">

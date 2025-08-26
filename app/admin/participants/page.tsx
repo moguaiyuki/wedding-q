@@ -28,8 +28,7 @@ export default function ParticipantsManagementPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     name: '',
-    group_type: 'bride',
-    seat_number: ''
+    group_type: 'bride'
   })
   const [error, setError] = useState('')
   const [showQRCodes, setShowQRCodes] = useState(false)
@@ -94,8 +93,7 @@ export default function ParticipantsManagementPage() {
     setEditingId(participant.id)
     setFormData({
       name: participant.name,
-      group_type: participant.group_type,
-      seat_number: participant.seat_number || ''
+      group_type: participant.group_type
     })
     setShowAddForm(true)
   }
@@ -122,8 +120,7 @@ export default function ParticipantsManagementPage() {
   const resetForm = () => {
     setFormData({
       name: '',
-      group_type: 'bride',
-      seat_number: ''
+      group_type: 'bride'
     })
     setEditingId(null)
     setShowAddForm(false)
@@ -207,7 +204,7 @@ export default function ParticipantsManagementPage() {
                 {editingId ? '参加者を編集' : '参加者を追加'}
               </h2>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       名前 <span className="text-red-500">*</span>
@@ -237,18 +234,6 @@ export default function ParticipantsManagementPage() {
                         </option>
                       ))}
                     </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      座席番号
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.seat_number}
-                      onChange={(e) => setFormData({ ...formData, seat_number: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="A-1"
-                    />
                   </div>
                 </div>
                 <div className="flex gap-2">
@@ -281,13 +266,13 @@ export default function ParticipantsManagementPage() {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    座席番号
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     名前
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    グループ
+                    新郎側/新婦側
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    詳細グループ
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     QRコード
@@ -298,36 +283,45 @@ export default function ParticipantsManagementPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {participants.map((participant) => (
-                  <tr key={participant.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {participant.seat_number || '-'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {participant.name}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {getGroupLabel(participant.group_type)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-500">
-                      {participant.qr_code}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <button
-                        onClick={() => handleEdit(participant)}
-                        className="text-blue-600 hover:text-blue-900 mr-2"
-                      >
-                        編集
-                      </button>
-                      <button
-                        onClick={() => handleDelete(participant.id)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        削除
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {participants.map((participant) => {
+                  const mainSide = participant.group_type.includes('bride') ? '新婦側' : '新郎側'
+                  return (
+                    <tr key={participant.id}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {participant.name}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          participant.group_type.includes('bride') 
+                            ? 'bg-pink-100 text-pink-800' 
+                            : 'bg-blue-100 text-blue-800'
+                        }`}>
+                          {mainSide}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {getGroupLabel(participant.group_type)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-500">
+                        {participant.qr_code}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <button
+                          onClick={() => handleEdit(participant)}
+                          className="text-blue-600 hover:text-blue-900 mr-2"
+                        >
+                          編集
+                        </button>
+                        <button
+                          onClick={() => handleDelete(participant.id)}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          削除
+                        </button>
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
@@ -361,7 +355,6 @@ export default function ParticipantsManagementPage() {
                     className="mx-auto mb-2"
                   />
                   <p className="font-semibold text-sm">{qr.name}</p>
-                  <p className="text-xs text-gray-600">{qr.seatNumber || '-'}</p>
                   <p className="text-xs text-gray-500">{getGroupLabel(qr.groupType)}</p>
                   <p className="text-xs font-mono text-gray-400 mt-1">{qr.qrCode}</p>
                 </div>
@@ -373,20 +366,63 @@ export default function ParticipantsManagementPage() {
 
       <style jsx global>{`
         @media print {
-          body * {
-            visibility: hidden;
+          @page {
+            size: A4;
+            margin: 10mm;
           }
-          .print\\:shadow-none,
-          .print\\:shadow-none * {
-            visibility: visible;
+          
+          body {
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
           }
+          
+          /* Hide everything except QR codes */
+          body > * {
+            display: none !important;
+          }
+          
+          /* Show only QR code container */
           .print\\:shadow-none {
-            position: absolute;
-            left: 0;
-            top: 0;
+            display: block !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 10mm !important;
+            background: white !important;
+            box-shadow: none !important;
           }
+          
           .print\\:hidden {
             display: none !important;
+          }
+          
+          /* QR code grid layout for print */
+          .print\\:grid-cols-3 {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 10mm !important;
+          }
+          
+          /* Individual QR code styling */
+          .print\\:shadow-none .border {
+            border: 1px solid #000 !important;
+            padding: 5mm !important;
+            break-inside: avoid !important;
+            page-break-inside: avoid !important;
+          }
+          
+          .print\\:shadow-none img {
+            width: 100% !important;
+            max-width: 150px !important;
+            height: auto !important;
+            margin: 0 auto 5mm auto !important;
+          }
+          
+          .print\\:shadow-none p {
+            margin: 2mm 0 !important;
+            color: #000 !important;
           }
         }
       `}</style>

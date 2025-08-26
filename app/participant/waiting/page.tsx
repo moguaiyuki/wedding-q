@@ -151,9 +151,6 @@ export default function WaitingPage() {
               <p className="text-xs text-gray-500 mb-1">本名: {user.name}</p>
             )}
             <p className="text-sm text-gray-500">ID: {user?.qr_code || '-'}</p>
-            {user?.seat_number && (
-              <p className="text-sm text-gray-500">座席: {user.seat_number}</p>
-            )}
           </div>
 
           <div className="mb-6">
