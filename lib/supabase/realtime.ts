@@ -14,7 +14,21 @@ class RealtimeManager {
   subscribeToGameState(handler: GameStateChangeHandler): () => void {
     const channelName = 'game-state'
     
+    // Prevent multiple subscriptions to the same channel
+    if (this.channels.has(channelName)) {
+      console.log('Already subscribed to game state, skipping...')
+      return () => {
+        this.unsubscribe(channelName)
+      }
+    }
+    
     const subscribe = () => {
+      // Check again to prevent duplicate subscription during reconnect
+      if (this.channels.has(channelName)) {
+        console.log('Channel already exists, skipping subscribe...')
+        return
+      }
+      
       const channel = this.supabase
         .channel('game-state-changes')
         .on(
@@ -32,8 +46,8 @@ class RealtimeManager {
         .subscribe((status, error) => {
           console.log('Game state subscription status:', status, error)
           
-          // Handle reconnection on error
-          if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+          // Only reconnect on specific errors, not on CLOSED
+          if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
             console.log('Reconnecting game state subscription...')
             this.scheduleReconnect(channelName, subscribe)
           } else if (status === 'SUBSCRIBED') {
@@ -115,20 +129,24 @@ class RealtimeManager {
 
   // Schedule reconnection with exponential backoff
   private scheduleReconnect(channelName: string, subscribeFn: () => void) {
-    // Clear existing timer if any
-    const existingTimer = this.reconnectTimers.get(channelName)
-    if (existingTimer) {
-      clearTimeout(existingTimer)
+    // Prevent scheduling multiple reconnects for the same channel
+    if (this.reconnectTimers.has(channelName)) {
+      console.log(`Reconnect already scheduled for ${channelName}, skipping...`)
+      return
     }
     
-    // Unsubscribe existing channel
-    this.unsubscribe(channelName)
+    // Unsubscribe existing channel before reconnecting
+    const channel = this.channels.get(channelName)
+    if (channel) {
+      this.channels.delete(channelName) // Remove from map first
+      this.supabase.removeChannel(channel) // Then remove channel
+    }
     
     // Schedule reconnection after delay
     const timer = setTimeout(() => {
       console.log(`Attempting to reconnect ${channelName}...`)
-      subscribeFn()
       this.reconnectTimers.delete(channelName)
+      subscribeFn()
     }, 3000) // Reconnect after 3 seconds
     
     this.reconnectTimers.set(channelName, timer)
@@ -136,17 +154,22 @@ class RealtimeManager {
 
   // Unsubscribe from a specific channel
   private unsubscribe(channelName: string) {
-    const channel = this.channels.get(channelName)
-    if (channel) {
-      this.supabase.removeChannel(channel)
-      this.channels.delete(channelName)
-    }
-    
-    // Clear reconnection timer if any
+    // Clear reconnection timer first
     const timer = this.reconnectTimers.get(channelName)
     if (timer) {
       clearTimeout(timer)
       this.reconnectTimers.delete(channelName)
+    }
+    
+    // Then remove channel
+    const channel = this.channels.get(channelName)
+    if (channel) {
+      this.channels.delete(channelName) // Remove from map first
+      try {
+        this.supabase.removeChannel(channel) // Then remove channel
+      } catch (error) {
+        console.error(`Error removing channel ${channelName}:`, error)
+      }
     }
   }
 
