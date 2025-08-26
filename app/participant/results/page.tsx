@@ -33,8 +33,12 @@ export default function ResultsPage() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    fetchResults()
-    fetchGameState()
+    // First fetch game state, then results
+    const init = async () => {
+      await fetchGameState()
+      await fetchResults()
+    }
+    init()
     
     // Set up realtime subscription for game state changes
     const realtimeManager = getRealtimeManager()
@@ -72,11 +76,12 @@ export default function ResultsPage() {
         setTotalQuestions(answers.length)
         
         // 最新の回答を取得（最後の要素）
-        if (answers.length > 0 && gameState?.current_question_number) {
+        if (answers.length > 0) {
           const lastAnswerData = answers[answers.length - 1]
+          // gameStateを使わずに、現在の問題番号を設定
           setLastAnswer({
             is_correct: lastAnswerData.is_correct,
-            question_number: gameState.current_question_number,
+            question_number: answers.length, // 回答数を問題番号として使用
             points_earned: lastAnswerData.points_earned
           })
         }
