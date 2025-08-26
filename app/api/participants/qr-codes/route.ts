@@ -41,7 +41,8 @@ export async function GET(request: NextRequest) {
     }
 
     // QRコードのデータ - 本番環境または環境変数から取得したURLを使用
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://wedding-q.vercel.app'
+    // 環境変数に改行が含まれる可能性があるためtrimする
+    const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://wedding-q.vercel.app').trim()
     const qrData = `${baseUrl}/participant?qr=${participant.qr_code}`
     
     // QRコードのオプション
@@ -127,7 +128,8 @@ export async function POST(request: NextRequest) {
     const qrCodes = await Promise.all(
       participants.map(async (participant) => {
         // QRコードのデータ - 本番環境または環境変数から取得したURLを使用
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://wedding-q.vercel.app'
+        // 環境変数に改行が含まれる可能性があるためtrimする
+        const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://wedding-q.vercel.app').trim()
         const qrData = `${baseUrl}/participant?qr=${participant.qr_code}`
         const dataUrl = await QRCode.toDataURL(qrData, {
           errorCorrectionLevel: 'M',
