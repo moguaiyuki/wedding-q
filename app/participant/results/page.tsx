@@ -37,6 +37,7 @@ export default function ResultsPage() {
     const init = async () => {
       await fetchGameState()
       await fetchResults()
+      await fetchRanking()
     }
     init()
     
@@ -46,6 +47,7 @@ export default function ResultsPage() {
       if (payload.eventType === 'UPDATE' || payload.eventType === 'INSERT') {
         fetchGameState()
         fetchResults() // Refresh results when state changes
+        fetchRanking() // Refresh ranking
       }
     })
     
@@ -102,6 +104,18 @@ export default function ResultsPage() {
       }
     } catch (error) {
       console.error('Failed to fetch game state:', error)
+    }
+  }
+
+  const fetchRanking = async () => {
+    try {
+      const response = await fetch('/api/stats/ranking')
+      if (response.ok) {
+        const data = await response.json()
+        setRank(data.rank)
+      }
+    } catch (error) {
+      console.error('Failed to fetch ranking:', error)
     }
   }
 
@@ -164,22 +178,14 @@ export default function ResultsPage() {
               <p className="text-sm text-gray-600 mt-1">問</p>
             </div>
 
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-6 text-center">
-              <p className="text-sm text-gray-600 mb-2">正解率</p>
-              <p className="text-4xl font-bold text-purple-600">
-                {totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0}
+            <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-lg p-6 text-center">
+              <p className="text-sm text-gray-600 mb-2">現在の順位</p>
+              <p className="text-4xl font-bold text-yellow-600">
+                {rank ? `${rank}位` : '-'}
               </p>
-              <p className="text-sm text-gray-600 mt-1">%</p>
+              <p className="text-sm text-gray-600 mt-1">位</p>
             </div>
           </div>
-
-          {rank && (
-            <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-lg p-6 mb-6 text-center">
-              <p className="text-sm text-gray-600 mb-2">現在の順位</p>
-              <p className="text-5xl font-bold text-yellow-600">{rank}位</p>
-              <p className="text-sm text-gray-600 mt-2">60名中</p>
-            </div>
-          )}
 
           {!isFinished && (
             <div className="text-center">
