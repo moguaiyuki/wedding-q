@@ -46,7 +46,12 @@ function ParticipantContent() {
         return
       }
 
-      router.push('/participant/waiting')
+      // ニックネーム未設定の場合はプロフィール設定画面へ誘導
+      if (data.shouldSetupProfile) {
+        router.push('/participant/profile?setup=true')
+      } else {
+        router.push('/participant/waiting')
+      }
     } catch (error) {
       console.error('Auth error:', error)
       setError('ネットワークエラーが発生しました')

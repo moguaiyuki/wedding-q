@@ -15,6 +15,7 @@ export async function GET() {
     return NextResponse.json({
       id: user.id,
       name: user.name,
+      nickname: user.nickname,
       qr_code: user.qr_code,
       group_type: user.group_type,
       seat_number: user.seat_number

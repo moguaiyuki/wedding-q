@@ -61,9 +61,11 @@ export async function POST(request: NextRequest) {
       user: {
         id: user.id,
         name: user.name,
+        nickname: user.nickname,
         group_type: user.group_type,
         seat_number: user.seat_number
-      }
+      },
+      shouldSetupProfile: !user.nickname // ニックネーム未設定の場合はtrueを返す
     })
   } catch (error) {
     console.error('Participant auth error:', error)

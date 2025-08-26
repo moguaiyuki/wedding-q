@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 interface User {
   id: string
@@ -11,18 +11,24 @@ interface User {
   seat_number?: string
 }
 
-export default function ProfilePage() {
+function ProfileContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [user, setUser] = useState<User | null>(null)
   const [nickname, setNickname] = useState('')
   const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const isFirstSetup = searchParams.get('setup') === 'true'
 
   useEffect(() => {
     fetchUser()
-  }, [])
+    // 初回セットアップの場合は自動で編集モードに
+    if (isFirstSetup) {
+      setIsEditing(true)
+    }
+  }, [isFirstSetup])
 
   const fetchUser = async () => {
     try {
@@ -130,14 +136,27 @@ export default function ProfilePage() {
       <div className="max-w-md mx-auto">
         <div className="bg-white rounded-lg shadow-xl p-6">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-800">プロフィール設定</h1>
-            <button
-              onClick={() => router.push('/participant/waiting')}
-              className="text-gray-600 hover:text-gray-800"
-            >
-              ✕
-            </button>
+            <h1 className="text-2xl font-bold text-gray-800">
+              {isFirstSetup ? 'はじめに表示名を設定' : 'プロフィール設定'}
+            </h1>
+            {!isFirstSetup && (
+              <button
+                onClick={() => router.push('/participant/waiting')}
+                className="text-gray-600 hover:text-gray-800"
+              >
+                ✕
+              </button>
+            )}
           </div>
+
+          {isFirstSetup && !user?.nickname && (
+            <div className="bg-blue-50 border border-blue-300 rounded-lg p-4 mb-6">
+              <p className="text-sm text-blue-800">
+                クイズ中に表示される名前を設定してください。
+                あなただけのニックネームで楽しく参加しましょう！
+              </p>
+            </div>
+          )}
 
           {error && (
             <div className="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg mb-4">
@@ -249,11 +268,26 @@ export default function ProfilePage() {
               onClick={() => router.push('/participant/waiting')}
               className="w-full bg-gray-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-700 transition-colors"
             >
-              クイズに戻る
+              {isFirstSetup ? 'クイズを開始' : 'クイズに戻る'}
             </button>
           </div>
         </div>
       </div>
     </div>
+  )
+}
+
+export default function ProfilePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-pink to-wedding-white">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-wedding-pink mx-auto mb-4"></div>
+          <p className="text-gray-600">読み込み中...</p>
+        </div>
+      </div>
+    }>
+      <ProfileContent />
+    </Suspense>
   )
 }

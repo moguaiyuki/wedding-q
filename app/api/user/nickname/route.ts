@@ -6,6 +6,8 @@ export async function PUT(request: NextRequest) {
   try {
     const user = await getCurrentUser()
     
+    console.log('Current user in nickname API:', user)
+    
     if (!user) {
       return NextResponse.json(
         { error: '認証が必要です' },
@@ -48,8 +50,8 @@ export async function PUT(request: NextRequest) {
       .from('users')
       .select('id')
       .eq('nickname', nickname)
-      .neq('id', user.id)
-      .single()
+      .neq('qr_code', user.qr_code)
+      .maybeSingle()
 
     if (existingUser) {
       return NextResponse.json(
@@ -59,18 +61,29 @@ export async function PUT(request: NextRequest) {
     }
 
     // ニックネームを更新
+    console.log('Updating user nickname:', { userId: user.id, nickname, qrCode: user.qr_code })
+    
+    // QRコードで更新（IDの代わりに）
     const { data: updatedUser, error } = await supabase
       .from('users')
       .update({ nickname })
-      .eq('id', user.id)
+      .eq('qr_code', user.qr_code)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       console.error('Update nickname error:', error)
       return NextResponse.json(
         { error: 'ニックネームの更新に失敗しました' },
         { status: 500 }
+      )
+    }
+
+    if (!updatedUser) {
+      console.error('No user found with ID:', user.id)
+      return NextResponse.json(
+        { error: 'ユーザーが見つかりません' },
+        { status: 404 }
       )
     }
 
@@ -104,15 +117,23 @@ export async function DELETE(request: NextRequest) {
     const { data: updatedUser, error } = await supabase
       .from('users')
       .update({ nickname: null })
-      .eq('id', user.id)
+      .eq('qr_code', user.qr_code)
       .select()
-      .single()
+      .maybeSingle()
 
     if (error) {
       console.error('Clear nickname error:', error)
       return NextResponse.json(
         { error: 'ニックネームのクリアに失敗しました' },
         { status: 500 }
+      )
+    }
+
+    if (!updatedUser) {
+      console.error('No user found with ID:', user.id)
+      return NextResponse.json(
+        { error: 'ユーザーが見つかりません' },
+        { status: 404 }
       )
     }
 
