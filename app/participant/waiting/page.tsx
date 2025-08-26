@@ -154,9 +154,9 @@ export default function WaitingPage() {
               {user?.nickname || user?.name || '読み込み中...'}
             </p>
             {user?.nickname && (
-              <p className="text-xs text-gray-500 mb-1">本名: {user.name}</p>
+              <p className="text-xs text-gray-700 mb-1">本名: {user.name}</p>
             )}
-            <p className="text-sm text-gray-500">ID: {user?.qr_code || '-'}</p>
+            <p className="text-sm text-gray-700">ID: {user?.qr_code || '-'}</p>
           </div>
 
           <div className="mb-6">
@@ -180,7 +180,7 @@ export default function WaitingPage() {
           </div>
         </div>
 
-        <div className="mt-4 text-sm text-gray-500">
+        <div className="mt-4 text-sm text-gray-700">
           <p>画面を閉じないでください</p>
         </div>
       </div>

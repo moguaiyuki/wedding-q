@@ -433,7 +433,7 @@ export default function QuestionsManagementPage() {
                   <p className="text-gray-700 mb-2">{question.question_text}</p>
                   
                   {question.image_url && (
-                    <p className="text-sm text-gray-500 mb-2">
+                    <p className="text-sm text-gray-700 mb-2">
                       画像: {question.image_url}
                     </p>
                   )}

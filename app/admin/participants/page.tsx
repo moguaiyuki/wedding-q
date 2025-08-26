@@ -265,19 +265,19 @@ export default function ParticipantsManagementPage() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                     名前
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                     新郎側/新婦側
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                     詳細グループ
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                     QRコード
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                     操作
                   </th>
                 </tr>
@@ -299,13 +299,13 @@ export default function ParticipantsManagementPage() {
                           {mainSide}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                         {getGroupLabel(participant.group_type)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-700">
                         {participant.qr_code}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                         <button
                           onClick={() => handleEdit(participant)}
                           className="text-blue-600 hover:text-blue-900 mr-2"
@@ -355,8 +355,8 @@ export default function ParticipantsManagementPage() {
                     className="mx-auto mb-2"
                   />
                   <p className="font-semibold text-sm">{qr.name}</p>
-                  <p className="text-xs text-gray-500">{getGroupLabel(qr.groupType)}</p>
-                  <p className="text-xs font-mono text-gray-400 mt-1">{qr.qrCode}</p>
+                  <p className="text-xs text-gray-700">{getGroupLabel(qr.groupType)}</p>
+                  <p className="text-xs font-mono text-gray-600 mt-1">{qr.qrCode}</p>
                 </div>
               ))}
             </div>

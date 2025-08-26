@@ -390,7 +390,7 @@ export default function AdminDashboard() {
                 <div>
                   <p className="text-sm text-gray-600">最後の操作:</p>
                   <p className="text-gray-800">{lastAction.action_type}</p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-700">
                     {new Date(lastAction.performed_at).toLocaleString('ja-JP')}
                   </p>
                 </div>

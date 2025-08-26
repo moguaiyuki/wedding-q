@@ -128,12 +128,12 @@ export default function DataManagementPage() {
               <div className="bg-blue-50 p-4 rounded-lg">
                 <p className="text-sm text-gray-600">参加者</p>
                 <p className="text-2xl font-bold text-blue-600">{stats.participants}名</p>
-                <p className="text-xs text-gray-500 mt-1">削除されません</p>
+                <p className="text-xs text-gray-700 mt-1">削除されません</p>
               </div>
               <div className="bg-green-50 p-4 rounded-lg">
                 <p className="text-sm text-gray-600">問題</p>
                 <p className="text-2xl font-bold text-green-600">{stats.questions}問</p>
-                <p className="text-xs text-gray-500 mt-1">削除されません</p>
+                <p className="text-xs text-gray-700 mt-1">削除されません</p>
               </div>
               <div className="bg-yellow-50 p-4 rounded-lg">
                 <p className="text-sm text-gray-600">回答</p>
@@ -166,7 +166,7 @@ export default function DataManagementPage() {
               disabled={isResetting || (stats.answers === 0 && stats.sessions === 0)}
               className={`px-6 py-3 rounded-lg font-medium ${
                 stats.answers === 0 && stats.sessions === 0
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  ? 'bg-gray-300 text-gray-700 cursor-not-allowed'
                   : 'bg-red-600 text-white hover:bg-red-700'
               } disabled:opacity-50`}
             >
@@ -174,7 +174,7 @@ export default function DataManagementPage() {
             </button>
 
             {stats.answers === 0 && stats.sessions === 0 && (
-              <p className="text-sm text-gray-500 mt-2">
+              <p className="text-sm text-gray-700 mt-2">
                 削除するデータがありません
               </p>
             )}

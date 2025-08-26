@@ -57,6 +57,12 @@ export default function QuizPage() {
 
   useEffect(() => {
     if (gameState?.current_question_id) {
+      // 新しい問題に変わったときは、まず回答状態をリセット
+      setHasAnswered(false)
+      setSelectedChoice('')
+      setFreeTextAnswer('')
+      setError('')
+      
       fetchQuestion(gameState.current_question_id)
       checkIfAnswered(gameState.current_question_id)
     }
@@ -101,8 +107,12 @@ export default function QuizPage() {
       const response = await fetch(`/api/answers?question_id=${questionId}`)
       if (response.ok) {
         const data = await response.json()
-        if (data && data.id) {
+        // APIはnullまたはanswerオブジェクトを返す
+        // dataが存在し、nullでなければ回答済み
+        if (data) {
           setHasAnswered(true)
+        } else {
+          setHasAnswered(false)
         }
       }
     } catch (error) {

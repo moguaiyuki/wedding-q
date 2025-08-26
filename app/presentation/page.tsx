@@ -356,7 +356,7 @@ export default function PresentationPage() {
                           index === 0 ? 'text-yellow-600' :
                           index === 1 ? 'text-gray-600' :
                           index === 2 ? 'text-orange-600' :
-                          'text-gray-500'
+                          'text-gray-700'
                         }`}>
                           {index + 1}位
                         </span>

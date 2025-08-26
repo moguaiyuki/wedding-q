@@ -193,7 +193,7 @@ function ProfileContent() {
                     maxLength={20}
                     disabled={isLoading}
                   />
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs text-gray-700">
                     • 20文字以内で入力してください<br />
                     • 絵文字は使用できません<br />
                     • 他の参加者と重複しない名前にしてください
