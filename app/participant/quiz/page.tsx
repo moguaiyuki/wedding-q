@@ -105,18 +105,43 @@ export default function QuizPage() {
   const checkIfAnswered = async (questionId: string) => {
     try {
       const response = await fetch(`/api/answers?question_id=${questionId}`)
+      console.log('Check answer response status:', response.status)
+      
       if (response.ok) {
-        const data = await response.json()
-        // APIはnullまたはanswerオブジェクトを返す
-        // dataが存在し、nullでなければ回答済み
-        if (data) {
-          setHasAnswered(true)
-        } else {
+        const text = await response.text()
+        console.log('Raw response:', text)
+        
+        // 空のレスポンスをチェック
+        if (!text) {
+          console.log('Empty response - no answer found')
+          setHasAnswered(false)
+          return
+        }
+        
+        try {
+          const data = JSON.parse(text)
+          console.log('Parsed answer data:', data)
+          
+          // APIはnullまたはanswerオブジェクトを返す
+          // dataが存在し、nullでなければ回答済み
+          if (data && data !== null) {
+            console.log('Answer found - setting hasAnswered to true')
+            setHasAnswered(true)
+          } else {
+            console.log('No answer found - setting hasAnswered to false')
+            setHasAnswered(false)
+          }
+        } catch (parseError) {
+          console.error('JSON parse error:', parseError)
           setHasAnswered(false)
         }
+      } else {
+        console.log('Response not ok:', response.status)
+        setHasAnswered(false)
       }
     } catch (error) {
       console.error('Failed to check answer:', error)
+      setHasAnswered(false)
     }
   }
 

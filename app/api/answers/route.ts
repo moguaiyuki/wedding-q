@@ -142,14 +142,20 @@ export async function GET(request: NextRequest) {
         .eq('question_id', questionId)
         .single()
 
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
+        // PGRST116 = row not found (未回答の場合)
+        if (error.code === 'PGRST116') {
+          return NextResponse.json(null)
+        }
+        
+        console.error('Get answer error:', error)
         return NextResponse.json(
           { error: '回答の取得に失敗しました' },
           { status: 500 }
         )
       }
 
-      return NextResponse.json(answer || null)
+      return NextResponse.json(answer)
     } else {
       const { data: answers, error } = await supabase
         .from('answers')
