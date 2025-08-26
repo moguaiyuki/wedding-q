@@ -7,7 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug",
+    "test:stress": "playwright test tests/e2e/concurrent-stress.spec.ts",
+    "supabase:migrate": "node scripts/migrate.js",
+    "vercel:deploy": "vercel --prod"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.3",
@@ -23,6 +29,7 @@
     "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.40.0",
     "@types/node": "^20",
     "@types/qrcode": "^1.5.5",
     "@types/react": "^18",

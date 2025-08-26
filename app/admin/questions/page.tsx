@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { ImageUpload } from '@/components/image-upload'
 
 interface Choice {
   text: string
@@ -22,6 +23,8 @@ interface Question {
     is_correct: boolean
     display_order: number
   }>
+  explanation_text?: string
+  explanation_image_url?: string
 }
 
 export default function QuestionsManagementPage() {
@@ -37,6 +40,8 @@ export default function QuestionsManagementPage() {
     image_url: '',
     time_limit_seconds: 30,
     points: 10,
+    explanation_text: '',
+    explanation_image_url: '',
     choices: [
       { text: '', is_correct: false },
       { text: '', is_correct: false },
@@ -139,6 +144,8 @@ export default function QuestionsManagementPage() {
           image_url: '',
           time_limit_seconds: 30,
           points: 10,
+          explanation_text: '',
+          explanation_image_url: '',
           choices: [
             { text: '', is_correct: false },
             { text: '', is_correct: false },
@@ -266,18 +273,32 @@ export default function QuestionsManagementPage() {
                 />
               </div>
 
+              <ImageUpload
+                value={formData.image_url}
+                onChange={(url) => setFormData({ ...formData, image_url: url })}
+                type="question"
+                label="問題画像（オプション）"
+              />
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  画像URL（オプション）
+                  解説文（オプション）
                 </label>
-                <input
-                  type="url"
-                  value={formData.image_url}
-                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                <textarea
+                  value={formData.explanation_text}
+                  onChange={(e) => setFormData({ ...formData, explanation_text: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="https://example.com/image.jpg"
+                  rows={2}
+                  placeholder="正解発表時に表示される解説"
                 />
               </div>
+
+              <ImageUpload
+                value={formData.explanation_image_url}
+                onChange={(url) => setFormData({ ...formData, explanation_image_url: url })}
+                type="explanation"
+                label="解説画像（オプション）"
+              />
 
               {formData.question_type === 'multiple_choice' && (
                 <div>

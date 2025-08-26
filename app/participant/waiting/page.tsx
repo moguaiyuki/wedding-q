@@ -12,6 +12,7 @@ interface GameState {
 interface User {
   id: string
   name: string
+  nickname?: string | null
   qr_code: string
   group_type: string
   seat_number?: string
@@ -97,6 +98,19 @@ export default function WaitingPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-pink to-wedding-white p-4">
       <div className="text-center">
         <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
+          {user && (
+            <div className="flex justify-between items-center mb-4">
+              <p className="text-sm text-gray-600">
+                ようこそ、<span className="font-semibold">{user.nickname || user.name}</span>さん
+              </p>
+              <button
+                onClick={() => router.push('/participant/profile')}
+                className="text-sm text-blue-600 hover:text-blue-800"
+              >
+                プロフィール設定
+              </button>
+            </div>
+          )}
           <h1 className="text-3xl font-bold mb-4 text-gray-800">
             準備完了！
           </h1>

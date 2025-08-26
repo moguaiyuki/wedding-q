@@ -1,0 +1,191 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
+import { validateAdminSession } from '@/lib/auth'
+
+export async function GET(request: NextRequest) {
+  try {
+    // 管理者認証チェック
+    const isAdmin = await validateAdminSession()
+    if (!isAdmin) {
+      return NextResponse.json(
+        { error: '管理者権限が必要です' },
+        { status: 401 }
+      )
+    }
+
+    const supabase = await createClient()
+    
+    const { data: participants, error } = await supabase
+      .from('users')
+      .select('*')
+      .order('created_at', { ascending: true })
+
+    if (error) {
+      console.error('Fetch participants error:', error)
+      return NextResponse.json(
+        { error: '参加者の取得に失敗しました' },
+        { status: 500 }
+      )
+    }
+
+    return NextResponse.json(participants || [])
+  } catch (error) {
+    console.error('Participants API error:', error)
+    return NextResponse.json(
+      { error: 'サーバーエラーが発生しました' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    // 管理者認証チェック
+    const isAdmin = await validateAdminSession()
+    if (!isAdmin) {
+      return NextResponse.json(
+        { error: '管理者権限が必要です' },
+        { status: 401 }
+      )
+    }
+
+    const body = await request.json()
+    const { name, group_type, seat_number } = body
+
+    if (!name || !group_type) {
+      return NextResponse.json(
+        { error: '名前とグループ属性は必須です' },
+        { status: 400 }
+      )
+    }
+
+    const supabase = await createClient()
+    
+    // QRコードIDを生成（ユニークID）
+    const qr_code = `WQ${Date.now()}${Math.random().toString(36).substr(2, 5)}`.toUpperCase()
+
+    const { data: participant, error } = await supabase
+      .from('users')
+      .insert({
+        id: crypto.randomUUID(),
+        qr_code,
+        name,
+        group_type,
+        seat_number: seat_number || null
+      })
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Create participant error:', error)
+      return NextResponse.json(
+        { error: '参加者の作成に失敗しました' },
+        { status: 500 }
+      )
+    }
+
+    return NextResponse.json(participant)
+  } catch (error) {
+    console.error('Participants API error:', error)
+    return NextResponse.json(
+      { error: 'サーバーエラーが発生しました' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const isAdmin = await validateAdminSession()
+    if (!isAdmin) {
+      return NextResponse.json(
+        { error: '管理者権限が必要です' },
+        { status: 401 }
+      )
+    }
+
+    const body = await request.json()
+    const { id, name, group_type, seat_number } = body
+
+    if (!id) {
+      return NextResponse.json(
+        { error: '参加者IDが必要です' },
+        { status: 400 }
+      )
+    }
+
+    const supabase = await createClient()
+    
+    const { data: participant, error } = await supabase
+      .from('users')
+      .update({
+        name,
+        group_type,
+        seat_number
+      })
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Update participant error:', error)
+      return NextResponse.json(
+        { error: '参加者の更新に失敗しました' },
+        { status: 500 }
+      )
+    }
+
+    return NextResponse.json(participant)
+  } catch (error) {
+    console.error('Participants API error:', error)
+    return NextResponse.json(
+      { error: 'サーバーエラーが発生しました' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const isAdmin = await validateAdminSession()
+    if (!isAdmin) {
+      return NextResponse.json(
+        { error: '管理者権限が必要です' },
+        { status: 401 }
+      )
+    }
+
+    const { searchParams } = new URL(request.url)
+    const id = searchParams.get('id')
+
+    if (!id) {
+      return NextResponse.json(
+        { error: '参加者IDが必要です' },
+        { status: 400 }
+      )
+    }
+
+    const supabase = await createClient()
+    
+    const { error } = await supabase
+      .from('users')
+      .delete()
+      .eq('id', id)
+
+    if (error) {
+      console.error('Delete participant error:', error)
+      return NextResponse.json(
+        { error: '参加者の削除に失敗しました' },
+        { status: 500 }
+      )
+    }
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error('Participants API error:', error)
+    return NextResponse.json(
+      { error: 'サーバーエラーが発生しました' },
+      { status: 500 }
+    )
+  }
+}

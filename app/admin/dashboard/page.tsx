@@ -274,12 +274,24 @@ export default function AdminDashboard() {
           <h1 className="text-3xl font-bold text-gray-800">
             クイズ管理ダッシュボード
           </h1>
-          <div className="space-x-4">
+          <div className="space-x-2">
             <button
               onClick={() => router.push('/admin/questions')}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               問題管理
+            </button>
+            <button
+              onClick={() => router.push('/admin/participants')}
+              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            >
+              参加者管理
+            </button>
+            <button
+              onClick={() => router.push('/admin/data')}
+              className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
+            >
+              データ管理
             </button>
             <button
               onClick={handleLogout}
