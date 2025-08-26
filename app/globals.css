@@ -82,6 +82,24 @@ body {
   }
 }
 
+/* インプットフィールドの文字色修正 */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+input[type="tel"],
+input[type="url"],
+input[type="search"],
+textarea,
+select {
+  color: rgb(17, 24, 39); /* text-gray-900 */
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgb(156, 163, 175); /* text-gray-400 */
+}
+
 @keyframes delayedPulse {
   0%, 100% {
     opacity: 1;
