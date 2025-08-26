@@ -61,7 +61,7 @@ export default function AdminLoginPage() {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:ring-offset-2 min-h-[44px]"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent focus:ring-offset-2 min-h-[44px] text-gray-900 placeholder-gray-400"
               placeholder="パスワードを入力"
               disabled={isLoading}
               aria-label="管理者パスワード"
