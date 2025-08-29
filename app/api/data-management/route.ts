@@ -30,11 +30,10 @@ export async function DELETE(request: NextRequest) {
 
     // トランザクション的に処理
     // 1. 全ての回答データを削除（管理者権限で一括削除）
-    const { error: answersError, count: deletedAnswersCount } = await adminClient
+    const { error: answersError } = await adminClient
       .from('answers')
       .delete()
       .gte('answered_at', '1970-01-01')
-      .select('*', { count: 'exact' })
     
     if (answersError) {
       console.error('Delete answers error:', answersError)
@@ -44,14 +43,13 @@ export async function DELETE(request: NextRequest) {
       )
     }
     
-    console.log('Deleted answers count:', deletedAnswersCount)
+    console.log('Answers deleted successfully')
 
     // 2. 全てのセッションデータを削除（管理者権限で一括削除）
-    const { error: sessionsError, count: deletedSessionsCount } = await adminClient
+    const { error: sessionsError } = await adminClient
       .from('user_sessions')
       .delete()
       .gte('last_active', '1970-01-01')
-      .select('*', { count: 'exact' })
     
     if (sessionsError) {
       console.error('Delete sessions error:', sessionsError)
@@ -61,7 +59,7 @@ export async function DELETE(request: NextRequest) {
       )
     }
     
-    console.log('Deleted sessions count:', deletedSessionsCount)
+    console.log('Sessions deleted successfully')
 
     // 3. ゲーム状態をリセット（管理者権限で一括更新）
     const { error: gameStateError } = await adminClient
