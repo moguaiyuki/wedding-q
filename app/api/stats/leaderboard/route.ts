@@ -8,10 +8,10 @@ export async function GET(request: NextRequest) {
 
     const supabase = await createClient()
 
-    // Get all users
+    // Get all users with nickname and group info
     const { data: users, error: usersError } = await supabase
       .from('users')
-      .select('id, name')
+      .select('id, name, nickname, group_type')
 
     if (usersError) {
       console.error('Fetch users error:', usersError)
@@ -55,10 +55,12 @@ export async function GET(request: NextRequest) {
       userScores.set(answer.user_id, score)
     })
 
-    // Create leaderboard
+    // Create leaderboard with nickname and group info
     const leaderboard = users?.map(user => ({
       user_id: user.id,
       name: user.name,
+      nickname: user.nickname,
+      group_type: user.group_type,
       total_score: userScores.get(user.id)?.total_score || 0,
       correct_count: userScores.get(user.id)?.correct_count || 0
     })) || []

@@ -12,26 +12,78 @@ export async function GET() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const { data: currentUser } = await supabase
+  // Get all users and their scores from answers
+  const { data: allUsers } = await supabase
     .from('users')
-    .select('id, total_score')
-    .eq('id', userIdCookie.value)
-    .single()
+    .select('id, name')
 
-  if (!currentUser) {
-    return NextResponse.json({ error: 'User not found' }, { status: 404 })
+  const { data: allAnswers } = await supabase
+    .from('answers')
+    .select('user_id, is_correct, points_earned')
+
+  if (!allUsers || !allAnswers) {
+    return NextResponse.json({ error: 'Data not found' }, { status: 404 })
   }
 
-  // Get ranking by counting users with higher scores
-  const { count } = await supabase
-    .from('users')
-    .select('*', { count: 'exact', head: true })
-    .gt('total_score', currentUser.total_score)
+  // Calculate scores for each user
+  const userScores = new Map<string, number>()
+  
+  allAnswers.forEach(answer => {
+    if (!answer.user_id) return
+    const currentScore = userScores.get(answer.user_id) || 0
+    if (answer.is_correct) {
+      userScores.set(answer.user_id, currentScore + (answer.points_earned || 0))
+    }
+  })
 
-  const rank = (count || 0) + 1
+  // Create sorted list of users by score
+  const sortedUsers = allUsers.map(user => ({
+    id: user.id,
+    score: userScores.get(user.id) || 0
+  })).sort((a, b) => b.score - a.score)
+
+  // Find current user's rank
+  const currentUserScore = userScores.get(userIdCookie.value) || 0
+  
+  // If user has no score, they are not ranked yet
+  if (currentUserScore === 0) {
+    // Count how many users have a score > 0
+    const usersWithScore = sortedUsers.filter(u => u.score > 0).length
+    if (usersWithScore === 0) {
+      // No one has scored yet, so rank is 1
+      return NextResponse.json({ 
+        rank: 1,
+        totalScore: 0
+      })
+    } else {
+      // User is ranked last among participants
+      return NextResponse.json({ 
+        rank: usersWithScore + 1,
+        totalScore: 0
+      })
+    }
+  }
+  
+  let rank = 1
+  let currentRank = 1
+  let lastScore = -1
+
+  for (const user of sortedUsers) {
+    // Handle ties
+    if (user.score !== lastScore) {
+      currentRank = rank
+    }
+    
+    if (user.id === userIdCookie.value) {
+      break
+    }
+    
+    lastScore = user.score
+    rank++
+  }
 
   return NextResponse.json({ 
-    rank,
-    totalScore: currentUser.total_score || 0
+    rank: currentRank,
+    totalScore: currentUserScore
   })
 }

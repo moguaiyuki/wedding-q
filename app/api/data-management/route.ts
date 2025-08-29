@@ -61,7 +61,23 @@ export async function DELETE(request: NextRequest) {
     
     console.log('Sessions deleted successfully')
 
-    // 3. ゲーム状態をリセット（管理者権限で一括更新）
+    // 3. 全てのユーザーのニックネームをクリア
+    const { error: nicknameError } = await adminClient
+      .from('users')
+      .update({ nickname: null })
+      .gte('created_at', '1970-01-01')
+    
+    if (nicknameError) {
+      console.error('Clear nicknames error:', nicknameError)
+      return NextResponse.json(
+        { error: `ニックネームのクリアに失敗しました: ${nicknameError.message}` },
+        { status: 500 }
+      )
+    }
+    
+    console.log('Nicknames cleared successfully')
+
+    // 4. ゲーム状態をリセット（管理者権限で一括更新）
     const { error: gameStateError } = await adminClient
       .from('game_state')
       .update({
@@ -83,7 +99,7 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: '回答データを初期化しました'
+      message: '回答データとニックネームを初期化しました'
     })
   } catch (error) {
     console.error('Data management API error:', error)

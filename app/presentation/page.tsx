@@ -35,6 +35,7 @@ interface AnswerStats {
 interface LeaderboardEntry {
   user_id: string
   name: string
+  nickname?: string
   total_score: number
   correct_count: number
 }
@@ -56,8 +57,11 @@ export default function PresentationPage() {
     
     // Subscribe to game state changes
     const unsubscribeGameState = realtimeManager.subscribeToGameState((payload) => {
-      if (payload.eventType === 'UPDATE' || payload.eventType === 'INSERT') {
-        fetchGameState()
+      console.log('Presentation received game state change:', payload)
+      fetchGameState()
+      // finishedの時はleaderboardも更新
+      if (payload.new?.current_state === 'finished') {
+        fetchLeaderboard()
       }
     })
     
@@ -66,9 +70,16 @@ export default function PresentationPage() {
       setParticipantCount(count)
     })
     
+    // Polling as fallback (every 2 seconds)
+    const interval = setInterval(() => {
+      fetchGameState()
+      fetchParticipantCount()
+    }, 2000)
+    
     return () => {
       unsubscribeGameState()
       unsubscribeParticipants()
+      clearInterval(interval)
     }
   }, [])
 
@@ -96,6 +107,9 @@ export default function PresentationPage() {
         fetchAnswerStats(gameState.current_question_id)
         fetchLeaderboard()
       }
+    } else if (gameState?.current_state === 'finished') {
+      // finished状態のときはleaderboardを取得
+      fetchLeaderboard()
     }
   }, [gameState?.current_question_id, gameState?.current_state])
 
@@ -202,6 +216,48 @@ export default function PresentationPage() {
   }
 
 
+  // Showing question
+  if (gameState.current_state === 'showing_question' && currentQuestion) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-pink to-wedding-white p-8">
+        <div className="bg-white rounded-2xl shadow-2xl p-12 max-w-4xl w-full">
+          <div className="text-center">
+            <h2 className="text-5xl font-bold mb-8 text-gray-800">
+              第{currentQuestion.question_number}問
+            </h2>
+            <p className="text-3xl mb-8 text-gray-700">
+              {currentQuestion.question_text}
+            </p>
+            {currentQuestion.image_url && (
+              <div className="mb-8">
+                <img 
+                  src={currentQuestion.image_url} 
+                  alt="問題画像" 
+                  className="max-w-full h-auto mx-auto rounded-lg shadow-lg"
+                  style={{ maxHeight: '400px' }}
+                />
+              </div>
+            )}
+            {currentQuestion.question_type === 'multiple_choice' && currentQuestion.choices && (
+              <div className="mt-8 space-y-4">
+                {currentQuestion.choices.map((choice, index) => (
+                  <div key={choice.id} className="bg-gray-100 rounded-lg p-4 text-left">
+                    <span className="text-xl text-gray-800">
+                      {String.fromCharCode(65 + index)}. {choice.choice_text}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="mt-8 animate-pulse">
+              <p className="text-2xl text-gray-600">まもなく回答受付開始...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   // Accepting answers
   if (gameState.current_state === 'accepting_answers' && currentQuestion) {
     return (
@@ -235,7 +291,7 @@ export default function PresentationPage() {
                       />
                       <div className="relative p-4 flex justify-between items-center">
                         <span className="text-xl text-gray-800">{choice.choice_text}</span>
-                        <span className="text-xl font-bold text-gray-900">{stat?.count || 0}名</span>
+                        <span className="text-xl font-bold text-gray-800">{stat?.count || 0}名</span>
                       </div>
                     </div>
                   )
@@ -287,13 +343,13 @@ export default function PresentationPage() {
                         style={{ width: `${percentage}%` }}
                       />
                       <div className="relative p-4 flex justify-between items-center">
-                        <span className="text-xl font-semibold">
+                        <span className="text-xl font-semibold text-gray-800">
                           {choice.choice_text}
                           {isCorrect && ' ✓'}
                         </span>
                         <div className="text-right">
-                          <span className="text-xl font-bold block">{stat?.count || 0}名</span>
-                          <span className="text-lg text-gray-600">({percentage.toFixed(1)}%)</span>
+                          <span className="text-xl font-bold block text-gray-800">{stat?.count || 0}名</span>
+                          <span className="text-lg text-gray-700">({percentage.toFixed(1)}%)</span>
                         </div>
                       </div>
                     </div>
@@ -311,9 +367,9 @@ export default function PresentationPage() {
                         <span className="text-2xl font-bold mr-4 text-wedding-pink">
                           {index + 1}位
                         </span>
-                        <span className="text-xl">{entry.name}</span>
+                        <span className="text-xl text-gray-800">{entry.nickname || entry.name}</span>
                       </div>
-                      <span className="text-2xl font-bold">{entry.total_score}点</span>
+                      <span className="text-2xl font-bold text-gray-800">{entry.total_score}点</span>
                     </div>
                   ))}
                 </div>
@@ -360,7 +416,7 @@ export default function PresentationPage() {
                         }`}>
                           {index + 1}位
                         </span>
-                        <span className="text-2xl">{entry.name}</span>
+                        <span className="text-2xl text-gray-800">{entry.nickname || entry.name}</span>
                       </div>
                       <div className="text-right">
                         <span className="text-3xl font-bold block">{entry.total_score}点</span>

@@ -51,6 +51,7 @@ export default function DataManagementPage() {
     const confirmMessage = `以下のデータを削除します：
 ・回答データ: ${stats.answers}件
 ・セッションデータ: ${stats.sessions}件
+・ニックネーム（全ユーザー）
 
 参加者データ（${stats.participants}名）と問題データ（${stats.questions}問）は保持されます。
 
@@ -155,7 +156,7 @@ export default function DataManagementPage() {
               <h3 className="font-semibold text-yellow-800 mb-2">⚠️ 注意事項</h3>
               <ul className="text-sm text-yellow-700 space-y-1">
                 <li>• リハーサル後、本番前に実行してください</li>
-                <li>• 回答データとセッションデータのみ削除されます</li>
+                <li>• 回答データ、セッションデータ、ニックネームが削除されます</li>
                 <li>• 参加者登録と問題データは保持されます</li>
                 <li>• この操作は取り消せません</li>
               </ul>

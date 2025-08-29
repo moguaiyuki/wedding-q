@@ -35,8 +35,8 @@ export default function FinalResultsPage() {
 
   const fetchResults = async () => {
     try {
-      // リーダーボードを取得
-      const leaderboardResponse = await fetch('/api/stats/leaderboard')
+      // リーダーボードを取得（全員分）
+      const leaderboardResponse = await fetch('/api/stats/leaderboard?limit=100')
       if (!leaderboardResponse.ok) {
         if (leaderboardResponse.status === 401) {
           router.push('/admin')
@@ -45,11 +45,20 @@ export default function FinalResultsPage() {
         throw new Error('Failed to fetch leaderboard')
       }
       const leaderboardData = await leaderboardResponse.json()
-      setLeaderboard(leaderboardData)
-
-      // 問題ごとの統計を取得
+      
+      // 総問題数を取得
       const questionsResponse = await fetch('/api/questions')
       const questionsData = await questionsResponse.json()
+      const totalQuestions = questionsData.length
+      
+      // ランクを追加
+      const rankedData = leaderboardData.map((entry: any, index: number) => ({
+        ...entry,
+        rank: index + 1,
+        total_questions: totalQuestions
+      }))
+      
+      setLeaderboard(rankedData)
       
       const questionStats = await Promise.all(
         questionsData.map(async (question: any) => {

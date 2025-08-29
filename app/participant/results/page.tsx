@@ -130,7 +130,12 @@ export default function ResultsPage() {
       const response = await fetch('/api/stats/ranking')
       if (response.ok) {
         const data = await response.json()
+        console.log('Ranking data:', data)
         setRank(data.rank)
+      } else {
+        console.error('Failed to fetch ranking, status:', response.status)
+        const errorData = await response.json()
+        console.error('Error data:', errorData)
       }
     } catch (error) {
       console.error('Failed to fetch ranking:', error)
@@ -211,7 +216,7 @@ export default function ResultsPage() {
             <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-lg p-6 text-center">
               <p className="text-sm text-gray-600 mb-2">現在の順位</p>
               <p className="text-4xl font-bold text-yellow-600">
-                {rank ? `${rank}位` : '-'}
+                {rank ? rank : '-'}
               </p>
               <p className="text-sm text-gray-600 mt-1">位</p>
             </div>

@@ -15,10 +15,10 @@ export async function GET(request: NextRequest) {
 
     const supabase = await createClient()
 
-    // Get all answers for the question
+    // Get all answers for the question with correctness info
     const { data: answers, error: answersError } = await supabase
       .from('answers')
-      .select('choice_id')
+      .select('choice_id, is_correct')
       .eq('question_id', questionId)
 
     if (answersError) {
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     // Get choices for the question
     const { data: choices, error: choicesError } = await supabase
       .from('choices')
-      .select('id, choice_text')
+      .select('id, choice_text, is_correct')
       .eq('question_id', questionId)
 
     if (choicesError) {
@@ -45,6 +45,7 @@ export async function GET(request: NextRequest) {
 
     // Calculate statistics
     const total = answers?.length || 0
+    const correctCount = answers?.filter(a => a.is_correct).length || 0
     const stats = choices?.map(choice => {
       const count = answers?.filter(a => a.choice_id === choice.id).length || 0
       const percentage = total > 0 ? (count / total) * 100 : 0
@@ -52,13 +53,16 @@ export async function GET(request: NextRequest) {
         choice_id: choice.id,
         choice_text: choice.choice_text,
         count,
-        percentage
+        percentage,
+        is_correct: choice.is_correct
       }
     }) || []
 
     return NextResponse.json({
       stats,
-      total
+      total,
+      total_count: total,
+      correct_count: correctCount
     })
   } catch (error) {
     console.error('Stats API error:', error)

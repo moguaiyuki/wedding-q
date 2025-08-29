@@ -71,6 +71,13 @@ function ProfileContent() {
       setUser(data.user)
       setSuccess('ニックネームを更新しました')
       setIsEditing(false)
+      
+      // 初回設定完了後は待機画面へ遷移
+      if (isFirstSetup) {
+        setTimeout(() => {
+          router.push('/participant/waiting')
+        }, 1000)
+      }
     } catch (error) {
       console.error('Update nickname error:', error)
       setError('エラーが発生しました')
@@ -202,22 +209,33 @@ function ProfileContent() {
                     <button
                       type="submit"
                       disabled={isLoading || !nickname.trim()}
-                      className="px-4 py-2 bg-wedding-pink text-white rounded-lg hover:bg-pink-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-4 py-2 bg-wedding-pink text-white rounded-lg hover:bg-pink-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                     >
                       {isLoading ? '保存中...' : '保存'}
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsEditing(false)
-                        setNickname(user.nickname || '')
-                        setError('')
-                      }}
-                      disabled={isLoading}
-                      className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
-                    >
-                      キャンセル
-                    </button>
+                    {!isFirstSetup ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsEditing(false)
+                          setNickname(user.nickname || '')
+                          setError('')
+                        }}
+                        disabled={isLoading}
+                        className="px-4 py-2 bg-gray-100 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 font-medium"
+                      >
+                        キャンセル
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => router.push('/participant/waiting')}
+                        disabled={isLoading}
+                        className="px-4 py-2 bg-gray-200 text-gray-700 border border-gray-400 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50 font-medium"
+                      >
+                        スキップ
+                      </button>
+                    )}
                   </div>
                 </form>
               ) : (
@@ -268,7 +286,8 @@ function ProfileContent() {
               onClick={() => router.push('/participant/waiting')}
               className="w-full bg-gray-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-700 transition-colors"
             >
-              {isFirstSetup ? 'クイズを開始' : 'クイズに戻る'}
+              {isFirstSetup && !user.nickname ? 'スキップしてクイズに進む' : 
+               isFirstSetup ? 'クイズに進む' : 'クイズに戻る'}
             </button>
           </div>
         </div>
