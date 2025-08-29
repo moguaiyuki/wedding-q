@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { validateAdminSession } from '@/lib/auth'
 
 // データ初期化（回答データのみクリア）
@@ -24,39 +25,46 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    const supabase = await createClient()
+    // 管理者権限のクライアントを使用（RLSを回避）
+    const adminClient = createAdminClient()
 
     // トランザクション的に処理
-    // 1. 回答データを削除
-    const { error: answersError } = await supabase
+    // 1. 全ての回答データを削除（管理者権限で一括削除）
+    const { error: answersError, count: deletedAnswersCount } = await adminClient
       .from('answers')
       .delete()
-      .neq('id', '00000000-0000-0000-0000-000000000000') // 全削除（ダミー条件）
-
+      .gte('answered_at', '1970-01-01')
+      .select('*', { count: 'exact' })
+    
     if (answersError) {
       console.error('Delete answers error:', answersError)
       return NextResponse.json(
-        { error: '回答データの削除に失敗しました' },
+        { error: `回答データの削除に失敗しました: ${answersError.message}` },
         { status: 500 }
       )
     }
+    
+    console.log('Deleted answers count:', deletedAnswersCount)
 
-    // 2. ユーザーセッションをクリア
-    const { error: sessionsError } = await supabase
+    // 2. 全てのセッションデータを削除（管理者権限で一括削除）
+    const { error: sessionsError, count: deletedSessionsCount } = await adminClient
       .from('user_sessions')
       .delete()
-      .neq('id', '00000000-0000-0000-0000-000000000000') // 全削除（ダミー条件）
-
+      .gte('last_active', '1970-01-01')
+      .select('*', { count: 'exact' })
+    
     if (sessionsError) {
       console.error('Delete sessions error:', sessionsError)
       return NextResponse.json(
-        { error: 'セッションデータの削除に失敗しました' },
+        { error: `セッションデータの削除に失敗しました: ${sessionsError.message}` },
         { status: 500 }
       )
     }
+    
+    console.log('Deleted sessions count:', deletedSessionsCount)
 
-    // 3. ゲーム状態をリセット
-    const { error: gameStateError } = await supabase
+    // 3. ゲーム状態をリセット（管理者権限で一括更新）
+    const { error: gameStateError } = await adminClient
       .from('game_state')
       .update({
         current_state: 'waiting',
@@ -65,12 +73,12 @@ export async function DELETE(request: NextRequest) {
         answers_closed_at: null,
         results_shown_at: null
       })
-      .neq('id', '00000000-0000-0000-0000-000000000000') // 全更新（ダミー条件）
-
+      .gte('id', '00000000-0000-0000-0000-000000000000')
+    
     if (gameStateError) {
       console.error('Reset game state error:', gameStateError)
       return NextResponse.json(
-        { error: 'ゲーム状態のリセットに失敗しました' },
+        { error: `ゲーム状態のリセットに失敗しました: ${gameStateError.message}` },
         { status: 500 }
       )
     }

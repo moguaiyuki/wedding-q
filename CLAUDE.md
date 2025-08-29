@@ -121,3 +121,4 @@ Required in `.env.local`:
 
 - @IMPLEMENTATION_PLAN.md に従って実行した場合、進捗を更新するようにしてください
 - 文字色はアクセシビリティを意識して
+- 勝手にcommit および pushはしないでください
