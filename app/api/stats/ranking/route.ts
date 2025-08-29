@@ -3,8 +3,8 @@ import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 
 export async function GET() {
-  const cookieStore = cookies()
-  const supabase = createClient(cookieStore)
+  const cookieStore = await cookies()
+  const supabase = await createClient()
 
   // Get current user
   const userIdCookie = cookieStore.get('user_id')
