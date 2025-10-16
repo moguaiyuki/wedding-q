@@ -24,7 +24,9 @@ export async function GET(request: NextRequest) {
           question_number,
           question_text,
           question_type,
-          image_url
+          image_url,
+          explanation_text,
+          explanation_image_url
         )
       `)
       .eq('user_id', user.id)

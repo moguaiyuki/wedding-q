@@ -17,6 +17,8 @@ interface LastAnswer {
   points_earned: number
   selected_choice_id?: string
   correct_choice_id?: string
+  explanation_text?: string
+  explanation_image_url?: string
   choices?: Array<{
     id: string
     choice_text: string
@@ -127,6 +129,8 @@ export default function ResultsPage() {
                 points_earned: latestData.answer.points_earned,
                 selected_choice_id: latestData.answer.selected_choice_id,
                 correct_choice_id: latestData.correct_choice_id,
+                explanation_text: latestData.question.explanation_text,
+                explanation_image_url: latestData.question.explanation_image_url,
                 choices: latestData.choices
               })
             }
@@ -225,6 +229,28 @@ export default function ResultsPage() {
                 )}
               </div>
 
+              {/* エピソード表示 */}
+              {(lastAnswer.explanation_text || lastAnswer.explanation_image_url) && (
+                <div className="bg-blue-50 rounded-lg p-4 mb-6 border-2 border-blue-200">
+                  <h3 className="text-base font-bold mb-2 text-blue-800">💡 エピソード</h3>
+                  {lastAnswer.explanation_text && (
+                    <p className="text-sm text-gray-800 mb-3 whitespace-pre-wrap text-left">
+                      {lastAnswer.explanation_text}
+                    </p>
+                  )}
+                  {lastAnswer.explanation_image_url && (
+                    <div className="mt-2">
+                      <img
+                        src={lastAnswer.explanation_image_url}
+                        alt="エピソード画像"
+                        className="max-w-full h-auto mx-auto rounded-lg shadow-md"
+                        style={{ maxHeight: '300px' }}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* 選択肢の表示 */}
               {lastAnswer.choices && lastAnswer.choices.length > 0 && (
                 <div className="mb-6">
@@ -277,6 +303,28 @@ export default function ResultsPage() {
                       )
                     })}
                   </div>
+                </div>
+              )}
+
+              {/* 解説表示 */}
+              {(lastAnswer.explanation_text || lastAnswer.explanation_image_url) && (
+                <div className="bg-blue-50 rounded-lg p-4 mb-6 border-2 border-blue-200">
+                  <h3 className="text-base font-bold mb-2 text-blue-800">💡 解説</h3>
+                  {lastAnswer.explanation_text && (
+                    <p className="text-sm text-gray-800 mb-3 whitespace-pre-wrap text-left">
+                      {lastAnswer.explanation_text}
+                    </p>
+                  )}
+                  {lastAnswer.explanation_image_url && (
+                    <div className="mt-2">
+                      <img
+                        src={lastAnswer.explanation_image_url}
+                        alt="解説画像"
+                        className="max-w-full h-auto mx-auto rounded-lg shadow-md"
+                        style={{ maxHeight: '300px' }}
+                      />
+                    </div>
+                  )}
                 </div>
               )}
             </>

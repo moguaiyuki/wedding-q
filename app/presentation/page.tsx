@@ -18,6 +18,8 @@ interface Question {
   question_type: 'multiple_choice' | 'free_text'
   image_url?: string
   points: number
+  explanation_text?: string
+  explanation_image_url?: string
   choices?: Array<{
     id: string
     choice_text: string
@@ -315,6 +317,28 @@ export default function PresentationPage() {
                 <p className="text-4xl font-bold text-green-600">
                   {correctChoice.choice_text}
                 </p>
+              </div>
+            )}
+
+            {/* エピソード表示 */}
+            {(currentQuestion.explanation_text || currentQuestion.explanation_image_url) && (
+              <div className="bg-blue-50 rounded-lg p-6 mb-8 border-2 border-blue-200">
+                <h3 className="text-2xl font-bold mb-4 text-blue-800">💡 エピソード</h3>
+                {currentQuestion.explanation_text && (
+                  <p className="text-lg text-gray-800 mb-4 whitespace-pre-wrap text-left">
+                    {currentQuestion.explanation_text}
+                  </p>
+                )}
+                {currentQuestion.explanation_image_url && (
+                  <div className="mt-4">
+                    <img
+                      src={currentQuestion.explanation_image_url}
+                      alt="エピソード画像"
+                      className="max-w-full h-auto mx-auto rounded-lg shadow-lg"
+                      style={{ maxHeight: '400px' }}
+                    />
+                  </div>
+                )}
               </div>
             )}
             {currentQuestion.question_type === 'multiple_choice' && answerStats.length > 0 && (
