@@ -48,6 +48,19 @@ export default function ResultsPage() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
+  // Helper function to calculate rank with tie handling
+  const getRank = (index: number, leaderboardData: LeaderboardEntry[]): number => {
+    if (index === 0) return 1
+
+    let rank = 1
+    for (let i = 0; i < index; i++) {
+      if (leaderboardData[i].total_score !== leaderboardData[i + 1]?.total_score) {
+        rank = i + 2
+      }
+    }
+    return rank
+  }
+
   useEffect(() => {
     // First fetch game state, then results
     const init = async () => {
@@ -287,7 +300,7 @@ export default function ResultsPage() {
             <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-lg p-6 text-center">
               <p className="text-sm text-gray-600 mb-2">現在の順位</p>
               <p className="text-4xl font-bold text-yellow-600">
-                {rank ? rank : '-'}
+                {rank !== null && rank !== undefined ? rank : '-'}
               </p>
               <p className="text-sm text-gray-600 mt-1">位</p>
             </div>
@@ -299,35 +312,38 @@ export default function ResultsPage() {
               <h2 className="text-xl font-bold mb-4 text-gray-800">現在のランキング</h2>
               <div className="bg-gray-50 rounded-lg p-4">
                 <div className="space-y-2">
-                  {leaderboard.slice(0, 10).map((entry, index) => (
-                    <div 
-                      key={entry.user_id} 
-                      className={`flex justify-between items-center p-3 rounded-lg border ${
-                        index === 0 ? 'bg-yellow-50 border-yellow-300' :
-                        index === 1 ? 'bg-gray-50 border-gray-300' :
-                        index === 2 ? 'bg-orange-50 border-orange-300' :
-                        'bg-white border-gray-200'
-                      }`}
-                    >
-                      <div className="flex items-center">
-                        <span className={`font-bold mr-3 text-lg ${
-                          index === 0 ? 'text-yellow-700' :
-                          index === 1 ? 'text-gray-700' :
-                          index === 2 ? 'text-orange-700' :
-                          'text-gray-700'
-                        }`}>
-                          {index + 1}位
-                        </span>
-                        <span className="text-sm text-gray-800 font-medium">
-                          {entry.nickname || entry.name}
-                        </span>
+                  {leaderboard.slice(0, 10).map((entry, index) => {
+                    const rank = getRank(index, leaderboard)
+                    return (
+                      <div
+                        key={entry.user_id}
+                        className={`flex justify-between items-center p-3 rounded-lg border ${
+                          rank === 1 ? 'bg-yellow-50 border-yellow-300' :
+                          rank === 2 ? 'bg-gray-50 border-gray-300' :
+                          rank === 3 ? 'bg-orange-50 border-orange-300' :
+                          'bg-white border-gray-200'
+                        }`}
+                      >
+                        <div className="flex items-center">
+                          <span className={`font-bold mr-3 text-lg ${
+                            rank === 1 ? 'text-yellow-700' :
+                            rank === 2 ? 'text-gray-700' :
+                            rank === 3 ? 'text-orange-700' :
+                            'text-gray-700'
+                          }`}>
+                            {rank}位
+                          </span>
+                          <span className="text-sm text-gray-800 font-medium">
+                            {entry.nickname || entry.name}
+                          </span>
+                        </div>
+                        <div className="text-right">
+                          <span className="font-bold text-lg text-gray-900">{entry.total_score}点</span>
+                          <span className="text-xs text-gray-600 ml-2 font-medium">正解: {entry.correct_count}問</span>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <span className="font-bold text-lg text-gray-900">{entry.total_score}点</span>
-                        <span className="text-xs text-gray-600 ml-2 font-medium">正解: {entry.correct_count}問</span>
-                      </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </div>
             </div>

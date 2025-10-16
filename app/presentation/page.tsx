@@ -47,6 +47,19 @@ export default function PresentationPage() {
   const [answerStats, setAnswerStats] = useState<AnswerStats[]>([])
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
 
+  // Helper function to calculate rank with tie handling
+  const getRank = (index: number, leaderboardData: LeaderboardEntry[]): number => {
+    if (index === 0) return 1
+
+    let rank = 1
+    for (let i = 0; i < index; i++) {
+      if (leaderboardData[i].total_score !== leaderboardData[i + 1]?.total_score) {
+        rank = i + 2
+      }
+    }
+    return rank
+  }
+
   useEffect(() => {
     fetchGameState()
     fetchParticipantCount()
@@ -342,17 +355,20 @@ export default function PresentationPage() {
               <div className="mt-8">
                 <h3 className="text-3xl font-bold mb-4 text-gray-800">上位ランキング</h3>
                 <div className="space-y-2">
-                  {leaderboard.slice(0, 5).map((entry, index) => (
-                    <div key={entry.user_id} className="flex justify-between items-center bg-gray-100 rounded-lg p-4">
-                      <div className="flex items-center">
-                        <span className="text-2xl font-bold mr-4 text-wedding-pink">
-                          {index + 1}位
-                        </span>
-                        <span className="text-xl text-gray-800">{entry.nickname || entry.name}</span>
+                  {leaderboard.slice(0, 5).map((entry, index) => {
+                    const rank = getRank(index, leaderboard)
+                    return (
+                      <div key={entry.user_id} className="flex justify-between items-center bg-gray-100 rounded-lg p-4">
+                        <div className="flex items-center">
+                          <span className="text-2xl font-bold mr-4 text-wedding-pink">
+                            {rank}位
+                          </span>
+                          <span className="text-xl text-gray-800">{entry.nickname || entry.name}</span>
+                        </div>
+                        <span className="text-2xl font-bold text-gray-800">{entry.total_score}点</span>
                       </div>
-                      <span className="text-2xl font-bold text-gray-800">{entry.total_score}点</span>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </div>
             )}
@@ -378,33 +394,36 @@ export default function PresentationPage() {
               <div className="mt-8">
                 <h2 className="text-4xl font-bold mb-6 text-gray-800">最終ランキング</h2>
                 <div className="space-y-3">
-                  {leaderboard.map((entry, index) => (
-                    <div 
-                      key={entry.user_id} 
-                      className={`flex justify-between items-center rounded-lg p-6 ${
-                        index === 0 ? 'bg-yellow-100' :
-                        index === 1 ? 'bg-gray-100' :
-                        index === 2 ? 'bg-orange-100' :
-                        'bg-gray-50'
-                      }`}
-                    >
-                      <div className="flex items-center">
-                        <span className={`text-3xl font-bold mr-6 ${
-                          index === 0 ? 'text-yellow-600' :
-                          index === 1 ? 'text-gray-600' :
-                          index === 2 ? 'text-orange-600' :
-                          'text-gray-700'
-                        }`}>
-                          {index + 1}位
-                        </span>
-                        <span className="text-2xl text-gray-800">{entry.nickname || entry.name}</span>
+                  {leaderboard.map((entry, index) => {
+                    const rank = getRank(index, leaderboard)
+                    return (
+                      <div
+                        key={entry.user_id}
+                        className={`flex justify-between items-center rounded-lg p-6 ${
+                          rank === 1 ? 'bg-yellow-100' :
+                          rank === 2 ? 'bg-gray-100' :
+                          rank === 3 ? 'bg-orange-100' :
+                          'bg-gray-50'
+                        }`}
+                      >
+                        <div className="flex items-center">
+                          <span className={`text-3xl font-bold mr-6 ${
+                            rank === 1 ? 'text-yellow-600' :
+                            rank === 2 ? 'text-gray-600' :
+                            rank === 3 ? 'text-orange-600' :
+                            'text-gray-700'
+                          }`}>
+                            {rank}位
+                          </span>
+                          <span className="text-2xl text-gray-800">{entry.nickname || entry.name}</span>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-3xl font-bold block">{entry.total_score}点</span>
+                          <span className="text-lg text-gray-600">正解: {entry.correct_count}問</span>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <span className="text-3xl font-bold block">{entry.total_score}点</span>
-                        <span className="text-lg text-gray-600">正解: {entry.correct_count}問</span>
-                      </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </div>
             )}
