@@ -46,7 +46,6 @@ export default function PresentationPage() {
   const [participantCount, setParticipantCount] = useState(0)
   const [answerStats, setAnswerStats] = useState<AnswerStats[]>([])
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
-  const [answerCount, setAnswerCount] = useState(0)
 
   useEffect(() => {
     fetchGameState()
@@ -86,24 +85,8 @@ export default function PresentationPage() {
   useEffect(() => {
     if (gameState?.current_question_id) {
       fetchQuestion(gameState.current_question_id)
-      
-      if (gameState.current_state === 'accepting_answers') {
-        // Subscribe to answers for real-time updates
-        const realtimeManager = getRealtimeManager()
-        const unsubscribe = realtimeManager.subscribeToAnswers(
-          gameState.current_question_id,
-          () => {
-            fetchAnswerStats(gameState.current_question_id!)
-          }
-        )
-        
-        // Initial fetch
-        fetchAnswerStats(gameState.current_question_id)
-        
-        return () => {
-          unsubscribe()
-        }
-      } else if (gameState.current_state === 'showing_results') {
+
+      if (gameState.current_state === 'showing_results') {
         fetchAnswerStats(gameState.current_question_id)
         fetchLeaderboard()
       }
@@ -270,34 +253,32 @@ export default function PresentationPage() {
             <p className="text-3xl mb-8 text-gray-700">
               {currentQuestion.question_text}
             </p>
-            <div className="bg-gray-100 rounded-lg p-8">
-              <p className="text-3xl text-gray-700">
-                回答受付中
-              </p>
-              <p className="text-5xl font-bold text-gray-800 mt-4">
-                {answerCount} / {participantCount} 名
-              </p>
-            </div>
-            {currentQuestion.question_type === 'multiple_choice' && answerStats.length > 0 && (
-              <div className="mt-8 space-y-4">
-                {currentQuestion.choices?.map((choice) => {
-                  const stat = answerStats.find(s => s.choice_id === choice.id)
-                  const percentage = stat ? stat.percentage : 0
-                  return (
-                    <div key={choice.id} className="relative bg-gray-200 rounded-lg overflow-hidden">
-                      <div 
-                        className="absolute inset-0 bg-wedding-pink opacity-30"
-                        style={{ width: `${percentage}%` }}
-                      />
-                      <div className="relative p-4 flex justify-between items-center">
-                        <span className="text-xl text-gray-800">{choice.choice_text}</span>
-                        <span className="text-xl font-bold text-gray-800">{stat?.count || 0}名</span>
-                      </div>
-                    </div>
-                  )
-                })}
+            {currentQuestion.image_url && (
+              <div className="mb-8">
+                <img
+                  src={currentQuestion.image_url}
+                  alt="問題画像"
+                  className="max-w-full h-auto mx-auto rounded-lg shadow-lg"
+                  style={{ maxHeight: '400px' }}
+                />
               </div>
             )}
+            {currentQuestion.question_type === 'multiple_choice' && currentQuestion.choices && (
+              <div className="mt-8 space-y-4">
+                {currentQuestion.choices.map((choice, index) => (
+                  <div key={choice.id} className="bg-gray-100 rounded-lg p-4 text-left">
+                    <span className="text-xl text-gray-800">
+                      {String.fromCharCode(65 + index)}. {choice.choice_text}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="mt-8 bg-wedding-pink rounded-lg p-6">
+              <p className="text-3xl font-bold text-white">
+                回答受付中
+              </p>
+            </div>
           </div>
         </div>
       </div>
