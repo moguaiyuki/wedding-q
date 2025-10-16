@@ -15,6 +15,13 @@ interface LastAnswer {
   is_correct: boolean
   question_number: number
   points_earned: number
+  selected_choice_id?: string
+  correct_choice_id?: string
+  choices?: Array<{
+    id: string
+    choice_text: string
+    display_order: number
+  }>
 }
 
 interface GameState {
@@ -87,23 +94,30 @@ export default function ResultsPage() {
       const response = await fetch('/api/answers')
       if (response.ok) {
         const answers: UserAnswer[] = await response.json()
-        
+
         const total = answers.reduce((sum, answer) => sum + answer.points_earned, 0)
         const correct = answers.filter(answer => answer.is_correct).length
-        
+
         setTotalScore(total)
         setCorrectCount(correct)
         setTotalQuestions(answers.length)
-        
-        // 最新の回答を取得（最後の要素）
+
+        // 最新の回答の詳細を取得
         if (answers.length > 0) {
-          const lastAnswerData = answers[answers.length - 1]
-          // gameStateを使わずに、現在の問題番号を設定
-          setLastAnswer({
-            is_correct: lastAnswerData.is_correct,
-            question_number: answers.length, // 回答数を問題番号として使用
-            points_earned: lastAnswerData.points_earned
-          })
+          const latestResponse = await fetch('/api/answers/latest')
+          if (latestResponse.ok) {
+            const latestData = await latestResponse.json()
+            if (latestData) {
+              setLastAnswer({
+                is_correct: latestData.answer.is_correct,
+                question_number: latestData.question.question_number,
+                points_earned: latestData.answer.points_earned,
+                selected_choice_id: latestData.answer.selected_choice_id,
+                correct_choice_id: latestData.correct_choice_id,
+                choices: latestData.choices
+              })
+            }
+          }
         }
       }
     } catch (error) {
@@ -177,25 +191,82 @@ export default function ResultsPage() {
 
           {/* 直前の回答結果表示 */}
           {lastAnswer && !isFinished && (
-            <div className={`rounded-lg p-6 mb-6 text-center ${
-              lastAnswer.is_correct 
-                ? 'bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-300' 
-                : 'bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-300'
-            }`}>
-              <div className="text-5xl mb-3">
-                {lastAnswer.is_correct ? '⭕' : '❌'}
-              </div>
-              <p className={`text-2xl font-bold mb-2 ${
-                lastAnswer.is_correct ? 'text-green-700' : 'text-red-700'
+            <>
+              <div className={`rounded-lg p-6 mb-6 text-center ${
+                lastAnswer.is_correct
+                  ? 'bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-300'
+                  : 'bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-300'
               }`}>
-                {lastAnswer.is_correct ? '正解！' : '残念...'}
-              </p>
-              {lastAnswer.is_correct && (
-                <p className="text-lg text-green-600">
-                  +{lastAnswer.points_earned}ポイント獲得
+                <div className="text-5xl mb-3">
+                  {lastAnswer.is_correct ? '⭕' : '❌'}
+                </div>
+                <p className={`text-2xl font-bold mb-2 ${
+                  lastAnswer.is_correct ? 'text-green-700' : 'text-red-700'
+                }`}>
+                  {lastAnswer.is_correct ? '正解！' : '残念...'}
                 </p>
+                {lastAnswer.is_correct && (
+                  <p className="text-lg text-green-600">
+                    +{lastAnswer.points_earned}ポイント獲得
+                  </p>
+                )}
+              </div>
+
+              {/* 選択肢の表示 */}
+              {lastAnswer.choices && lastAnswer.choices.length > 0 && (
+                <div className="mb-6">
+                  <h3 className="text-lg font-bold mb-3 text-gray-800">回答結果</h3>
+                  <div className="space-y-2">
+                    {lastAnswer.choices.map((choice, index) => {
+                      const isSelected = choice.id === lastAnswer.selected_choice_id
+                      const isCorrect = choice.id === lastAnswer.correct_choice_id
+
+                      return (
+                        <div
+                          key={choice.id}
+                          className={`rounded-lg p-4 border-2 ${
+                            isCorrect
+                              ? 'bg-green-50 border-green-400'
+                              : isSelected
+                              ? 'bg-red-50 border-red-400'
+                              : 'bg-gray-50 border-gray-200'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center">
+                              <span className="font-bold mr-3 text-gray-700">
+                                {String.fromCharCode(65 + index)}.
+                              </span>
+                              <span className={`text-sm ${
+                                isCorrect || isSelected ? 'font-semibold' : 'font-normal'
+                              } ${
+                                isCorrect
+                                  ? 'text-green-800'
+                                  : isSelected
+                                  ? 'text-red-800'
+                                  : 'text-gray-700'
+                              }`}>
+                                {choice.choice_text}
+                              </span>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              {isSelected && (
+                                <span className="text-sm font-bold text-red-600">
+                                  あなたの回答
+                                </span>
+                              )}
+                              {isCorrect && (
+                                <span className="text-xl">✓</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
               )}
-            </div>
+            </>
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
