@@ -442,7 +442,7 @@ export default function PresentationPage() {
                           <span className="text-2xl text-gray-800">{entry.nickname || entry.name}</span>
                         </div>
                         <div className="text-right">
-                          <span className="text-3xl font-bold block">{entry.total_score}点</span>
+                          <span className="text-3xl font-bold block text-gray-800">{entry.total_score}点</span>
                           <span className="text-lg text-gray-600">正解: {entry.correct_count}問</span>
                         </div>
                       </div>
