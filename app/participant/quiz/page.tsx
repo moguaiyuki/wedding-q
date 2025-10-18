@@ -9,7 +9,7 @@ interface Question {
   id: string
   question_number: number
   question_text: string
-  question_type: 'multiple_choice' | 'free_text'
+  question_type: 'multiple_choice' | 'free_text' | 'multiple_answer'
   image_url?: string
   choices?: Array<{
     id: string
@@ -29,6 +29,7 @@ export default function QuizPage() {
   const [question, setQuestion] = useState<Question | null>(null)
   const [gameState, setGameState] = useState<GameState | null>(null)
   const [selectedChoice, setSelectedChoice] = useState<string>('')
+  const [selectedChoices, setSelectedChoices] = useState<string[]>([])
   const [freeTextAnswer, setFreeTextAnswer] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [hasAnswered, setHasAnswered] = useState(false)
@@ -60,9 +61,10 @@ export default function QuizPage() {
       // 新しい問題に変わったときは、まず回答状態をリセット
       setHasAnswered(false)
       setSelectedChoice('')
+      setSelectedChoices([])
       setFreeTextAnswer('')
       setError('')
-      
+
       fetchQuestion(gameState.current_question_id)
       checkIfAnswered(gameState.current_question_id)
     }
@@ -153,6 +155,11 @@ export default function QuizPage() {
       return
     }
 
+    if (question.question_type === 'multiple_answer' && selectedChoices.length === 0) {
+      setError('少なくとも1つの選択肢を選んでください')
+      return
+    }
+
     if (question.question_type === 'free_text' && !freeTextAnswer.trim()) {
       setError('回答を入力してください')
       return
@@ -170,6 +177,7 @@ export default function QuizPage() {
         body: JSON.stringify({
           question_id: question.id,
           choice_id: question.question_type === 'multiple_choice' ? selectedChoice : null,
+          selected_choice_ids: question.question_type === 'multiple_answer' ? selectedChoices : null,
           answer_text: question.question_type === 'free_text' ? freeTextAnswer : null,
         }),
       })
@@ -188,6 +196,14 @@ export default function QuizPage() {
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  const toggleChoice = (choiceId: string) => {
+    setSelectedChoices(prev =>
+      prev.includes(choiceId)
+        ? prev.filter(id => id !== choiceId)
+        : [...prev, choiceId]
+    )
   }
 
   if (!question || !gameState) {
@@ -269,6 +285,47 @@ export default function QuizPage() {
                 </div>
               )}
 
+              {question.question_type === 'multiple_answer' && question.choices && (
+                <div className="mb-6">
+                  <div className="text-sm text-gray-600 mb-3">
+                    複数選択できます（最低1つ選択してください）
+                  </div>
+                  <div className="space-y-3" role="group" aria-label="回答選択肢（複数選択可）">
+                    {question.choices
+                      .sort((a, b) => a.display_order - b.display_order)
+                      .map((choice) => (
+                        <button
+                          key={choice.id}
+                          onClick={() => toggleChoice(choice.id)}
+                          disabled={isSubmitting}
+                          className={`w-full p-4 text-left rounded-lg border-2 transition-all flex items-center ${
+                            selectedChoices.includes(choice.id)
+                              ? 'border-wedding-pink bg-pink-50 text-gray-800'
+                              : 'border-gray-300 hover:border-gray-400 text-gray-700 hover:bg-gray-50'
+                          } disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-wedding-pink focus:ring-offset-2`}
+                          aria-label={`選択肢${choice.display_order}: ${choice.choice_text}`}
+                          aria-pressed={selectedChoices.includes(choice.id)}
+                          role="checkbox"
+                          aria-checked={selectedChoices.includes(choice.id)}
+                        >
+                          <div className={`w-5 h-5 mr-3 rounded border-2 flex items-center justify-center flex-shrink-0 ${
+                            selectedChoices.includes(choice.id)
+                              ? 'bg-wedding-pink border-wedding-pink'
+                              : 'border-gray-400'
+                          }`}>
+                            {selectedChoices.includes(choice.id) && (
+                              <svg className="w-3 h-3 text-white" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+                                <path d="M5 13l4 4L19 7"></path>
+                              </svg>
+                            )}
+                          </div>
+                          <span>{choice.choice_text}</span>
+                        </button>
+                      ))}
+                  </div>
+                </div>
+              )}
+
               {question.question_type === 'free_text' && (
                 <div className="mb-6">
                   <textarea
@@ -295,8 +352,9 @@ export default function QuizPage() {
 
               <button
                   onClick={handleSubmit}
-                  disabled={isSubmitting || 
+                  disabled={isSubmitting ||
                     (question.question_type === 'multiple_choice' && !selectedChoice) ||
+                    (question.question_type === 'multiple_answer' && selectedChoices.length === 0) ||
                     (question.question_type === 'free_text' && !freeTextAnswer.trim())}
                   className="w-full bg-wedding-pink text-white py-3 px-4 rounded-lg font-medium hover:bg-pink-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-wedding-pink focus:ring-offset-2 min-h-[44px]"
                   aria-label={isSubmitting ? '回答を送信中' : '回答を送信する'}

@@ -119,11 +119,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (question_type === 'multiple_choice' && choices && choices.length > 0) {
+    // Create choices for multiple_choice and multiple_answer questions
+    if ((question_type === 'multiple_choice' || question_type === 'multiple_answer') && choices && choices.length > 0) {
       const choicesData = choices.map((choice: any, index: number) => ({
         question_id: question.id,
         choice_text: choice.text,
         is_correct: choice.is_correct || false,
+        points: choice.points !== undefined ? choice.points : (choice.is_correct ? points || 10 : 0),
         display_order: index + 1
       }))
 
@@ -205,29 +207,51 @@ export async function PUT(request: NextRequest) {
       )
     }
 
-    // 選択式問題の場合、既存の選択肢を削除して新しい選択肢を作成
-    if (question_type === 'multiple_choice') {
-      // 既存の選択肢を削除
-      await supabase
-        .from('choices')
-        .delete()
-        .eq('question_id', questionId)
-
-      // 新しい選択肢を追加
+    // Update choices for multiple_choice and multiple_answer questions
+    if (question_type === 'multiple_choice' || question_type === 'multiple_answer') {
       if (choices && choices.length > 0) {
-        const choicesData = choices.map((choice: any, index: number) => ({
-          question_id: questionId,
-          choice_text: choice.text,
-          is_correct: choice.is_correct || false,
-          display_order: index + 1
-        }))
-
-        const { error: choicesError } = await supabase
+        // 既存の選択肢を取得
+        const { data: existingChoices } = await supabase
           .from('choices')
-          .insert(choicesData)
+          .select('*')
+          .eq('question_id', questionId)
+          .order('display_order', { ascending: true })
 
-        if (choicesError) {
-          console.error('Choices update error:', choicesError)
+        // 各選択肢を更新または作成
+        for (let i = 0; i < choices.length; i++) {
+          const choice = choices[i]
+          const choiceData = {
+            question_id: questionId,
+            choice_text: choice.text,
+            is_correct: choice.is_correct || false,
+            points: choice.points !== undefined ? choice.points : (choice.is_correct ? points || 10 : 0),
+            display_order: i + 1
+          }
+
+          if (existingChoices && existingChoices[i]) {
+            // 既存の選択肢を更新（IDを維持）
+            await supabase
+              .from('choices')
+              .update(choiceData)
+              .eq('id', existingChoices[i].id)
+          } else {
+            // 新しい選択肢を作成
+            await supabase
+              .from('choices')
+              .insert(choiceData)
+          }
+        }
+
+        // 余分な選択肢を削除（選択肢数が減った場合）
+        if (existingChoices && existingChoices.length > choices.length) {
+          const idsToDelete = existingChoices
+            .slice(choices.length)
+            .map(c => c.id)
+
+          await supabase
+            .from('choices')
+            .delete()
+            .in('id', idsToDelete)
         }
       }
     }

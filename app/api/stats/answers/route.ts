@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     // Get all answers for the question with correctness info
     const { data: answers, error: answersError } = await supabase
       .from('answers')
-      .select('choice_id, is_correct')
+      .select('choice_id, selected_choice_ids, is_correct')
       .eq('question_id', questionId)
 
     if (answersError) {
@@ -47,7 +47,27 @@ export async function GET(request: NextRequest) {
     const total = answers?.length || 0
     const correctCount = answers?.filter(a => a.is_correct).length || 0
     const stats = choices?.map(choice => {
-      const count = answers?.filter(a => a.choice_id === choice.id).length || 0
+      // For multiple_answer, count how many participants selected this choice
+      // For multiple_choice, count those with matching choice_id
+      let count = 0
+      answers?.forEach(answer => {
+        if (answer.selected_choice_ids) {
+          // Multiple answer type - check if choice is in array
+          try {
+            const selectedIds = typeof answer.selected_choice_ids === 'string'
+              ? JSON.parse(answer.selected_choice_ids)
+              : answer.selected_choice_ids
+            if (Array.isArray(selectedIds) && selectedIds.includes(choice.id)) {
+              count++
+            }
+          } catch (e) {
+            console.error('Error parsing selected_choice_ids:', e)
+          }
+        } else if (answer.choice_id === choice.id) {
+          // Single choice type
+          count++
+        }
+      })
       const percentage = total > 0 ? (count / total) * 100 : 0
       return {
         choice_id: choice.id,

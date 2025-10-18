@@ -7,19 +7,21 @@ import { ImageUpload } from '@/components/image-upload'
 interface Choice {
   text: string
   is_correct: boolean
+  points?: number
 }
 
 interface Question {
   id: string
   question_number: number
   question_text: string
-  question_type: 'multiple_choice' | 'free_text'
+  question_type: 'multiple_choice' | 'free_text' | 'multiple_answer'
   image_url?: string
   points: number
   choices?: Array<{
     id: string
     choice_text: string
     is_correct: boolean
+    points: number
     display_order: number
   }>
   explanation_text?: string
@@ -36,16 +38,16 @@ export default function QuestionsManagementPage() {
   const [formData, setFormData] = useState({
     question_number: 1,
     question_text: '',
-    question_type: 'multiple_choice' as 'multiple_choice' | 'free_text',
+    question_type: 'multiple_choice' as 'multiple_choice' | 'free_text' | 'multiple_answer',
     image_url: '',
     points: 10,
     explanation_text: '',
     explanation_image_url: '',
     choices: [
-      { text: '', is_correct: false },
-      { text: '', is_correct: false },
-      { text: '', is_correct: false },
-      { text: '', is_correct: false }
+      { text: '', is_correct: false, points: 0 },
+      { text: '', is_correct: false, points: 0 },
+      { text: '', is_correct: false, points: 0 },
+      { text: '', is_correct: false, points: 0 }
     ] as Choice[]
   })
 
@@ -75,7 +77,7 @@ export default function QuestionsManagementPage() {
   const handleAddChoice = () => {
     setFormData(prev => ({
       ...prev,
-      choices: [...prev.choices, { text: '', is_correct: false }]
+      choices: [...prev.choices, { text: '', is_correct: false, points: 0 }]
     }))
   }
 
@@ -86,22 +88,76 @@ export default function QuestionsManagementPage() {
     }))
   }
 
-  const handleChoiceChange = (index: number, field: 'text' | 'is_correct', value: string | boolean) => {
+  const handleChoiceChange = (index: number, field: 'text' | 'is_correct' | 'points', value: string | boolean | number) => {
     setFormData(prev => ({
       ...prev,
-      choices: prev.choices.map((choice, i) => 
-        i === index 
-          ? { ...choice, [field]: value }
-          : field === 'is_correct' && value === true 
-            ? { ...choice, is_correct: false }
-            : choice
-      )
+      choices: prev.choices.map((choice, i) => {
+        if (i === index) {
+          return { ...choice, [field]: value }
+        }
+        // For single answer mode, uncheck other choices when one is checked
+        if (field === 'is_correct' && value === true && prev.question_type === 'multiple_choice') {
+          return { ...choice, is_correct: false }
+        }
+        return choice
+      })
     }))
+  }
+
+  // Handle question type change
+  const handleQuestionTypeChange = (newType: 'multiple_choice' | 'free_text' | 'multiple_answer') => {
+    if (newType === 'multiple_answer') {
+      // For multiple_answer, create 8 fixed choices
+      const newChoices: Choice[] = Array(8).fill(null).map(() => ({
+        text: '',
+        is_correct: false,
+        points: 0
+      }))
+      setFormData(prev => ({
+        ...prev,
+        question_type: newType,
+        choices: newChoices
+      }))
+    } else if (newType === 'multiple_choice') {
+      // For multiple_choice, reset to 4 choices
+      setFormData(prev => ({
+        ...prev,
+        question_type: newType,
+        choices: [
+          { text: '', is_correct: false, points: 0 },
+          { text: '', is_correct: false, points: 0 },
+          { text: '', is_correct: false, points: 0 },
+          { text: '', is_correct: false, points: 0 }
+        ]
+      }))
+    } else {
+      setFormData(prev => ({ ...prev, question_type: newType }))
+    }
   }
 
   const handleEdit = (question: Question) => {
     setEditingId(question.id)
     setShowAddForm(true)
+
+    let choices: Choice[] = []
+    if ((question.question_type === 'multiple_choice' || question.question_type === 'multiple_answer') && question.choices) {
+      choices = question.choices.map(c => ({
+        text: c.choice_text,
+        is_correct: c.is_correct,
+        points: c.points
+      }))
+    } else if (question.question_type === 'multiple_answer') {
+      // If no choices exist for multiple_answer, create 8 empty ones
+      choices = Array(8).fill(null).map(() => ({ text: '', is_correct: false, points: 0 }))
+    } else {
+      choices = [
+        { text: '', is_correct: false, points: 0 },
+        { text: '', is_correct: false, points: 0 },
+        { text: '', is_correct: false, points: 0 },
+        { text: '', is_correct: false, points: 0 }
+      ]
+    }
+
     setFormData({
       question_number: question.question_number,
       question_text: question.question_text,
@@ -110,14 +166,7 @@ export default function QuestionsManagementPage() {
       points: question.points,
       explanation_text: question.explanation_text || '',
       explanation_image_url: question.explanation_image_url || '',
-      choices: question.question_type === 'multiple_choice' && question.choices
-        ? question.choices.map(c => ({ text: c.choice_text, is_correct: c.is_correct }))
-        : [
-            { text: '', is_correct: false },
-            { text: '', is_correct: false },
-            { text: '', is_correct: false },
-            { text: '', is_correct: false }
-          ]
+      choices
     })
   }
 
@@ -162,17 +211,17 @@ export default function QuestionsManagementPage() {
       explanation_text: '',
       explanation_image_url: '',
       choices: [
-        { text: '', is_correct: false },
-        { text: '', is_correct: false },
-        { text: '', is_correct: false },
-        { text: '', is_correct: false }
+        { text: '', is_correct: false, points: 0 },
+        { text: '', is_correct: false, points: 0 },
+        { text: '', is_correct: false, points: 0 },
+        { text: '', is_correct: false, points: 0 }
       ]
     })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!formData.question_text.trim()) {
       alert('問題文を入力してください')
       return
@@ -190,10 +239,22 @@ export default function QuestionsManagementPage() {
       }
     }
 
+    if (formData.question_type === 'multiple_answer') {
+      const validChoices = formData.choices.filter(c => c.text.trim())
+      if (validChoices.length !== 8) {
+        alert('複数回答式は8個すべての選択肢を入力してください')
+        return
+      }
+      if (!validChoices.some(c => c.is_correct)) {
+        alert('正解の選択肢を少なくとも1つ設定してください')
+        return
+      }
+    }
+
     try {
       const url = editingId ? `/api/questions?id=${editingId}` : '/api/questions'
       const method = editingId ? 'PUT' : 'POST'
-      
+
       const response = await fetch(url, {
         method,
         headers: {
@@ -201,7 +262,7 @@ export default function QuestionsManagementPage() {
         },
         body: JSON.stringify({
           ...formData,
-          choices: formData.question_type === 'multiple_choice' 
+          choices: (formData.question_type === 'multiple_choice' || formData.question_type === 'multiple_answer')
             ? formData.choices.filter(c => c.text.trim())
             : undefined
         }),
@@ -280,28 +341,31 @@ export default function QuestionsManagementPage() {
                   </label>
                   <select
                     value={formData.question_type}
-                    onChange={(e) => setFormData({ ...formData, question_type: e.target.value as 'multiple_choice' | 'free_text' })}
+                    onChange={(e) => handleQuestionTypeChange(e.target.value as 'multiple_choice' | 'free_text' | 'multiple_answer')}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
-                    <option value="multiple_choice">選択式</option>
+                    <option value="multiple_choice">単一回答式</option>
+                    <option value="multiple_answer">複数回答式</option>
                     <option value="free_text">自由記述</option>
                   </select>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    配点
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.points}
-                    onChange={(e) => setFormData({ ...formData, points: parseInt(e.target.value) })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    min="1"
-                    max="100"
-                    required
-                  />
-                </div>
+                {formData.question_type !== 'multiple_answer' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      配点
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.points}
+                      onChange={(e) => setFormData({ ...formData, points: parseInt(e.target.value) })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      min="1"
+                      max="100"
+                      required
+                    />
+                  </div>
+                )}
               </div>
 
               <div>
@@ -347,7 +411,7 @@ export default function QuestionsManagementPage() {
               {formData.question_type === 'multiple_choice' && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    選択肢
+                    選択肢（単一回答式）
                   </label>
                   <div className="space-y-2">
                     {formData.choices.map((choice, index) => (
@@ -388,6 +452,53 @@ export default function QuestionsManagementPage() {
                 </div>
               )}
 
+              {formData.question_type === 'multiple_answer' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    選択肢（複数回答式 - 8個固定）
+                  </label>
+                  <div className="text-sm text-gray-600 mb-2">
+                    各選択肢に点数を設定してください。正解は正の値、不正解は負の値を設定します。
+                  </div>
+                  <div className="space-y-2">
+                    {formData.choices.map((choice, index) => (
+                      <div key={index} className="flex items-center space-x-2">
+                        <span className="text-sm font-medium text-gray-600 w-6">{index + 1}.</span>
+                        <input
+                          type="checkbox"
+                          checked={choice.is_correct}
+                          onChange={(e) => handleChoiceChange(index, 'is_correct', e.target.checked)}
+                          className="flex-shrink-0"
+                          title="正解フラグ"
+                        />
+                        <input
+                          type="text"
+                          value={choice.text}
+                          onChange={(e) => handleChoiceChange(index, 'text', e.target.value)}
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder={`選択肢 ${index + 1}`}
+                          required
+                        />
+                        <input
+                          type="number"
+                          value={choice.points || 0}
+                          onChange={(e) => handleChoiceChange(index, 'points', parseInt(e.target.value) || 0)}
+                          className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="点数"
+                          min="-100"
+                          max="100"
+                          required
+                        />
+                        <span className="text-sm text-gray-500">点</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-2 text-sm text-gray-500">
+                    ※ 選択した選択肢の点数を合計して採点します（負の点数は減点）
+                  </div>
+                </div>
+              )}
+
               <div className="flex justify-end space-x-4">
                 <button
                   type="button"
@@ -422,11 +533,14 @@ export default function QuestionsManagementPage() {
                     </h3>
                     <div className="flex items-center space-x-2">
                       <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">
-                        {question.question_type === 'multiple_choice' ? '選択式' : '自由記述'}
+                        {question.question_type === 'multiple_choice' ? '単一回答式' :
+                         question.question_type === 'multiple_answer' ? '複数回答式' : '自由記述'}
                       </span>
-                      <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-sm">
-                        {question.points}点
-                      </span>
+                      {question.question_type !== 'multiple_answer' && (
+                        <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-sm">
+                          {question.points}点
+                        </span>
+                      )}
                     </div>
                   </div>
                   
@@ -438,7 +552,7 @@ export default function QuestionsManagementPage() {
                     </p>
                   )}
                   
-                  {question.question_type === 'multiple_choice' && question.choices && (
+                  {(question.question_type === 'multiple_choice' || question.question_type === 'multiple_answer') && question.choices && (
                     <div className="mt-2 space-y-1">
                       {question.choices
                         .sort((a, b) => a.display_order - b.display_order)
@@ -447,6 +561,11 @@ export default function QuestionsManagementPage() {
                             <span className={`w-4 h-4 rounded-full ${choice.is_correct ? 'bg-green-500' : 'bg-gray-300'}`}></span>
                             <span className={choice.is_correct ? 'font-semibold text-green-700' : 'text-gray-600'}>
                               {choice.choice_text}
+                              {question.question_type === 'multiple_answer' && (
+                                <span className="ml-2 text-sm text-gray-500">
+                                  ({choice.points > 0 ? '+' : ''}{choice.points}点)
+                                </span>
+                              )}
                             </span>
                           </div>
                         ))}

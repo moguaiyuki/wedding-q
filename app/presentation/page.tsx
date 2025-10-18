@@ -15,7 +15,7 @@ interface Question {
   id: string
   question_number: number
   question_text: string
-  question_type: 'multiple_choice' | 'free_text'
+  question_type: 'multiple_choice' | 'free_text' | 'multiple_answer'
   image_url?: string
   points: number
   explanation_text?: string
@@ -154,7 +154,6 @@ export default function PresentationPage() {
       if (response.ok) {
         const data = await response.json()
         setAnswerStats(data.stats || [])
-        setAnswerCount(data.total || 0)
       }
     } catch (error) {
       console.error('Failed to fetch answer stats:', error)
@@ -228,16 +227,19 @@ export default function PresentationPage() {
             </p>
             {currentQuestion.image_url && (
               <div className="mb-8">
-                <img 
-                  src={currentQuestion.image_url} 
-                  alt="問題画像" 
+                <img
+                  src={currentQuestion.image_url}
+                  alt="問題画像"
                   className="max-w-full h-auto mx-auto rounded-lg shadow-lg"
                   style={{ maxHeight: '400px' }}
                 />
               </div>
             )}
-            {currentQuestion.question_type === 'multiple_choice' && currentQuestion.choices && (
+            {(currentQuestion.question_type === 'multiple_choice' || currentQuestion.question_type === 'multiple_answer') && currentQuestion.choices && (
               <div className="mt-8 space-y-4">
+                {currentQuestion.question_type === 'multiple_answer' && (
+                  <p className="text-xl text-blue-600 mb-4">複数選択可</p>
+                )}
                 {currentQuestion.choices.map((choice, index) => (
                   <div key={choice.id} className="bg-gray-100 rounded-lg p-4 text-left">
                     <span className="text-xl text-gray-800">
@@ -278,8 +280,11 @@ export default function PresentationPage() {
                 />
               </div>
             )}
-            {currentQuestion.question_type === 'multiple_choice' && currentQuestion.choices && (
+            {(currentQuestion.question_type === 'multiple_choice' || currentQuestion.question_type === 'multiple_answer') && currentQuestion.choices && (
               <div className="mt-8 space-y-4">
+                {currentQuestion.question_type === 'multiple_answer' && (
+                  <p className="text-xl text-blue-600 mb-4">複数選択可</p>
+                )}
                 {currentQuestion.choices.map((choice, index) => (
                   <div key={choice.id} className="bg-gray-100 rounded-lg p-4 text-left">
                     <span className="text-xl text-gray-800">
@@ -302,8 +307,8 @@ export default function PresentationPage() {
 
   // Showing results
   if (gameState.current_state === 'showing_results' && currentQuestion) {
-    const correctChoice = currentQuestion.choices?.find(c => c.is_correct)
-    
+    const correctChoices = currentQuestion.choices?.filter(c => c.is_correct) || []
+
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-pink to-wedding-white p-8">
         <div className="bg-white rounded-2xl shadow-2xl p-12 max-w-5xl w-full">
@@ -311,12 +316,22 @@ export default function PresentationPage() {
             <h2 className="text-5xl font-bold mb-8 text-gray-800">
               第{currentQuestion.question_number}問 結果発表
             </h2>
-            {correctChoice && (
+            {correctChoices.length > 0 && (
               <div className="bg-green-100 rounded-lg p-6 mb-8">
                 <p className="text-2xl text-gray-700 mb-2">正解</p>
-                <p className="text-4xl font-bold text-green-600">
-                  {correctChoice.choice_text}
-                </p>
+                {currentQuestion.question_type === 'multiple_answer' ? (
+                  <div className="space-y-2">
+                    {correctChoices.map((choice) => (
+                      <p key={choice.id} className="text-3xl font-bold text-green-600">
+                        {choice.choice_text}
+                      </p>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-4xl font-bold text-green-600">
+                    {correctChoices[0].choice_text}
+                  </p>
+                )}
               </div>
             )}
 
@@ -341,20 +356,20 @@ export default function PresentationPage() {
                 )}
               </div>
             )}
-            {currentQuestion.question_type === 'multiple_choice' && answerStats.length > 0 && (
+            {(currentQuestion.question_type === 'multiple_choice' || currentQuestion.question_type === 'multiple_answer') && answerStats.length > 0 && (
               <div className="space-y-4 mb-8">
                 {currentQuestion.choices?.map((choice) => {
                   const stat = answerStats.find(s => s.choice_id === choice.id)
                   const percentage = stat ? stat.percentage : 0
                   const isCorrect = choice.is_correct
                   return (
-                    <div 
-                      key={choice.id} 
+                    <div
+                      key={choice.id}
                       className={`relative rounded-lg overflow-hidden ${
                         isCorrect ? 'bg-green-100' : 'bg-gray-200'
                       }`}
                     >
-                      <div 
+                      <div
                         className={`absolute inset-0 ${
                           isCorrect ? 'bg-green-500' : 'bg-gray-400'
                         } opacity-30`}
