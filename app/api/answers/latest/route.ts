@@ -64,19 +64,51 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Find the correct choice
-    const correctChoice = choices?.find(c => c.is_correct)
+    // Find the correct choices (can be multiple for multiple_answer)
+    const correctChoices = choices?.filter(c => c.is_correct) || []
+    const correctChoice = correctChoices[0] // For backward compatibility
+
+    // Handle both single and multiple answer types
+    const questionType = (answer.questions as any)?.question_type
+    const selectedChoiceIds = answer.selected_choice_ids
+      ? (typeof answer.selected_choice_ids === 'string'
+          ? JSON.parse(answer.selected_choice_ids)
+          : answer.selected_choice_ids)
+      : null
+
+    // Recalculate points for multiple_answer questions using current choice points
+    let recalculatedPoints = answer.points_earned
+    let recalculatedIsCorrect = answer.is_correct
+
+    if (questionType === 'multiple_answer' && selectedChoiceIds && selectedChoiceIds.length > 0) {
+      let total_points = 0
+      const selectedChoicesData = choices?.filter(c => selectedChoiceIds.includes(c.id)) || []
+
+      for (const choice of selectedChoicesData) {
+        total_points += choice.points
+      }
+
+      // Check if all correct choices were selected and no incorrect ones
+      const correctChoiceIds = correctChoices.map(c => c.id)
+      const allCorrectSelected = correctChoiceIds.every(id => selectedChoiceIds.includes(id))
+      const noIncorrectSelected = selectedChoicesData.every(c => c.is_correct)
+
+      recalculatedIsCorrect = allCorrectSelected && noIncorrectSelected
+      recalculatedPoints = Math.max(0, total_points)
+    }
 
     return NextResponse.json({
       answer: {
-        is_correct: answer.is_correct,
-        points_earned: answer.points_earned,
+        is_correct: recalculatedIsCorrect,
+        points_earned: recalculatedPoints,
         selected_choice_id: answer.choice_id,
+        selected_choice_ids: selectedChoiceIds,
         answered_at: answer.answered_at
       },
       question: answer.questions,
       choices: choices || [],
-      correct_choice_id: correctChoice?.id || null
+      correct_choice_id: correctChoice?.id || null,
+      correct_choice_ids: correctChoices.map(c => c.id)
     })
   } catch (error) {
     console.error('Get latest answer API error:', error)

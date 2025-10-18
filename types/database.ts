@@ -12,7 +12,7 @@ export interface Question {
   id: string
   question_number: number
   question_text: string
-  question_type: 'multiple_choice' | 'free_text'
+  question_type: 'multiple_choice' | 'free_text' | 'multiple_answer'
   image_url?: string
   points: number
   created_at: string
@@ -24,6 +24,7 @@ export interface Choice {
   question_id: string
   choice_text: string
   is_correct: boolean
+  points: number
   display_order: number
   created_at: string
 }
@@ -33,6 +34,7 @@ export interface Answer {
   user_id: string
   question_id: string
   choice_id?: string
+  selected_choice_ids?: string[]
   answer_text?: string
   is_correct?: boolean
   points_earned: number

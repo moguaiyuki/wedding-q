@@ -16,9 +16,12 @@ interface LastAnswer {
   question_number: number
   points_earned: number
   selected_choice_id?: string
+  selected_choice_ids?: string[]
+  correct_choice_ids?: string[]
   correct_choice_id?: string
   explanation_text?: string
   explanation_image_url?: string
+  question_type?: 'multiple_choice' | 'free_text' | 'multiple_answer'
   choices?: Array<{
     id: string
     choice_text: string
@@ -128,9 +131,12 @@ export default function ResultsPage() {
                 question_number: latestData.question.question_number,
                 points_earned: latestData.answer.points_earned,
                 selected_choice_id: latestData.answer.selected_choice_id,
+                selected_choice_ids: latestData.answer.selected_choice_ids,
                 correct_choice_id: latestData.correct_choice_id,
+                correct_choice_ids: latestData.correct_choice_ids,
                 explanation_text: latestData.question.explanation_text,
                 explanation_image_url: latestData.question.explanation_image_url,
+                question_type: latestData.question.question_type,
                 choices: latestData.choices
               })
             }
@@ -209,25 +215,40 @@ export default function ResultsPage() {
           {/* 直前の回答結果表示 */}
           {lastAnswer && !isFinished && (
             <>
-              <div className={`rounded-lg p-6 mb-6 text-center ${
-                lastAnswer.is_correct
-                  ? 'bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-300'
-                  : 'bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-300'
-              }`}>
-                <div className="text-5xl mb-3">
-                  {lastAnswer.is_correct ? '⭕' : '❌'}
-                </div>
-                <p className={`text-2xl font-bold mb-2 ${
-                  lastAnswer.is_correct ? 'text-green-700' : 'text-red-700'
+              {/* 複数回答式以外の場合のみ正解/残念を表示 */}
+              {lastAnswer.question_type !== 'multiple_answer' && (
+                <div className={`rounded-lg p-6 mb-6 text-center ${
+                  lastAnswer.is_correct
+                    ? 'bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-300'
+                    : 'bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-300'
                 }`}>
-                  {lastAnswer.is_correct ? '正解！' : '残念...'}
-                </p>
-                {lastAnswer.is_correct && (
-                  <p className="text-lg text-green-600">
-                    +{lastAnswer.points_earned}ポイント獲得
+                  <div className="text-5xl mb-3">
+                    {lastAnswer.is_correct ? '⭕' : '❌'}
+                  </div>
+                  <p className={`text-2xl font-bold mb-2 ${
+                    lastAnswer.is_correct ? 'text-green-700' : 'text-red-700'
+                  }`}>
+                    {lastAnswer.is_correct ? '正解！' : '残念...'}
                   </p>
-                )}
-              </div>
+                  {lastAnswer.is_correct && (
+                    <p className="text-lg text-green-600">
+                      +{lastAnswer.points_earned}ポイント獲得
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* 複数回答式の場合は獲得ポイントのみ表示 */}
+              {lastAnswer.question_type === 'multiple_answer' && (
+                <div className="rounded-lg p-6 mb-6 text-center bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-300">
+                  <p className="text-xl font-bold text-blue-700 mb-2">
+                    獲得ポイント
+                  </p>
+                  <p className="text-3xl font-bold text-blue-600">
+                    {lastAnswer.points_earned}ポイント
+                  </p>
+                </div>
+              )}
 
               {/* エピソード表示 */}
               {(lastAnswer.explanation_text || lastAnswer.explanation_image_url) && (
@@ -255,10 +276,17 @@ export default function ResultsPage() {
               {lastAnswer.choices && lastAnswer.choices.length > 0 && (
                 <div className="mb-6">
                   <h3 className="text-lg font-bold mb-3 text-gray-800">回答結果</h3>
+                  {lastAnswer.question_type === 'multiple_answer' && (
+                    <p className="text-sm text-blue-600 mb-3">複数選択式</p>
+                  )}
                   <div className="space-y-2">
                     {lastAnswer.choices.map((choice, index) => {
-                      const isSelected = choice.id === lastAnswer.selected_choice_id
-                      const isCorrect = choice.id === lastAnswer.correct_choice_id
+                      const isSelected = lastAnswer.question_type === 'multiple_answer'
+                        ? lastAnswer.selected_choice_ids?.includes(choice.id)
+                        : choice.id === lastAnswer.selected_choice_id
+                      const isCorrect = lastAnswer.question_type === 'multiple_answer'
+                        ? lastAnswer.correct_choice_ids?.includes(choice.id)
+                        : choice.id === lastAnswer.correct_choice_id
 
                       return (
                         <div
@@ -267,7 +295,7 @@ export default function ResultsPage() {
                             isCorrect
                               ? 'bg-green-50 border-green-400'
                               : isSelected
-                              ? 'bg-red-50 border-red-400'
+                              ? 'bg-blue-50 border-blue-400'
                               : 'bg-gray-50 border-gray-200'
                           }`}
                         >
@@ -282,7 +310,7 @@ export default function ResultsPage() {
                                 isCorrect
                                   ? 'text-green-800'
                                   : isSelected
-                                  ? 'text-red-800'
+                                  ? 'text-blue-800'
                                   : 'text-gray-700'
                               }`}>
                                 {choice.choice_text}
@@ -290,12 +318,15 @@ export default function ResultsPage() {
                             </div>
                             <div className="flex items-center space-x-2">
                               {isSelected && (
-                                <span className="text-sm font-bold text-red-600">
+                                <span className="text-sm font-bold text-blue-600">
                                   あなたの回答
                                 </span>
                               )}
                               {isCorrect && (
-                                <span className="text-xl">✓</span>
+                                <span className="text-sm font-bold text-green-600 flex items-center">
+                                  <span className="text-xl mr-1">✓</span>
+                                  正解
+                                </span>
                               )}
                             </div>
                           </div>
@@ -303,28 +334,6 @@ export default function ResultsPage() {
                       )
                     })}
                   </div>
-                </div>
-              )}
-
-              {/* 解説表示 */}
-              {(lastAnswer.explanation_text || lastAnswer.explanation_image_url) && (
-                <div className="bg-blue-50 rounded-lg p-4 mb-6 border-2 border-blue-200">
-                  <h3 className="text-base font-bold mb-2 text-blue-800">💡 解説</h3>
-                  {lastAnswer.explanation_text && (
-                    <p className="text-sm text-gray-800 mb-3 whitespace-pre-wrap text-left">
-                      {lastAnswer.explanation_text}
-                    </p>
-                  )}
-                  {lastAnswer.explanation_image_url && (
-                    <div className="mt-2">
-                      <img
-                        src={lastAnswer.explanation_image_url}
-                        alt="解説画像"
-                        className="max-w-full h-auto mx-auto rounded-lg shadow-md"
-                        style={{ maxHeight: '300px' }}
-                      />
-                    </div>
-                  )}
                 </div>
               )}
             </>

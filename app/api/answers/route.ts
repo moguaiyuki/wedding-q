@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { question_id, choice_id, answer_text } = body
+    const { question_id, choice_id, selected_choice_ids, answer_text } = body
 
     if (!question_id) {
       return NextResponse.json(
@@ -39,10 +39,62 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Get question type to determine scoring logic
+    const { data: question } = await supabase
+      .from('questions')
+      .select('question_type, points')
+      .eq('id', question_id)
+      .single()
+
+    if (!question) {
+      return NextResponse.json(
+        { error: '問題が見つかりません' },
+        { status: 404 }
+      )
+    }
+
     let is_correct = false
     let points_earned = 0
 
-    if (choice_id) {
+    // Scoring logic for multiple_answer type
+    if (question.question_type === 'multiple_answer' && selected_choice_ids && selected_choice_ids.length > 0) {
+      // Get all choices for this question
+      const { data: allChoices } = await supabase
+        .from('choices')
+        .select('id, is_correct, points')
+        .eq('question_id', question_id)
+
+      if (!allChoices) {
+        return NextResponse.json(
+          { error: '選択肢の取得に失敗しました' },
+          { status: 500 }
+        )
+      }
+
+      // Calculate points for selected choices
+      let total_points = 0
+      const selectedChoicesData = allChoices.filter(c => selected_choice_ids.includes(c.id))
+
+      for (const choice of selectedChoicesData) {
+        if (choice.is_correct) {
+          // Correct choice: add points
+          total_points += choice.points
+        } else {
+          // Incorrect choice: subtract points (points should be negative)
+          total_points += choice.points
+        }
+      }
+
+      // Check if all correct choices were selected and no incorrect ones
+      const correctChoiceIds = allChoices.filter(c => c.is_correct).map(c => c.id)
+      const allCorrectSelected = correctChoiceIds.every(id => selected_choice_ids.includes(id))
+      const noIncorrectSelected = selectedChoicesData.every(c => c.is_correct)
+
+      is_correct = allCorrectSelected && noIncorrectSelected
+      points_earned = Math.max(0, total_points) // Never give negative points
+    }
+    // Scoring logic for multiple_choice (single answer)
+    else if (question.question_type === 'multiple_choice' && choice_id) {
       const { data: choice } = await supabase
         .from('choices')
         .select('is_correct')
@@ -51,16 +103,11 @@ export async function POST(request: NextRequest) {
 
       if (choice && choice.is_correct) {
         is_correct = true
-        
-        const { data: question } = await supabase
-          .from('questions')
-          .select('points')
-          .eq('id', question_id)
-          .single()
-        
         points_earned = question?.points || 10
       }
     }
+    // Free text questions don't have automatic scoring
+    // is_correct and points_earned remain false/0
 
     const { data: answer, error } = await supabase
       .from('answers')
@@ -68,6 +115,7 @@ export async function POST(request: NextRequest) {
         user_id: user.id,
         question_id,
         choice_id,
+        selected_choice_ids: selected_choice_ids ? JSON.stringify(selected_choice_ids) : null,
         answer_text,
         is_correct,
         points_earned,

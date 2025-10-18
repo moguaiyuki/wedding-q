@@ -21,7 +21,18 @@ export async function GET() {
 
   const { data: allAnswers, error: answersError } = await supabase
     .from('answers')
-    .select('user_id, is_correct, points_earned')
+    .select(`
+      user_id,
+      question_id,
+      choice_id,
+      selected_choice_ids,
+      is_correct,
+      points_earned,
+      questions:question_id (
+        question_type,
+        points
+      )
+    `)
 
   console.log('[Ranking API] Users count:', allUsers?.length, 'Error:', usersError)
   console.log('[Ranking API] Answers count:', allAnswers?.length, 'Error:', answersError)
@@ -31,15 +42,54 @@ export async function GET() {
     return NextResponse.json({ error: 'Data not found' }, { status: 404 })
   }
 
-  // Calculate scores for each user
+  // Get all choices for all questions
+  const { data: allChoices, error: choicesError } = await supabase
+    .from('choices')
+    .select('id, question_id, is_correct, points')
+
+  if (choicesError) {
+    console.error('[Ranking API] Fetch choices error:', choicesError)
+    return NextResponse.json({ error: 'Failed to fetch choices' }, { status: 500 })
+  }
+
+  // Build a map for quick lookup of choices by question_id
+  const choicesByQuestion = new Map<string, any[]>()
+  allChoices?.forEach(choice => {
+    if (!choicesByQuestion.has(choice.question_id)) {
+      choicesByQuestion.set(choice.question_id, [])
+    }
+    choicesByQuestion.get(choice.question_id)?.push(choice)
+  })
+
+  // Calculate scores for each user with recalculated points for multiple_answer
   const userScores = new Map<string, number>()
-  
+
   allAnswers.forEach(answer => {
     if (!answer.user_id) return
+
     const currentScore = userScores.get(answer.user_id) || 0
-    if (answer.is_correct) {
-      userScores.set(answer.user_id, currentScore + (answer.points_earned || 0))
+    const questionType = (answer.questions as any)?.question_type
+
+    let points = answer.points_earned || 0
+
+    // Recalculate for multiple_answer questions
+    if (questionType === 'multiple_answer' && answer.selected_choice_ids) {
+      const selectedIds = typeof answer.selected_choice_ids === 'string'
+        ? JSON.parse(answer.selected_choice_ids)
+        : answer.selected_choice_ids
+
+      const questionChoices = choicesByQuestion.get(answer.question_id) || []
+      const selectedChoices = questionChoices.filter(c => selectedIds.includes(c.id))
+
+      let total_points = 0
+      for (const choice of selectedChoices) {
+        total_points += choice.points
+      }
+
+      points = Math.max(0, total_points)
     }
+
+    userScores.set(answer.user_id, currentScore + points)
   })
 
   // Create sorted list of users by score
