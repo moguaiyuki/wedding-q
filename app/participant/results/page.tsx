@@ -260,31 +260,6 @@ export default function ResultsPage() {
                 )}
               </div>
 
-              {/* エピソード表示 */}
-              {(lastAnswer.explanation_text || lastAnswer.explanation_image_url) && (
-                <div className="bg-wedding-cream-100 rounded-2xl p-4 mb-6 border-2 border-wedding-gold-200">
-                  <h3 className="text-base font-bold mb-2 text-gray-800 flex items-center gap-2">
-                    <Lightbulb className="w-5 h-5 text-wedding-gold-500" strokeWidth={2.5} />
-                    エピソード
-                  </h3>
-                  {lastAnswer.explanation_text && (
-                    <p className="text-sm text-gray-800 mb-3 whitespace-pre-wrap text-left">
-                      {lastAnswer.explanation_text}
-                    </p>
-                  )}
-                  {lastAnswer.explanation_image_url && (
-                    <div className="mt-2">
-                      <img
-                        src={lastAnswer.explanation_image_url}
-                        alt="エピソード画像"
-                        className="max-w-full h-auto mx-auto rounded-lg shadow-md"
-                        style={{ maxHeight: '300px' }}
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
-
               {/* 選択肢の表示 */}
               {lastAnswer.choices && lastAnswer.choices.length > 0 && (
                 <div className="mb-6">
@@ -340,31 +315,6 @@ export default function ResultsPage() {
                       )
                     })}
                   </div>
-                </div>
-              )}
-
-              {/* 解説表示 */}
-              {(lastAnswer.explanation_text || lastAnswer.explanation_image_url) && (
-                <div className="bg-wedding-cream-100 rounded-2xl p-4 mb-6 border-2 border-wedding-gold-200">
-                  <h3 className="text-base font-bold mb-2 text-gray-800 flex items-center gap-2">
-                    <Lightbulb className="w-5 h-5 text-wedding-gold-500" strokeWidth={2.5} />
-                    解説
-                  </h3>
-                  {lastAnswer.explanation_text && (
-                    <p className="text-sm text-gray-800 mb-3 whitespace-pre-wrap text-left">
-                      {lastAnswer.explanation_text}
-                    </p>
-                  )}
-                  {lastAnswer.explanation_image_url && (
-                    <div className="mt-2">
-                      <img
-                        src={lastAnswer.explanation_image_url}
-                        alt="解説画像"
-                        className="max-w-full h-auto mx-auto rounded-lg shadow-md"
-                        style={{ maxHeight: '300px' }}
-                      />
-                    </div>
-                  )}
                 </div>
               )}
             </>

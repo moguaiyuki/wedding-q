@@ -325,30 +325,6 @@ export default function PresentationPage() {
               </div>
             )}
 
-            {/* エピソード表示 */}
-            {(currentQuestion.explanation_text || currentQuestion.explanation_image_url) && (
-              <div className="bg-wedding-cream-100 rounded-2xl p-8 mb-8 border-2 border-wedding-gold-300">
-                <h3 className="text-3xl font-bold mb-4 text-gray-800 flex items-center justify-center gap-3">
-                  <Lightbulb className="w-8 h-8 text-wedding-gold-600" strokeWidth={2.5} />
-                  エピソード
-                </h3>
-                {currentQuestion.explanation_text && (
-                  <p className="text-lg text-gray-800 mb-4 whitespace-pre-wrap text-left">
-                    {currentQuestion.explanation_text}
-                  </p>
-                )}
-                {currentQuestion.explanation_image_url && (
-                  <div className="mt-4">
-                    <img
-                      src={currentQuestion.explanation_image_url}
-                      alt="エピソード画像"
-                      className="max-w-full h-auto mx-auto rounded-lg shadow-lg"
-                      style={{ maxHeight: '400px' }}
-                    />
-                  </div>
-                )}
-              </div>
-            )}
             {currentQuestion.question_type === 'multiple_choice' && answerStats.length > 0 && (
               <div className="space-y-4 mb-8">
                 {currentQuestion.choices?.map((choice) => {
