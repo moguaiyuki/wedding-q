@@ -242,7 +242,7 @@ export default function PresentationPage() {
                 {currentQuestion.choices.map((choice, index) => (
                   <div key={choice.id} className="bg-wedding-cream-100 rounded-2xl p-6 text-left border-2 border-gray-200">
                     <span className="text-2xl font-semibold text-gray-800">
-                      {String.fromCharCode(65 + index)}. {choice.choice_text}
+                      {index + 1}. {choice.choice_text}
                     </span>
                   </div>
                 ))}
@@ -284,7 +284,7 @@ export default function PresentationPage() {
                 {currentQuestion.choices.map((choice, index) => (
                   <div key={choice.id} className="bg-wedding-cream-100 rounded-2xl p-6 text-left border-2 border-gray-200">
                     <span className="text-2xl font-semibold text-gray-800">
-                      {String.fromCharCode(65 + index)}. {choice.choice_text}
+                      {index + 1}. {choice.choice_text}
                     </span>
                   </div>
                 ))}
