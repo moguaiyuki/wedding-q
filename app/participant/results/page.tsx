@@ -309,11 +309,11 @@ export default function ResultsPage() {
             </>
           )}
 
-          <div className="flex justify-center mb-8">
-            <div className="bg-gradient-to-br from-wedding-pink-100 to-wedding-rose-100 rounded-2xl p-8 text-center border-2 border-wedding-pink-200 min-w-[300px]">
-              <p className="text-sm font-semibold text-gray-700 mb-2">現在のスコア</p>
-              <p className="text-5xl font-bold text-wedding-pink-600">{totalScore}</p>
-              <p className="text-sm font-medium text-gray-600 mt-1">ポイント</p>
+          <div className="flex justify-center mb-6">
+            <div className="bg-white rounded-full px-6 py-3 border border-gray-200 shadow-sm">
+              <p className="text-sm text-gray-600">
+                現在のスコア: <span className="font-bold text-gray-900 text-lg ml-1">{totalScore}点</span>
+              </p>
             </div>
           </div>
 
