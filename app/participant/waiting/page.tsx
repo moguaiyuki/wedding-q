@@ -28,27 +28,27 @@ export default function WaitingPage() {
     fetchUserInfo()
     fetchGameState()
     fetchParticipantCount()
-    
+
     // Set up realtime subscriptions
     const realtimeManager = getRealtimeManager()
-    
+
     // Subscribe to game state changes
     const unsubscribeGameState = realtimeManager.subscribeToGameState((payload) => {
       console.log('Waiting page received game state change:', payload)
       fetchGameState()
     })
-    
+
     // Subscribe to participant count changes
     const unsubscribeParticipants = realtimeManager.subscribeToParticipants((count) => {
       setParticipantCount(count)
     })
-    
+
     // Also set up polling as fallback (every 2 seconds)
     const interval = setInterval(() => {
       fetchGameState()
       fetchParticipantCount()
     }, 2000)
-    
+
     return () => {
       unsubscribeGameState()
       unsubscribeParticipants()
@@ -124,10 +124,10 @@ export default function WaitingPage() {
                 </svg>
                 <div className="flex-1 text-left">
                   <p className="text-sm font-medium text-yellow-800">
-                    表示名を設定しましょう！
+                    クイズ中に表示される名前を設定できます。
                   </p>
                   <p className="text-xs text-yellow-700 mt-1">
-                    ニックネームを設定すると、クイズ中はその名前が表示されます
+                    表示名を設定すると、クイズ中はその名前が表示されます
                   </p>
                   <button
                     onClick={() => router.push('/participant/profile')}
@@ -139,52 +139,20 @@ export default function WaitingPage() {
               </div>
             </div>
           )}
-          {user && (
-            <div className="flex justify-between items-center mb-4">
-              <p className="text-sm text-gray-600">
-                ようこそ、<span className="font-semibold">{user.nickname || `${user.name}（未設定）`}</span>さん
-              </p>
+          <div className="mb-6">
+            <h2 className="text-lg font-semibold text-gray-600 mb-3">{user?.nickname || user?.name || 'ゲスト'}さん</h2>
+            <h1 className="text-3xl font-bold mb-4 text-gray-800 font-serif">
+              準備完了です！
+            </h1>
+            <p className="text-gray-600 mb-3">クイズ開始まで、この画面のままで<br />お待ちください...</p>
+            {user?.nickname && (
               <button
                 onClick={() => router.push('/participant/profile')}
-                className={`px-3 py-1.5 rounded-xl transition-colors ${
-                  user.nickname
-                    ? 'text-sm text-gray-600 hover:bg-gray-100'
-                    : 'bg-gradient-to-r from-quiz-pink-300 to-quiz-purple-300 text-gray-800 text-sm font-medium hover:from-quiz-pink-200 hover:to-quiz-purple-200 animate-pulse'
-                }`}
+                className="text-sm text-quiz-teal-600 hover:text-quiz-teal-700 font-bold"
               >
-                {user.nickname ? 'プロフィール' : '表示名を設定'}
+                表示名編集
               </button>
-            </div>
-          )}
-          <div className="mb-6">
-            <h2 className="text-lg font-semibold text-gray-600 mb-3">Hi, {user?.nickname || user?.name || 'ゲスト'}!</h2>
-            <h1 className="text-3xl font-bold mb-4 text-gray-800 font-serif">
-              準備完了！
-            </h1>
-            <p className="text-gray-600">まもなくクイズが始まります...</p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div className="bg-quiz-blue-100 rounded-2xl p-4 text-center">
-              <p className="text-xs text-gray-600 mb-1">参加者数</p>
-              <p className="text-3xl font-bold text-quiz-teal-600">{participantCount}</p>
-              <p className="text-xs text-gray-600">名</p>
-            </div>
-            <div className="bg-quiz-yellow-100 rounded-2xl p-4 text-center">
-              <p className="text-xs text-gray-600 mb-1">あなたのID</p>
-              <p className="text-lg font-bold text-gray-800">{user?.qr_code || '-'}</p>
-            </div>
-          </div>
-
-          {user?.nickname && (
-            <div className="bg-quiz-green-100 rounded-2xl p-3 mb-6">
-              <p className="text-xs text-gray-600">本名</p>
-              <p className="text-sm font-semibold text-gray-800">{user.name}</p>
-            </div>
-          )}
-
-          <div className="space-y-2 text-gray-600 text-sm">
-            <p>この画面のままお待ちください</p>
+            )}
           </div>
 
           <div className="mt-8">

@@ -190,9 +190,6 @@ export default function PresentationPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-quiz-beige-50 to-quiz-beige-100">
         <div className="text-center">
-          <h1 className="text-7xl font-bold mb-8 text-gray-800 font-serif">
-            結婚式クイズ
-          </h1>
           <div className="bg-white rounded-3xl shadow-2xl p-16 mb-8 max-w-4xl mx-auto">
             <p className="text-4xl mb-6 text-gray-700 font-semibold">まもなく開始します</p>
             <p className="text-7xl font-bold text-quiz-teal-600 mb-6">
