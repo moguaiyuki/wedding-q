@@ -382,7 +382,7 @@ export default function PresentationPage() {
                       >
                         <div className="flex items-center">
                           <span className={`text-3xl font-bold mr-6 ${
-                            rank === 1 ? 'text-wedding-gold-700' :
+                            rank === 1 ? 'text-gray-900' :
                             rank === 2 ? 'text-gray-700' :
                             rank === 3 ? 'text-orange-700' :
                             'text-gray-700'
@@ -437,7 +437,7 @@ export default function PresentationPage() {
                       >
                         <div className="flex items-center">
                           <span className={`text-5xl font-bold mr-8 ${
-                            rank === 1 ? 'text-wedding-gold-700' :
+                            rank === 1 ? 'text-gray-900' :
                             rank === 2 ? 'text-gray-700' :
                             rank === 3 ? 'text-orange-700' :
                             'text-gray-700'
