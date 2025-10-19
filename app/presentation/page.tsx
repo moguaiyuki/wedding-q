@@ -425,8 +425,13 @@ export default function PresentationPage() {
                   </div>
                 ))}
 
-                <div className="text-8xl mb-8">
-                  🏰✨🎆
+                {/* ディズニー画像 */}
+                <div className="my-8">
+                  <img
+                    src="/disney.jpg"
+                    alt="ディズニーランド"
+                    className="w-full max-w-3xl mx-auto rounded-2xl shadow-lg"
+                  />
                 </div>
 
                 <p className="text-5xl font-bold text-gray-800">
