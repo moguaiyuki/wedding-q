@@ -419,22 +419,17 @@ export default function PresentationPage() {
                 <h1 className="text-6xl font-bold mb-8 text-wedding-pink-600">優勝者は....</h1>
                 {winners.map((winner, index) => (
                   <div key={winner.user_id}>
-                    <p className="text-8xl font-bold text-gray-900 mb-8">
+                    <p className="text-8xl font-bold text-gray-900 mb-12">
                       {winner.nickname || winner.name}さん{winners.length > 1 && index < winners.length - 1 ? '、' : '！！'}
                     </p>
                   </div>
                 ))}
 
-                {/* ディズニー画像 */}
-                <div className="my-8">
-                  <img
-                    src="https://cdn1.parksmedia.wdprapps.disney.com/resize/mwImage/1/1600/900/75/dam/disneyland/destinations/tokyo-disney-resort/general/tokyo-disneyland-castle-16x9.jpg"
-                    alt="ディズニーランド"
-                    className="w-full max-w-3xl mx-auto rounded-2xl shadow-lg"
-                  />
+                <div className="text-8xl mb-8">
+                  🏰✨🎆
                 </div>
 
-                <p className="text-4xl font-bold text-gray-800 mt-6">
+                <p className="text-5xl font-bold text-gray-800">
                   ディズニーペアチケット贈呈となります！
                 </p>
               </div>
