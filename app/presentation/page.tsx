@@ -406,6 +406,9 @@ export default function PresentationPage() {
 
   // Finished state
   if (gameState.current_state === 'finished') {
+    // 1位の人を抽出
+    const winners = leaderboard.filter((entry, index) => getRank(index, leaderboard) === 1)
+
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-rose-50 to-wedding-cream-100 p-8">
         <div className="bg-white rounded-3xl shadow-2xl p-16 max-w-6xl w-full">
@@ -419,9 +422,32 @@ export default function PresentationPage() {
             <p className="text-4xl mb-12 text-gray-700 font-semibold">
               ご参加ありがとうございました
             </p>
+
+            {/* 優勝者発表 */}
+            {winners.length > 0 && (
+              <div className="mb-12">
+                <h2 className="text-4xl font-bold mb-6 text-gray-700">優勝者は...</h2>
+                <div className="bg-gradient-to-r from-wedding-gold-200 to-wedding-gold-300 rounded-3xl p-10 mb-6 border-4 border-wedding-gold-400">
+                  {winners.map((winner, index) => (
+                    <div key={winner.user_id}>
+                      <p className="text-6xl font-bold text-gray-900 mb-2">
+                        {winner.nickname || winner.name}さん{winners.length > 1 && index < winners.length - 1 ? '、' : '！！'}
+                      </p>
+                    </div>
+                  ))}
+                  <p className="text-3xl font-bold text-wedding-gold-700 mt-6">
+                    {winners[0].total_score}点
+                  </p>
+                </div>
+                <p className="text-3xl font-bold text-wedding-pink-600">
+                  おめでとうございます🎉
+                </p>
+              </div>
+            )}
+
             {leaderboard.length > 0 && (
               <div className="mt-8">
-                <h2 className="text-5xl font-bold mb-8 text-gray-800">最終ランキング</h2>
+                <h2 className="text-4xl font-bold mb-8 text-gray-800">最終ランキング</h2>
                 <div className="space-y-4">
                   {leaderboard.map((entry, index) => {
                     const rank = getRank(index, leaderboard)
