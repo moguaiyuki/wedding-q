@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { getRealtimeManager } from '@/lib/supabase/realtime'
-import { Trophy } from '@/components/illustrations/Trophy'
-import { CheckCircle, XCircle, Lightbulb, Check, Trophy as TrophyIcon } from 'lucide-react'
+import { CheckCircle, XCircle, Lightbulb, Check } from 'lucide-react'
 
 interface UserAnswer {
   question_id: string
@@ -51,6 +50,7 @@ export default function ResultsPage() {
   const [lastAnswer, setLastAnswer] = useState<LastAnswer | null>(null)
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [userName, setUserName] = useState<string>('')
 
   // Helper function to calculate rank with tie handling
   const getRank = (index: number, leaderboardData: LeaderboardEntry[]): number => {
@@ -68,6 +68,7 @@ export default function ResultsPage() {
   useEffect(() => {
     // First fetch game state, then results
     const init = async () => {
+      await fetchUserInfo()
       await fetchGameState()
       await fetchResults()
       await fetchRanking()
@@ -105,6 +106,18 @@ export default function ResultsPage() {
       router.push('/participant/waiting')
     }
   }, [gameState?.current_state, router])
+
+  const fetchUserInfo = async () => {
+    try {
+      const response = await fetch('/api/user/me')
+      if (response.ok) {
+        const data = await response.json()
+        setUserName(data.nickname || data.name)
+      }
+    } catch (error) {
+      console.error('Failed to fetch user info:', error)
+    }
+  }
 
   const fetchResults = async () => {
     try {
@@ -216,13 +229,10 @@ export default function ResultsPage() {
 
       <div className="max-w-2xl mx-auto relative z-10">
         <div className="bg-white rounded-3xl shadow-2xl p-8">
-          {isFinished && (
-            <div className="mb-6">
-              <Trophy />
-              <h1 className="text-4xl md:text-5xl font-bold text-center mb-3 text-wedding-pink-500 font-serif leading-tight">
-                Great job!<br/>
-                The quiz is now<br/>
-                complete.
+          {isFinished && rank !== null && (
+            <div className="mb-8 text-center">
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+                {userName}さんの順位は{rank}位でした！
               </h1>
             </div>
           )}
@@ -370,29 +380,6 @@ export default function ResultsPage() {
             </div>
           )}
 
-          {isFinished && (
-            <div className="text-center mt-6">
-              <button
-                onClick={() => window.location.href = '/participant'}
-                className="bg-wedding-pink-500 text-white py-3 px-8 rounded-full font-bold hover:bg-wedding-pink-600 transition-all transform hover:scale-105 shadow-lg inline-flex items-center gap-2"
-              >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
-                </svg>
-                Back to home
-              </button>
-
-              {correctCount === totalQuestions && (
-                <div className="bg-gradient-to-br from-wedding-gold-100 to-wedding-gold-200 rounded-2xl p-4 mt-6">
-                  <p className="text-xl font-bold text-wedding-gold-800 flex items-center justify-center gap-2">
-                    <TrophyIcon className="w-6 h-6 text-wedding-gold-700" strokeWidth={2.5} />
-                    パーフェクト達成！
-                    <TrophyIcon className="w-6 h-6 text-wedding-gold-700" strokeWidth={2.5} />
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
         </div>
       </div>
 
