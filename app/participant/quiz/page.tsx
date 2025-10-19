@@ -192,8 +192,8 @@ export default function QuizPage() {
 
   if (!question || !gameState) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-pink to-wedding-white">
-        <div className="bg-white rounded-lg shadow-xl p-8">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-rose-50 to-wedding-cream-100">
+        <div className="bg-white rounded-3xl shadow-2xl p-8">
           <div className="space-y-4">
             <div className="animate-pulse">
               <div className="h-8 bg-gray-200 rounded w-32 mx-auto mb-4"></div>
@@ -201,7 +201,7 @@ export default function QuizPage() {
               <div className="h-6 bg-gray-200 rounded w-48 mx-auto"></div>
             </div>
             <div className="text-center mt-6">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-wedding-pink mx-auto mb-4"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-wedding-pink-500 mx-auto mb-4"></div>
               <p className="text-gray-600">問題を読み込んでいます...</p>
             </div>
           </div>
@@ -212,16 +212,17 @@ export default function QuizPage() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-wedding-pink to-wedding-white p-4">
+    <div className="min-h-screen bg-gradient-to-br from-wedding-rose-50 to-wedding-cream-100 p-4">
       <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-lg shadow-xl p-6 mb-4">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold text-gray-800">
-              第{question.question_number}問
-            </h2>
+        <div className="bg-white rounded-3xl shadow-2xl p-6 mb-4 relative">
+          {/* Question number badge */}
+          <div className="absolute top-6 left-6 bg-wedding-pink-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+            第{question.question_number}問
           </div>
 
-          <p className="text-lg text-gray-700 mb-6">{question.question_text}</p>
+          <div className="mt-16 mb-6">
+            <p className="text-2xl font-bold text-gray-800 text-center leading-relaxed">{question.question_text}</p>
+          </div>
 
           {question.image_url && (
             <div className="relative w-full h-64 mb-6">
@@ -237,10 +238,9 @@ export default function QuizPage() {
           )}
 
           {hasAnswered ? (
-            <div className="text-center py-8">
-              <div className="text-6xl mb-4">✅</div>
-              <p className="text-xl font-semibold text-green-600">回答済みです！</p>
-              <p className="text-gray-600 mt-2">結果発表をお待ちください</p>
+            <div className="text-center py-8 bg-wedding-cream-100 border-2 border-wedding-gold-300 rounded-2xl">
+              <p className="text-xl font-bold text-gray-800 mb-2">回答済みです！</p>
+              <p className="text-gray-700">結果発表をお待ちください</p>
             </div>
           ) : (
             <>
@@ -253,17 +253,17 @@ export default function QuizPage() {
                         key={choice.id}
                         onClick={() => setSelectedChoice(choice.id)}
                         disabled={isSubmitting}
-                        className={`w-full p-4 text-left rounded-lg border-2 transition-all ${
+                        className={`w-full p-4 text-left rounded-2xl border-2 transition-all ${
                           selectedChoice === choice.id
-                            ? 'border-wedding-pink bg-pink-50 text-gray-800'
-                            : 'border-gray-300 hover:border-gray-400 text-gray-700 hover:bg-gray-50'
-                        } disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-wedding-pink focus:ring-offset-2`}
+                            ? 'border-wedding-pink-500 bg-wedding-pink-100 text-gray-800 shadow-lg scale-105'
+                            : 'border-gray-200 hover:border-wedding-pink-300 text-gray-700 hover:bg-gray-50'
+                        } disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-wedding-pink-400 focus:ring-offset-2`}
                         aria-label={`選択肢${choice.display_order}: ${choice.choice_text}`}
                         aria-pressed={selectedChoice === choice.id}
                         role="radio"
                         aria-checked={selectedChoice === choice.id}
                       >
-                        {choice.choice_text}
+                        <span className="font-medium">{choice.choice_text}</span>
                       </button>
                     ))}
                 </div>
@@ -275,7 +275,7 @@ export default function QuizPage() {
                     value={freeTextAnswer}
                     onChange={(e) => setFreeTextAnswer(e.target.value)}
                     disabled={isSubmitting}
-                    className="w-full p-4 border-2 border-gray-300 rounded-lg focus:border-wedding-pink focus:outline-none disabled:opacity-50 focus:ring-2 focus:ring-wedding-pink focus:ring-offset-2"
+                    className="w-full p-4 border-2 border-gray-200 rounded-2xl focus:border-wedding-pink-500 focus:outline-none disabled:opacity-50 focus:ring-2 focus:ring-wedding-pink-400 focus:ring-offset-2"
                     rows={4}
                     placeholder="回答を入力してください"
                     aria-label="自由記述回答"
@@ -295,14 +295,21 @@ export default function QuizPage() {
 
               <button
                   onClick={handleSubmit}
-                  disabled={isSubmitting || 
+                  disabled={isSubmitting ||
                     (question.question_type === 'multiple_choice' && !selectedChoice) ||
                     (question.question_type === 'free_text' && !freeTextAnswer.trim())}
-                  className="w-full bg-wedding-pink text-white py-3 px-4 rounded-lg font-medium hover:bg-pink-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-wedding-pink focus:ring-offset-2 min-h-[44px]"
+                  className="w-full bg-wedding-pink-500 text-white py-4 px-6 rounded-2xl font-bold text-lg hover:bg-wedding-pink-600 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 focus:outline-none focus:ring-2 focus:ring-wedding-pink-400 focus:ring-offset-2 min-h-[44px] shadow-lg"
                   aria-label={isSubmitting ? '回答を送信中' : '回答を送信する'}
                   aria-busy={isSubmitting}
                 >
-                  {isSubmitting ? '送信中...' : '回答を送信'}
+                  {isSubmitting ? '送信中...' : (
+                    <span className="flex items-center justify-center gap-2">
+                      回答を送信
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      </svg>
+                    </span>
+                  )}
                 </button>
             </>
           )}

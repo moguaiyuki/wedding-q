@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { getRealtimeManager } from '@/lib/supabase/realtime'
+import { CheckCircle, XCircle, Lightbulb, Check } from 'lucide-react'
 
 interface UserAnswer {
   question_id: string
@@ -49,6 +50,7 @@ export default function ResultsPage() {
   const [lastAnswer, setLastAnswer] = useState<LastAnswer | null>(null)
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [userName, setUserName] = useState<string>('')
 
   // Helper function to calculate rank with tie handling
   const getRank = (index: number, leaderboardData: LeaderboardEntry[]): number => {
@@ -66,6 +68,7 @@ export default function ResultsPage() {
   useEffect(() => {
     // First fetch game state, then results
     const init = async () => {
+      await fetchUserInfo()
       await fetchGameState()
       await fetchResults()
       await fetchRanking()
@@ -103,6 +106,18 @@ export default function ResultsPage() {
       router.push('/participant/waiting')
     }
   }, [gameState?.current_state, router])
+
+  const fetchUserInfo = async () => {
+    try {
+      const response = await fetch('/api/user/me')
+      if (response.ok) {
+        const data = await response.json()
+        setUserName(data.nickname || data.name)
+      }
+    } catch (error) {
+      console.error('Failed to fetch user info:', error)
+    }
+  }
 
   const fetchResults = async () => {
     try {
@@ -187,9 +202,9 @@ export default function ResultsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-pink to-wedding-white">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-rose-50 to-wedding-cream-100">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-wedding-pink mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-wedding-pink-500 mx-auto mb-4"></div>
           <p className="text-gray-600">結果を集計中...</p>
         </div>
       </div>
@@ -199,57 +214,50 @@ export default function ResultsPage() {
   const isFinished = gameState?.current_state === 'finished'
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-wedding-pink to-wedding-white p-4">
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-lg shadow-xl p-8">
-          <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">
-            {isFinished ? '最終結果' : `第${gameState?.current_question_number}問 結果`}
-          </h1>
+    <div className="min-h-screen bg-gradient-to-br from-wedding-rose-50 to-wedding-cream-100 p-4 relative overflow-hidden">
+      {/* Decorative stars */}
+      <div className="absolute top-10 right-16 w-8 h-8 text-wedding-gold-200 animate-pulse">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2 L14.5 9 L22 9.5 L16 15 L18 22 L12 18 L6 22 L8 15 L2 9.5 L9.5 9 Z" />
+        </svg>
+      </div>
+      <div className="absolute bottom-32 left-24 w-6 h-6 text-wedding-rose-200 animate-pulse animation-delay-200">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2 L14.5 9 L22 9.5 L16 15 L18 22 L12 18 L6 22 L8 15 L2 9.5 L9.5 9 Z" />
+        </svg>
+      </div>
+
+      <div className="max-w-2xl mx-auto relative z-10">
+        <div className="bg-white rounded-3xl shadow-2xl p-8">
+          {isFinished && rank !== null && (
+            <div className="mb-8 text-center">
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+                {userName}さんの順位は{rank}位でした！
+              </h1>
+            </div>
+          )}
+
+          {!isFinished && (
+            <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">
+              第{gameState?.current_question_number}問 結果
+            </h1>
+          )}
 
           {/* 直前の回答結果表示 */}
           {lastAnswer && !isFinished && (
             <>
-              <div className={`rounded-lg p-6 mb-6 text-center ${
-                lastAnswer.is_correct
-                  ? 'bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-300'
-                  : 'bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-300'
-              }`}>
-                <div className="text-5xl mb-3">
-                  {lastAnswer.is_correct ? '⭕' : '❌'}
-                </div>
+              <div className="mb-6 text-center">
                 <p className={`text-2xl font-bold mb-2 ${
-                  lastAnswer.is_correct ? 'text-green-700' : 'text-red-700'
+                  lastAnswer.is_correct ? 'text-wedding-pink-700' : 'text-red-700'
                 }`}>
                   {lastAnswer.is_correct ? '正解！' : '残念...'}
                 </p>
                 {lastAnswer.is_correct && (
-                  <p className="text-lg text-green-600">
+                  <p className="text-lg text-wedding-pink-600 font-semibold">
                     +{lastAnswer.points_earned}ポイント獲得
                   </p>
                 )}
               </div>
-
-              {/* エピソード表示 */}
-              {(lastAnswer.explanation_text || lastAnswer.explanation_image_url) && (
-                <div className="bg-blue-50 rounded-lg p-4 mb-6 border-2 border-blue-200">
-                  <h3 className="text-base font-bold mb-2 text-blue-800">💡 エピソード</h3>
-                  {lastAnswer.explanation_text && (
-                    <p className="text-sm text-gray-800 mb-3 whitespace-pre-wrap text-left">
-                      {lastAnswer.explanation_text}
-                    </p>
-                  )}
-                  {lastAnswer.explanation_image_url && (
-                    <div className="mt-2">
-                      <img
-                        src={lastAnswer.explanation_image_url}
-                        alt="エピソード画像"
-                        className="max-w-full h-auto mx-auto rounded-lg shadow-md"
-                        style={{ maxHeight: '300px' }}
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
 
               {/* 選択肢の表示 */}
               {lastAnswer.choices && lastAnswer.choices.length > 0 && (
@@ -263,26 +271,26 @@ export default function ResultsPage() {
                       return (
                         <div
                           key={choice.id}
-                          className={`rounded-lg p-4 border-2 ${
+                          className={`rounded-2xl p-4 border-2 ${
                             isCorrect
-                              ? 'bg-green-50 border-green-400'
+                              ? 'bg-wedding-pink-100 border-wedding-pink-400'
                               : isSelected
-                              ? 'bg-red-50 border-red-400'
+                              ? 'bg-red-200 border-red-600'
                               : 'bg-gray-50 border-gray-200'
                           }`}
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center">
                               <span className="font-bold mr-3 text-gray-700">
-                                {String.fromCharCode(65 + index)}.
+                                {index + 1}.
                               </span>
                               <span className={`text-sm ${
                                 isCorrect || isSelected ? 'font-semibold' : 'font-normal'
                               } ${
                                 isCorrect
-                                  ? 'text-green-800'
+                                  ? 'text-gray-900'
                                   : isSelected
-                                  ? 'text-red-800'
+                                  ? 'text-red-900'
                                   : 'text-gray-700'
                               }`}>
                                 {choice.choice_text}
@@ -290,12 +298,15 @@ export default function ResultsPage() {
                             </div>
                             <div className="flex items-center space-x-2">
                               {isSelected && (
-                                <span className="text-sm font-bold text-red-600">
+                                <span className="text-sm font-bold text-red-700">
                                   あなたの回答
                                 </span>
                               )}
                               {isCorrect && (
-                                <span className="text-xl">✓</span>
+                                <span className="flex items-center gap-1 text-sm font-bold text-wedding-pink-700">
+                                  <Check className="w-5 h-5" strokeWidth={3} />
+                                  正解
+                                </span>
                               )}
                             </div>
                           </div>
@@ -305,52 +316,14 @@ export default function ResultsPage() {
                   </div>
                 </div>
               )}
-
-              {/* 解説表示 */}
-              {(lastAnswer.explanation_text || lastAnswer.explanation_image_url) && (
-                <div className="bg-blue-50 rounded-lg p-4 mb-6 border-2 border-blue-200">
-                  <h3 className="text-base font-bold mb-2 text-blue-800">💡 解説</h3>
-                  {lastAnswer.explanation_text && (
-                    <p className="text-sm text-gray-800 mb-3 whitespace-pre-wrap text-left">
-                      {lastAnswer.explanation_text}
-                    </p>
-                  )}
-                  {lastAnswer.explanation_image_url && (
-                    <div className="mt-2">
-                      <img
-                        src={lastAnswer.explanation_image_url}
-                        alt="解説画像"
-                        className="max-w-full h-auto mx-auto rounded-lg shadow-md"
-                        style={{ maxHeight: '300px' }}
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
             </>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-6 text-center">
-              <p className="text-sm text-gray-600 mb-2">現在のスコア</p>
-              <p className="text-4xl font-bold text-blue-600">{totalScore}</p>
-              <p className="text-sm text-gray-600 mt-1">ポイント</p>
-            </div>
-
-            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-6 text-center">
-              <p className="text-sm text-gray-600 mb-2">正解数</p>
-              <p className="text-4xl font-bold text-green-600">
-                {correctCount}/{totalQuestions}
+          <div className="flex justify-center mb-6">
+            <div className="bg-white rounded-full px-6 py-3 border border-gray-200 shadow-sm">
+              <p className="text-sm text-gray-600">
+                現在のスコア: <span className="font-bold text-gray-900 text-lg ml-1">{totalScore}点</span>
               </p>
-              <p className="text-sm text-gray-600 mt-1">問</p>
-            </div>
-
-            <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-lg p-6 text-center">
-              <p className="text-sm text-gray-600 mb-2">現在の順位</p>
-              <p className="text-4xl font-bold text-yellow-600">
-                {rank !== null && rank !== undefined ? rank : '-'}
-              </p>
-              <p className="text-sm text-gray-600 mt-1">位</p>
             </div>
           </div>
 
@@ -358,23 +331,23 @@ export default function ResultsPage() {
           {leaderboard.length > 0 && (
             <div className="mb-6">
               <h2 className="text-xl font-bold mb-4 text-gray-800">現在のランキング</h2>
-              <div className="bg-gray-50 rounded-lg p-4">
+              <div className="bg-wedding-cream-100 rounded-2xl p-4">
                 <div className="space-y-2">
                   {leaderboard.slice(0, 10).map((entry, index) => {
                     const rank = getRank(index, leaderboard)
                     return (
                       <div
                         key={entry.user_id}
-                        className={`flex justify-between items-center p-3 rounded-lg border ${
-                          rank === 1 ? 'bg-yellow-50 border-yellow-300' :
-                          rank === 2 ? 'bg-gray-50 border-gray-300' :
-                          rank === 3 ? 'bg-orange-50 border-orange-300' :
+                        className={`flex justify-between items-center p-3 rounded-2xl border-2 ${
+                          rank === 1 ? 'bg-wedding-gold-100 border-wedding-gold-300' :
+                          rank === 2 ? 'bg-gray-100 border-gray-300' :
+                          rank === 3 ? 'bg-orange-100 border-orange-300' :
                           'bg-white border-gray-200'
                         }`}
                       >
                         <div className="flex items-center">
                           <span className={`font-bold mr-3 text-lg ${
-                            rank === 1 ? 'text-yellow-700' :
+                            rank === 1 ? 'text-gray-900' :
                             rank === 2 ? 'text-gray-700' :
                             rank === 3 ? 'text-orange-700' :
                             'text-gray-700'
@@ -387,7 +360,6 @@ export default function ResultsPage() {
                         </div>
                         <div className="text-right">
                           <span className="font-bold text-lg text-gray-900">{entry.total_score}点</span>
-                          <span className="text-xs text-gray-600 ml-2 font-medium">正解: {entry.correct_count}問</span>
                         </div>
                       </div>
                     )
@@ -401,34 +373,13 @@ export default function ResultsPage() {
             <div className="text-center">
               <p className="text-gray-600 mb-4">次の問題をお待ちください</p>
               <div className="inline-flex items-center space-x-2">
-                <div className="animate-pulse bg-wedding-pink rounded-full h-3 w-3"></div>
-                <div className="animate-pulse bg-wedding-pink rounded-full h-3 w-3 animation-delay-200"></div>
-                <div className="animate-pulse bg-wedding-pink rounded-full h-3 w-3 animation-delay-400"></div>
+                <div className="animate-pulse bg-wedding-pink-500 rounded-full h-3 w-3"></div>
+                <div className="animate-pulse bg-wedding-pink-500 rounded-full h-3 w-3 animation-delay-200"></div>
+                <div className="animate-pulse bg-wedding-gold-300 rounded-full h-3 w-3 animation-delay-400"></div>
               </div>
             </div>
           )}
 
-          {isFinished && (
-            <div className="text-center">
-              <div className="mb-6">
-                <div className="text-6xl mb-4">🎉</div>
-                <p className="text-2xl font-bold text-gray-800 mb-2">
-                  クイズ終了！
-                </p>
-                <p className="text-gray-600">
-                  ご参加ありがとうございました
-                </p>
-              </div>
-
-              {correctCount === totalQuestions && (
-                <div className="bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-lg p-4 mb-4">
-                  <p className="text-xl font-bold text-yellow-800">
-                    🏆 パーフェクト達成！ 🏆
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
         </div>
       </div>
 

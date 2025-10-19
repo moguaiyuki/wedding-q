@@ -1,10 +1,20 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { M_PLUS_Rounded_1c, Playfair_Display } from 'next/font/google'
 import './globals.css'
 import { ErrorBoundary } from '@/components/error-boundary'
 import { NetworkStatus } from '@/components/network-status'
 
-const inter = Inter({ subsets: ['latin'] })
+const mPlusRounded = M_PLUS_Rounded_1c({
+  weight: ['500', '700', '800'],
+  subsets: ['latin'],
+  variable: '--font-rounded',
+})
+
+const playfair = Playfair_Display({
+  weight: ['700'],
+  subsets: ['latin'],
+  variable: '--font-serif',
+})
 
 export const metadata: Metadata = {
   title: '結婚式クイズ',
@@ -18,7 +28,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja">
-      <body className={inter.className}>
+      <body className={`${mPlusRounded.variable} ${playfair.variable} font-rounded`}>
         <ErrorBoundary>
           <NetworkStatus />
           {children}
