@@ -236,13 +236,22 @@ export default function ResultsPage() {
           {/* 直前の回答結果表示 */}
           {lastAnswer && !isFinished && (
             <>
-              {!lastAnswer.is_correct && (
-                <div className="mb-6 text-center">
-                  <p className="text-2xl font-bold text-gray-800">
-                    残念...
+              <div className={`rounded-2xl p-6 mb-6 text-center ${
+                lastAnswer.is_correct
+                  ? 'bg-gradient-to-br from-wedding-pink-100 to-wedding-rose-100 border-2 border-wedding-pink-300'
+                  : 'bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-300'
+              }`}>
+                <p className={`text-2xl font-bold mb-2 ${
+                  lastAnswer.is_correct ? 'text-wedding-pink-700' : 'text-red-700'
+                }`}>
+                  {lastAnswer.is_correct ? '正解！' : '残念...'}
+                </p>
+                {lastAnswer.is_correct && (
+                  <p className="text-lg text-wedding-pink-600 font-semibold">
+                    +{lastAnswer.points_earned}ポイント獲得
                   </p>
-                </div>
-              )}
+                )}
+              </div>
 
               {/* 選択肢の表示 */}
               {lastAnswer.choices && lastAnswer.choices.length > 0 && (
