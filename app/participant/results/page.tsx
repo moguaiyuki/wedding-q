@@ -328,9 +328,9 @@ export default function ResultsPage() {
           </div>
 
           {/* ランキング表 */}
-          {leaderboard.length > 0 && (
+          {leaderboard.length > 0 && (isFinished || (gameState?.current_question_number || 0) <= 3) && (
             <div className="mb-6">
-              <h2 className="text-xl font-bold mb-4 text-gray-800">現在のランキング</h2>
+              <h2 className="text-xl font-bold mb-4 text-gray-800">{isFinished ? '最終ランキング' : '現在のランキング'}</h2>
               <div className="bg-wedding-cream-100 rounded-2xl p-4">
                 <div className="space-y-2">
                   {leaderboard.slice(0, 10).map((entry, index) => {
@@ -366,6 +366,15 @@ export default function ResultsPage() {
                   })}
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* 4問目以降のメッセージ */}
+          {!isFinished && (gameState?.current_question_number || 0) > 3 && (
+            <div className="mb-6 text-center bg-wedding-cream-100 rounded-2xl p-6">
+              <p className="text-lg text-gray-700 font-semibold">
+                4問目以降はランキング非表示
+              </p>
             </div>
           )}
 

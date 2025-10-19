@@ -368,7 +368,7 @@ export default function PresentationPage() {
                   })}
               </div>
             )}
-            {leaderboard.length > 0 && (
+            {leaderboard.length > 0 && gameState.current_question_number <= 3 && (
               <div className="mt-8">
                 <h3 className="text-3xl font-bold mb-6 text-gray-800">上位ランキング</h3>
                 <div className="space-y-3">
@@ -400,6 +400,13 @@ export default function PresentationPage() {
                     )
                   })}
                 </div>
+              </div>
+            )}
+            {gameState.current_question_number > 3 && (
+              <div className="mt-8 text-center">
+                <p className="text-2xl text-gray-600 font-semibold">
+                  4問目以降は順位非表示
+                </p>
               </div>
             )}
           </div>
