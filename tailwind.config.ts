@@ -9,51 +9,41 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // 旧カラー（互換性のため保持）
-        'wedding-pink': '#FFB6C1',
-        'wedding-gold': '#FFD700',
+        // ゼクシィ風結婚式カラーパレット
+        'wedding-pink': {
+          50: '#FFF0F5',
+          100: '#FFE4ED',
+          200: '#FFC9DB',
+          300: '#FFADC9',
+          400: '#FF91B7',
+          500: '#E91E63',
+          600: '#D81B60',
+          700: '#C2185B',
+        },
+        'wedding-rose': {
+          50: '#FFF5F7',
+          100: '#FFE8EE',
+          200: '#FFD1DD',
+          300: '#FFBACC',
+        },
+        'wedding-gold': {
+          100: '#FFF8E1',
+          200: '#FFECB3',
+          300: '#FFE082',
+          400: '#FFD54F',
+          500: '#FFC107',
+        },
+        'wedding-lavender': {
+          50: '#F5F0FF',
+          100: '#EDE7FF',
+          200: '#D6C7FF',
+          300: '#C0A7FF',
+        },
         'wedding-white': '#FFFAFA',
-        'wedding-green': '#90EE90',
-        // 新デザインシステムのカラーパレット
-        'quiz-beige': {
-          50: '#FAF8F5',
-          100: '#F5F1E8',
-          200: '#EDE7DB',
-        },
-        'quiz-yellow': {
-          100: '#FFF4D4',
-          200: '#FFE4A3',
-          300: '#FFD770',
-        },
-        'quiz-pink': {
-          100: '#FFE3EB',
-          200: '#FFD6E0',
-          300: '#FFB6C1',
-        },
-        'quiz-blue': {
-          100: '#D9EEF2',
-          200: '#C5E3E8',
-          300: '#B3D9E8',
-        },
-        'quiz-green': {
-          100: '#D9F2E3',
-          200: '#C5E8D4',
-          300: '#B3E8C5',
-        },
-        'quiz-purple': {
-          100: '#F0E8F7',
-          200: '#E3D5F0',
-          300: '#D8C5E8',
-        },
-        'quiz-coral': {
-          400: '#FF8B7B',
-          500: '#FF6B6B',
-          600: '#FF5252',
-        },
-        'quiz-teal': {
-          400: '#6AA0A5',
-          500: '#5C8A8F',
-          600: '#4A7C7F',
+        'wedding-cream': {
+          50: '#FFFBF5',
+          100: '#FFF8ED',
+          200: '#FFF0DB',
         },
       },
       fontFamily: {

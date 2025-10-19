@@ -189,9 +189,9 @@ export default function ResultsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-quiz-beige-50 to-quiz-beige-100">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-rose-50 to-wedding-cream-100">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-quiz-teal-500 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-wedding-pink-500 mx-auto mb-4"></div>
           <p className="text-gray-600">結果を集計中...</p>
         </div>
       </div>
@@ -201,14 +201,14 @@ export default function ResultsPage() {
   const isFinished = gameState?.current_state === 'finished'
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-quiz-beige-50 to-quiz-beige-100 p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-wedding-rose-50 to-wedding-cream-100 p-4 relative overflow-hidden">
       {/* Decorative stars */}
-      <div className="absolute top-10 right-16 w-8 h-8 text-quiz-yellow-200 animate-pulse">
+      <div className="absolute top-10 right-16 w-8 h-8 text-wedding-gold-200 animate-pulse">
         <svg viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 2 L14.5 9 L22 9.5 L16 15 L18 22 L12 18 L6 22 L8 15 L2 9.5 L9.5 9 Z" />
         </svg>
       </div>
-      <div className="absolute bottom-32 left-24 w-6 h-6 text-quiz-pink-200 animate-pulse animation-delay-200">
+      <div className="absolute bottom-32 left-24 w-6 h-6 text-wedding-rose-200 animate-pulse animation-delay-200">
         <svg viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 2 L14.5 9 L22 9.5 L16 15 L18 22 L12 18 L6 22 L8 15 L2 9.5 L9.5 9 Z" />
         </svg>
@@ -219,7 +219,7 @@ export default function ResultsPage() {
           {isFinished && (
             <div className="mb-6">
               <Trophy />
-              <h1 className="text-4xl md:text-5xl font-bold text-center mb-3 text-quiz-coral-500 font-serif leading-tight">
+              <h1 className="text-4xl md:text-5xl font-bold text-center mb-3 text-wedding-pink-500 font-serif leading-tight">
                 Great job!<br/>
                 The quiz is now<br/>
                 complete.
@@ -238,23 +238,23 @@ export default function ResultsPage() {
             <>
               <div className={`rounded-2xl p-6 mb-6 text-center ${
                 lastAnswer.is_correct
-                  ? 'bg-gradient-to-br from-quiz-green-100 to-quiz-green-200 border-2 border-green-300'
+                  ? 'bg-gradient-to-br from-wedding-pink-100 to-wedding-rose-100 border-2 border-wedding-pink-300'
                   : 'bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-300'
               }`}>
                 <div className="flex justify-center mb-3">
                   {lastAnswer.is_correct ? (
-                    <CheckCircle className="w-16 h-16 text-green-600" strokeWidth={2.5} />
+                    <CheckCircle className="w-16 h-16 text-wedding-pink-600" strokeWidth={2.5} />
                   ) : (
                     <XCircle className="w-16 h-16 text-red-600" strokeWidth={2.5} />
                   )}
                 </div>
                 <p className={`text-2xl font-bold mb-2 ${
-                  lastAnswer.is_correct ? 'text-green-700' : 'text-red-700'
+                  lastAnswer.is_correct ? 'text-wedding-pink-700' : 'text-red-700'
                 }`}>
                   {lastAnswer.is_correct ? '正解！' : '残念...'}
                 </p>
                 {lastAnswer.is_correct && (
-                  <p className="text-lg text-green-600">
+                  <p className="text-lg text-wedding-pink-600 font-semibold">
                     +{lastAnswer.points_earned}ポイント獲得
                   </p>
                 )}
@@ -262,9 +262,9 @@ export default function ResultsPage() {
 
               {/* エピソード表示 */}
               {(lastAnswer.explanation_text || lastAnswer.explanation_image_url) && (
-                <div className="bg-quiz-blue-100 rounded-2xl p-4 mb-6 border-2 border-quiz-blue-300">
-                  <h3 className="text-base font-bold mb-2 text-blue-800 flex items-center gap-2">
-                    <Lightbulb className="w-5 h-5 text-blue-700" strokeWidth={2.5} />
+                <div className="bg-wedding-cream-100 rounded-2xl p-4 mb-6 border-2 border-wedding-gold-200">
+                  <h3 className="text-base font-bold mb-2 text-gray-800 flex items-center gap-2">
+                    <Lightbulb className="w-5 h-5 text-wedding-gold-500" strokeWidth={2.5} />
                     エピソード
                   </h3>
                   {lastAnswer.explanation_text && (
@@ -299,7 +299,7 @@ export default function ResultsPage() {
                           key={choice.id}
                           className={`rounded-2xl p-4 border-2 ${
                             isCorrect
-                              ? 'bg-quiz-green-100 border-green-400'
+                              ? 'bg-wedding-pink-100 border-wedding-pink-400'
                               : isSelected
                               ? 'bg-red-50 border-red-400'
                               : 'bg-gray-50 border-gray-200'
@@ -314,7 +314,7 @@ export default function ResultsPage() {
                                 isCorrect || isSelected ? 'font-semibold' : 'font-normal'
                               } ${
                                 isCorrect
-                                  ? 'text-green-800'
+                                  ? 'text-gray-900'
                                   : isSelected
                                   ? 'text-red-800'
                                   : 'text-gray-700'
@@ -329,7 +329,7 @@ export default function ResultsPage() {
                                 </span>
                               )}
                               {isCorrect && (
-                                <span className="flex items-center gap-1 text-sm font-bold text-green-700">
+                                <span className="flex items-center gap-1 text-sm font-bold text-wedding-pink-700">
                                   <Check className="w-5 h-5" strokeWidth={3} />
                                   正解
                                 </span>
@@ -345,9 +345,9 @@ export default function ResultsPage() {
 
               {/* 解説表示 */}
               {(lastAnswer.explanation_text || lastAnswer.explanation_image_url) && (
-                <div className="bg-quiz-blue-100 rounded-2xl p-4 mb-6 border-2 border-quiz-blue-300">
-                  <h3 className="text-base font-bold mb-2 text-blue-800 flex items-center gap-2">
-                    <Lightbulb className="w-5 h-5 text-blue-700" strokeWidth={2.5} />
+                <div className="bg-wedding-cream-100 rounded-2xl p-4 mb-6 border-2 border-wedding-gold-200">
+                  <h3 className="text-base font-bold mb-2 text-gray-800 flex items-center gap-2">
+                    <Lightbulb className="w-5 h-5 text-wedding-gold-500" strokeWidth={2.5} />
                     解説
                   </h3>
                   {lastAnswer.explanation_text && (
@@ -371,26 +371,26 @@ export default function ResultsPage() {
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-gradient-to-br from-quiz-blue-100 to-quiz-blue-200 rounded-2xl p-6 text-center">
-              <p className="text-sm text-gray-600 mb-2">現在のスコア</p>
-              <p className="text-4xl font-bold text-quiz-teal-600">{totalScore}</p>
-              <p className="text-sm text-gray-600 mt-1">ポイント</p>
+            <div className="bg-gradient-to-br from-wedding-pink-100 to-wedding-rose-100 rounded-2xl p-6 text-center border-2 border-wedding-pink-200">
+              <p className="text-sm font-semibold text-gray-700 mb-2">現在のスコア</p>
+              <p className="text-4xl font-bold text-wedding-pink-600">{totalScore}</p>
+              <p className="text-sm font-medium text-gray-600 mt-1">ポイント</p>
             </div>
 
-            <div className="bg-gradient-to-br from-quiz-green-100 to-quiz-green-200 rounded-2xl p-6 text-center">
-              <p className="text-sm text-gray-600 mb-2">正解数</p>
-              <p className="text-4xl font-bold text-green-700">
+            <div className="bg-gradient-to-br from-wedding-cream-100 to-wedding-gold-100 rounded-2xl p-6 text-center border-2 border-wedding-gold-200">
+              <p className="text-sm font-semibold text-gray-700 mb-2">正解数</p>
+              <p className="text-4xl font-bold text-gray-900">
                 {correctCount}/{totalQuestions}
               </p>
-              <p className="text-sm text-gray-600 mt-1">問</p>
+              <p className="text-sm font-medium text-gray-600 mt-1">問</p>
             </div>
 
-            <div className="bg-gradient-to-br from-quiz-yellow-100 to-quiz-yellow-200 rounded-2xl p-6 text-center">
-              <p className="text-sm text-gray-600 mb-2">現在の順位</p>
-              <p className="text-4xl font-bold text-yellow-700">
+            <div className="bg-gradient-to-br from-wedding-gold-100 to-wedding-gold-200 rounded-2xl p-6 text-center border-2 border-wedding-gold-300">
+              <p className="text-sm font-semibold text-gray-700 mb-2">現在の順位</p>
+              <p className="text-4xl font-bold text-wedding-gold-700">
                 {rank !== null && rank !== undefined ? rank : '-'}
               </p>
-              <p className="text-sm text-gray-600 mt-1">位</p>
+              <p className="text-sm font-medium text-gray-600 mt-1">位</p>
             </div>
           </div>
 
@@ -398,7 +398,7 @@ export default function ResultsPage() {
           {leaderboard.length > 0 && (
             <div className="mb-6">
               <h2 className="text-xl font-bold mb-4 text-gray-800">現在のランキング</h2>
-              <div className="bg-quiz-beige-100 rounded-2xl p-4">
+              <div className="bg-wedding-cream-100 rounded-2xl p-4">
                 <div className="space-y-2">
                   {leaderboard.slice(0, 10).map((entry, index) => {
                     const rank = getRank(index, leaderboard)
@@ -406,7 +406,7 @@ export default function ResultsPage() {
                       <div
                         key={entry.user_id}
                         className={`flex justify-between items-center p-3 rounded-2xl border-2 ${
-                          rank === 1 ? 'bg-quiz-yellow-100 border-quiz-yellow-300' :
+                          rank === 1 ? 'bg-wedding-gold-100 border-wedding-gold-300' :
                           rank === 2 ? 'bg-gray-100 border-gray-300' :
                           rank === 3 ? 'bg-orange-100 border-orange-300' :
                           'bg-white border-gray-200'
@@ -414,7 +414,7 @@ export default function ResultsPage() {
                       >
                         <div className="flex items-center">
                           <span className={`font-bold mr-3 text-lg ${
-                            rank === 1 ? 'text-yellow-700' :
+                            rank === 1 ? 'text-wedding-gold-700' :
                             rank === 2 ? 'text-gray-700' :
                             rank === 3 ? 'text-orange-700' :
                             'text-gray-700'
@@ -441,9 +441,9 @@ export default function ResultsPage() {
             <div className="text-center">
               <p className="text-gray-600 mb-4">次の問題をお待ちください</p>
               <div className="inline-flex items-center space-x-2">
-                <div className="animate-pulse bg-quiz-teal-500 rounded-full h-3 w-3"></div>
-                <div className="animate-pulse bg-quiz-coral-500 rounded-full h-3 w-3 animation-delay-200"></div>
-                <div className="animate-pulse bg-quiz-yellow-300 rounded-full h-3 w-3 animation-delay-400"></div>
+                <div className="animate-pulse bg-wedding-pink-500 rounded-full h-3 w-3"></div>
+                <div className="animate-pulse bg-wedding-pink-500 rounded-full h-3 w-3 animation-delay-200"></div>
+                <div className="animate-pulse bg-wedding-gold-300 rounded-full h-3 w-3 animation-delay-400"></div>
               </div>
             </div>
           )}
@@ -452,7 +452,7 @@ export default function ResultsPage() {
             <div className="text-center mt-6">
               <button
                 onClick={() => window.location.href = '/participant'}
-                className="bg-quiz-teal-500 text-white py-3 px-8 rounded-full font-bold hover:bg-quiz-teal-600 transition-all transform hover:scale-105 shadow-lg inline-flex items-center gap-2"
+                className="bg-wedding-pink-500 text-white py-3 px-8 rounded-full font-bold hover:bg-wedding-pink-600 transition-all transform hover:scale-105 shadow-lg inline-flex items-center gap-2"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
@@ -461,11 +461,11 @@ export default function ResultsPage() {
               </button>
 
               {correctCount === totalQuestions && (
-                <div className="bg-gradient-to-br from-quiz-yellow-100 to-quiz-yellow-200 rounded-2xl p-4 mt-6">
-                  <p className="text-xl font-bold text-yellow-800 flex items-center justify-center gap-2">
-                    <TrophyIcon className="w-6 h-6 text-yellow-700" strokeWidth={2.5} />
+                <div className="bg-gradient-to-br from-wedding-gold-100 to-wedding-gold-200 rounded-2xl p-4 mt-6">
+                  <p className="text-xl font-bold text-wedding-gold-800 flex items-center justify-center gap-2">
+                    <TrophyIcon className="w-6 h-6 text-wedding-gold-700" strokeWidth={2.5} />
                     パーフェクト達成！
-                    <TrophyIcon className="w-6 h-6 text-yellow-700" strokeWidth={2.5} />
+                    <TrophyIcon className="w-6 h-6 text-wedding-gold-700" strokeWidth={2.5} />
                   </p>
                 </div>
               )}

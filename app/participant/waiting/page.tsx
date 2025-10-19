@@ -101,14 +101,14 @@ export default function WaitingPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-quiz-beige-50 to-quiz-beige-100 p-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-rose-50 to-wedding-cream-100 p-4 relative overflow-hidden">
       {/* Decorative stars */}
-      <div className="absolute top-10 right-16 w-8 h-8 text-quiz-yellow-200 animate-pulse">
+      <div className="absolute top-10 right-16 w-8 h-8 text-wedding-gold-200 animate-pulse">
         <svg viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 2 L14.5 9 L22 9.5 L16 15 L18 22 L12 18 L6 22 L8 15 L2 9.5 L9.5 9 Z" />
         </svg>
       </div>
-      <div className="absolute top-32 left-24 w-6 h-6 text-quiz-pink-200 animate-pulse animation-delay-200">
+      <div className="absolute top-32 left-24 w-6 h-6 text-wedding-rose-200 animate-pulse animation-delay-200">
         <svg viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 2 L14.5 9 L22 9.5 L16 15 L18 22 L12 18 L6 22 L8 15 L2 9.5 L9.5 9 Z" />
         </svg>
@@ -148,7 +148,7 @@ export default function WaitingPage() {
             {user?.nickname && (
               <button
                 onClick={() => router.push('/participant/profile')}
-                className="text-sm text-quiz-teal-600 hover:text-quiz-teal-700 font-bold"
+                className="text-sm text-wedding-pink-600 hover:text-wedding-pink-700 font-bold"
               >
                 表示名編集
               </button>
@@ -158,9 +158,9 @@ export default function WaitingPage() {
           <div className="mt-8">
             <div className="flex justify-center">
               <div className="animate-pulse flex space-x-2">
-                <div className="w-3 h-3 bg-quiz-teal-500 rounded-full"></div>
-                <div className="w-3 h-3 bg-quiz-coral-500 rounded-full animation-delay-200"></div>
-                <div className="w-3 h-3 bg-quiz-yellow-300 rounded-full animation-delay-400"></div>
+                <div className="w-3 h-3 bg-wedding-pink-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-wedding-pink-500 rounded-full animation-delay-200"></div>
+                <div className="w-3 h-3 bg-wedding-gold-300 rounded-full animation-delay-400"></div>
               </div>
             </div>
           </div>

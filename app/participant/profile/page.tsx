@@ -130,9 +130,9 @@ function ProfileContent() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-quiz-beige-50 to-quiz-beige-100">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-rose-50 to-wedding-cream-100">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-quiz-teal-500 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-wedding-pink-500 mx-auto mb-4"></div>
           <p className="text-gray-600">読み込み中...</p>
         </div>
       </div>
@@ -140,14 +140,14 @@ function ProfileContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-quiz-beige-50 to-quiz-beige-100 p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-wedding-rose-50 to-wedding-cream-100 p-4 relative overflow-hidden">
       {/* Decorative stars */}
-      <div className="absolute top-10 right-16 w-8 h-8 text-quiz-yellow-200 animate-pulse">
+      <div className="absolute top-10 right-16 w-8 h-8 text-wedding-gold-200 animate-pulse">
         <svg viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 2 L14.5 9 L22 9.5 L16 15 L18 22 L12 18 L6 22 L8 15 L2 9.5 L9.5 9 Z" />
         </svg>
       </div>
-      <div className="absolute bottom-32 left-24 w-6 h-6 text-quiz-pink-200 animate-pulse animation-delay-200">
+      <div className="absolute bottom-32 left-24 w-6 h-6 text-wedding-rose-200 animate-pulse animation-delay-200">
         <svg viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 2 L14.5 9 L22 9.5 L16 15 L18 22 L12 18 L6 22 L8 15 L2 9.5 L9.5 9 Z" />
         </svg>
@@ -170,8 +170,8 @@ function ProfileContent() {
           </div>
 
           {isFirstSetup && !user?.nickname && (
-            <div className="bg-quiz-blue-100 border-2 border-quiz-blue-300 rounded-2xl p-4 mb-6">
-              <p className="text-sm text-blue-800 font-medium">
+            <div className="bg-wedding-lavender-100 border-2 border-wedding-lavender-300 rounded-2xl p-4 mb-6">
+              <p className="text-sm text-wedding-lavender-800 font-medium">
                 クイズ中に表示される名前を設定できます。本名でよければスキップしてください！
               </p>
             </div>
@@ -184,23 +184,23 @@ function ProfileContent() {
           )}
 
           {success && (
-            <div className="bg-quiz-green-100 border-2 border-green-300 text-green-700 px-4 py-3 rounded-2xl mb-4 font-medium">
+            <div className="bg-wedding-lavender-100 border-2 border-wedding-lavender-300 text-wedding-lavender-700 px-4 py-3 rounded-2xl mb-4 font-medium">
               {success}
             </div>
           )}
 
           <div className="space-y-6">
-            <div className="bg-quiz-beige-100 rounded-2xl p-4">
+            <div className="bg-wedding-cream-100 rounded-2xl p-4">
               <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
-                <UserCircle className="w-5 h-5 text-quiz-teal-600" strokeWidth={2.5} />
+                <UserCircle className="w-5 h-5 text-wedding-pink-600" strokeWidth={2.5} />
                 フルネーム
               </label>
               <p className="text-lg font-semibold text-gray-900 ml-7">{user.name}</p>
             </div>
 
-            <div className="bg-quiz-yellow-100 rounded-2xl p-4">
+            <div className="bg-wedding-gold-100 rounded-2xl p-4">
               <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
-                <UserCircle className="w-5 h-5 text-quiz-coral-600" strokeWidth={2.5} />
+                <UserCircle className="w-5 h-5 text-wedding-pink-600" strokeWidth={2.5} />
                 表示名
               </label>
               {isEditing ? (
@@ -209,7 +209,7 @@ function ProfileContent() {
                     type="text"
                     value={nickname}
                     onChange={(e) => setNickname(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-quiz-teal-400 focus:border-quiz-teal-500 focus:outline-none transition-colors"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-wedding-pink-400 focus:border-wedding-pink-500 focus:outline-none transition-colors"
                     placeholder="ニックネームを入力（20文字以内）"
                     maxLength={20}
                     disabled={isLoading}
@@ -223,7 +223,7 @@ function ProfileContent() {
                     <button
                       type="submit"
                       disabled={isLoading || !nickname.trim()}
-                      className="px-6 py-3 bg-quiz-teal-500 text-white rounded-2xl hover:bg-quiz-teal-600 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 font-bold shadow-lg"
+                      className="px-6 py-3 bg-wedding-pink-500 text-white rounded-2xl hover:bg-wedding-pink-600 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 font-bold shadow-lg"
                     >
                       {isLoading ? '保存中...' : '保存'}
                     </button>
@@ -251,7 +251,7 @@ function ProfileContent() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => setIsEditing(true)}
-                      className="text-sm text-quiz-teal-600 hover:text-quiz-teal-700 font-bold"
+                      className="text-sm text-wedding-pink-600 hover:text-wedding-pink-700 font-bold"
                     >
                       編集
                     </button>
@@ -273,7 +273,7 @@ function ProfileContent() {
           <div className="mt-8 pt-6 border-t-2 border-gray-200">
             <button
               onClick={() => router.push('/participant/waiting')}
-              className="w-full bg-quiz-teal-500 text-white py-4 px-6 rounded-2xl font-bold text-lg hover:bg-quiz-teal-600 transition-all transform hover:scale-105 shadow-lg"
+              className="w-full bg-wedding-pink-500 text-white py-4 px-6 rounded-2xl font-bold text-lg hover:bg-wedding-pink-600 transition-all transform hover:scale-105 shadow-lg"
             >
               {isFirstSetup && !user.nickname ? 'スキップしてクイズに進む' :
                isFirstSetup ? 'クイズに進む' : 'クイズに戻る'}
@@ -288,9 +288,9 @@ function ProfileContent() {
 export default function ProfilePage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-quiz-beige-50 to-quiz-beige-100">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-rose-50 to-wedding-cream-100">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-quiz-teal-500 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-wedding-pink-500 mx-auto mb-4"></div>
           <p className="text-gray-600">読み込み中...</p>
         </div>
       </div>
