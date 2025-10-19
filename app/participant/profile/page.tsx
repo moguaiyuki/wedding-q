@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { X, UserCircle, Users, MapPin } from 'lucide-react'
+import { X, UserCircle } from 'lucide-react'
 
 interface User {
   id: string
@@ -172,8 +172,7 @@ function ProfileContent() {
           {isFirstSetup && !user?.nickname && (
             <div className="bg-quiz-blue-100 border-2 border-quiz-blue-300 rounded-2xl p-4 mb-6">
               <p className="text-sm text-blue-800 font-medium">
-                クイズ中に表示される名前を設定してください。
-                あなただけのニックネームで楽しく参加しましょう！
+                クイズ中に表示される名前を設定できます。本名でよければスキップしてください！
               </p>
             </div>
           )}
@@ -228,7 +227,7 @@ function ProfileContent() {
                     >
                       {isLoading ? '保存中...' : '保存'}
                     </button>
-                    {!isFirstSetup ? (
+                    {!isFirstSetup && (
                       <button
                         type="button"
                         onClick={() => {
@@ -240,15 +239,6 @@ function ProfileContent() {
                         className="px-6 py-3 bg-gray-100 text-gray-700 border-2 border-gray-300 rounded-2xl hover:bg-gray-200 transition-colors disabled:opacity-50 font-bold"
                       >
                         キャンセル
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => router.push('/participant/waiting')}
-                        disabled={isLoading}
-                        className="px-6 py-3 bg-gray-100 text-gray-700 border-2 border-gray-300 rounded-2xl hover:bg-gray-200 transition-colors disabled:opacity-50 font-bold"
-                      >
-                        スキップ
                       </button>
                     )}
                   </div>
@@ -278,24 +268,6 @@ function ProfileContent() {
                 </div>
               )}
             </div>
-
-            <div className="bg-quiz-pink-100 rounded-2xl p-4">
-              <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
-                <Users className="w-5 h-5 text-quiz-purple-600" strokeWidth={2.5} />
-                グループ
-              </label>
-              <p className="text-lg font-semibold text-gray-900 ml-7">{getGroupLabel(user.group_type)}</p>
-            </div>
-
-            {user.seat_number && (
-              <div className="bg-quiz-green-100 rounded-2xl p-4">
-                <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
-                  <MapPin className="w-5 h-5 text-green-600" strokeWidth={2.5} />
-                  座席番号
-                </label>
-                <p className="text-lg font-semibold text-gray-900 ml-7">{user.seat_number}</p>
-              </div>
-            )}
           </div>
 
           <div className="mt-8 pt-6 border-t-2 border-gray-200">
