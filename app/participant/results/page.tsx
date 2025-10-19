@@ -348,7 +348,7 @@ export default function ResultsPage() {
                       >
                         <div className="flex items-center">
                           <span className={`font-bold mr-3 text-lg ${
-                            rank === 1 ? 'text-wedding-gold-700' :
+                            rank === 1 ? 'text-gray-900' :
                             rank === 2 ? 'text-gray-700' :
                             rank === 3 ? 'text-orange-700' :
                             'text-gray-700'
