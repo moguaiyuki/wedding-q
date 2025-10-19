@@ -265,7 +265,7 @@ export default function ResultsPage() {
                             isCorrect
                               ? 'bg-wedding-pink-100 border-wedding-pink-400'
                               : isSelected
-                              ? 'bg-red-50 border-red-400'
+                              ? 'bg-red-200 border-red-600'
                               : 'bg-gray-50 border-gray-200'
                           }`}
                         >
@@ -280,7 +280,7 @@ export default function ResultsPage() {
                                 isCorrect
                                   ? 'text-gray-900'
                                   : isSelected
-                                  ? 'text-red-800'
+                                  ? 'text-red-900'
                                   : 'text-gray-700'
                               }`}>
                                 {choice.choice_text}
@@ -288,7 +288,7 @@ export default function ResultsPage() {
                             </div>
                             <div className="flex items-center space-x-2">
                               {isSelected && (
-                                <span className="text-sm font-bold text-red-600">
+                                <span className="text-sm font-bold text-red-700">
                                   あなたの回答
                                 </span>
                               )}
