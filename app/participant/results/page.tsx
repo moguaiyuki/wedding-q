@@ -320,27 +320,11 @@ export default function ResultsPage() {
             </>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-gradient-to-br from-wedding-pink-100 to-wedding-rose-100 rounded-2xl p-6 text-center border-2 border-wedding-pink-200">
+          <div className="flex justify-center mb-8">
+            <div className="bg-gradient-to-br from-wedding-pink-100 to-wedding-rose-100 rounded-2xl p-8 text-center border-2 border-wedding-pink-200 min-w-[300px]">
               <p className="text-sm font-semibold text-gray-700 mb-2">現在のスコア</p>
-              <p className="text-4xl font-bold text-wedding-pink-600">{totalScore}</p>
+              <p className="text-5xl font-bold text-wedding-pink-600">{totalScore}</p>
               <p className="text-sm font-medium text-gray-600 mt-1">ポイント</p>
-            </div>
-
-            <div className="bg-gradient-to-br from-wedding-cream-100 to-wedding-gold-100 rounded-2xl p-6 text-center border-2 border-wedding-gold-200">
-              <p className="text-sm font-semibold text-gray-700 mb-2">正解数</p>
-              <p className="text-4xl font-bold text-gray-900">
-                {correctCount}/{totalQuestions}
-              </p>
-              <p className="text-sm font-medium text-gray-600 mt-1">問</p>
-            </div>
-
-            <div className="bg-gradient-to-br from-wedding-gold-100 to-wedding-gold-200 rounded-2xl p-6 text-center border-2 border-wedding-gold-300">
-              <p className="text-sm font-semibold text-gray-700 mb-2">現在の順位</p>
-              <p className="text-4xl font-bold text-wedding-gold-700">
-                {rank !== null && rank !== undefined ? rank : '-'}
-              </p>
-              <p className="text-sm font-medium text-gray-600 mt-1">位</p>
             </div>
           </div>
 
