@@ -417,13 +417,21 @@ export default function PresentationPage() {
             {winners.length > 0 && (
               <div>
                 <h1 className="text-6xl font-bold mb-8 text-wedding-pink-600">優勝者は....</h1>
-                {winners.map((winner, index) => (
-                  <div key={winner.user_id}>
-                    <p className="text-8xl font-bold text-gray-900 mb-12">
-                      {winner.nickname || winner.name}さん{winners.length > 1 && index < winners.length - 1 ? '、' : '！！'}
-                    </p>
+                {winners.length === 1 ? (
+                  // 1人の場合は大きく表示
+                  <p className="text-5xl font-bold text-gray-900 mb-12">
+                    {winners[0].nickname || winners[0].name}さん！！
+                  </p>
+                ) : (
+                  // 複数人の場合は箇条書き風に横並びで表示
+                  <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 mb-12 max-w-4xl mx-auto">
+                    {winners.map((winner) => (
+                      <p key={winner.user_id} className="text-3xl font-bold text-gray-900">
+                        ・{winner.nickname || winner.name}さん
+                      </p>
+                    ))}
                   </div>
-                ))}
+                )}
 
                 {/* ディズニー画像 */}
                 <div className="my-8">
