@@ -236,30 +236,6 @@ export default function ResultsPage() {
           {/* 直前の回答結果表示 */}
           {lastAnswer && !isFinished && (
             <>
-              <div className={`rounded-2xl p-6 mb-6 text-center ${
-                lastAnswer.is_correct
-                  ? 'bg-gradient-to-br from-wedding-pink-100 to-wedding-rose-100 border-2 border-wedding-pink-300'
-                  : 'bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-300'
-              }`}>
-                <div className="flex justify-center mb-3">
-                  {lastAnswer.is_correct ? (
-                    <CheckCircle className="w-16 h-16 text-wedding-pink-600" strokeWidth={2.5} />
-                  ) : (
-                    <XCircle className="w-16 h-16 text-red-600" strokeWidth={2.5} />
-                  )}
-                </div>
-                <p className={`text-2xl font-bold mb-2 ${
-                  lastAnswer.is_correct ? 'text-wedding-pink-700' : 'text-red-700'
-                }`}>
-                  {lastAnswer.is_correct ? '正解！' : '残念...'}
-                </p>
-                {lastAnswer.is_correct && (
-                  <p className="text-lg text-wedding-pink-600 font-semibold">
-                    +{lastAnswer.points_earned}ポイント獲得
-                  </p>
-                )}
-              </div>
-
               {/* 選択肢の表示 */}
               {lastAnswer.choices && lastAnswer.choices.length > 0 && (
                 <div className="mb-6">
