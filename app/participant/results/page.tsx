@@ -272,7 +272,7 @@ export default function ResultsPage() {
                           <div className="flex items-center justify-between">
                             <div className="flex items-center">
                               <span className="font-bold mr-3 text-gray-700">
-                                {String.fromCharCode(65 + index)}.
+                                {index + 1}.
                               </span>
                               <span className={`text-sm ${
                                 isCorrect || isSelected ? 'font-semibold' : 'font-normal'
