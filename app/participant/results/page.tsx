@@ -350,7 +350,6 @@ export default function ResultsPage() {
                         </div>
                         <div className="text-right">
                           <span className="font-bold text-lg text-gray-900">{entry.total_score}点</span>
-                          <span className="text-xs text-gray-600 ml-2 font-medium">正解: {entry.correct_count}問</span>
                         </div>
                       </div>
                     )
