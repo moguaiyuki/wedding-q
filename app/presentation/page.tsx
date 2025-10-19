@@ -310,7 +310,7 @@ export default function PresentationPage() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-rose-50 to-wedding-cream-100 p-8">
         <div className="bg-white rounded-3xl shadow-2xl p-12 max-w-6xl w-full">
           <div className="text-center">
-            <h2 className="text-5xl font-bold mb-8 text-gray-800 font-serif">
+            <h2 className="text-5xl font-bold mb-8 text-gray-800">
               第{currentQuestion.question_number}問 結果発表
             </h2>
             {correctChoice && (
@@ -437,7 +437,7 @@ export default function PresentationPage() {
             <div className="flex justify-center mb-6">
               <Sparkles className="w-24 h-24 text-wedding-pink-500" strokeWidth={2} />
             </div>
-            <h1 className="text-7xl font-bold mb-6 text-wedding-pink-500 font-serif">
+            <h1 className="text-7xl font-bold mb-6 text-wedding-pink-500">
               Great job!
             </h1>
             <p className="text-4xl mb-12 text-gray-700 font-semibold">
@@ -445,7 +445,7 @@ export default function PresentationPage() {
             </p>
             {leaderboard.length > 0 && (
               <div className="mt-8">
-                <h2 className="text-5xl font-bold mb-8 text-gray-800 font-serif">最終ランキング</h2>
+                <h2 className="text-5xl font-bold mb-8 text-gray-800">最終ランキング</h2>
                 <div className="space-y-4">
                   {leaderboard.map((entry, index) => {
                     const rank = getRank(index, leaderboard)
