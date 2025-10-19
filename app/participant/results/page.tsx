@@ -236,6 +236,14 @@ export default function ResultsPage() {
           {/* 直前の回答結果表示 */}
           {lastAnswer && !isFinished && (
             <>
+              {!lastAnswer.is_correct && (
+                <div className="mb-6 text-center">
+                  <p className="text-2xl font-bold text-gray-800">
+                    残念...
+                  </p>
+                </div>
+              )}
+
               {/* 選択肢の表示 */}
               {lastAnswer.choices && lastAnswer.choices.length > 0 && (
                 <div className="mb-6">
