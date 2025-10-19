@@ -175,9 +175,9 @@ export default function PresentationPage() {
 
   if (!gameState) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-pink to-wedding-white">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-quiz-beige-50 to-quiz-beige-100">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-wedding-pink mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-quiz-teal-500 mx-auto mb-4"></div>
           <p className="text-2xl text-gray-600">接続中...</p>
         </div>
       </div>
@@ -187,25 +187,28 @@ export default function PresentationPage() {
   // Waiting state
   if (gameState.current_state === 'waiting') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-pink to-wedding-white">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-quiz-beige-50 to-quiz-beige-100">
         <div className="text-center">
-          <h1 className="text-6xl font-bold mb-8 text-gray-800">
+          <h1 className="text-7xl font-bold mb-8 text-gray-800 font-serif">
             結婚式クイズ
           </h1>
-          <div className="bg-white rounded-2xl shadow-2xl p-12 mb-8">
-            <p className="text-3xl mb-4 text-gray-700">まもなく開始します</p>
-            <p className="text-5xl font-bold text-wedding-pink mb-4">
-              参加者: {participantCount}名
+          <div className="bg-white rounded-3xl shadow-2xl p-16 mb-8 max-w-4xl mx-auto">
+            <p className="text-4xl mb-6 text-gray-700 font-semibold">まもなく開始します</p>
+            <p className="text-7xl font-bold text-quiz-teal-600 mb-6">
+              {participantCount}名
             </p>
-            <p className="text-2xl text-gray-600">
+            <p className="text-xl text-gray-600">
+              参加中
+            </p>
+            <div className="mt-8 text-2xl text-gray-600">
               QRコードを読み取って参加してください
-            </p>
+            </div>
           </div>
           <div className="flex justify-center">
             <div className="animate-pulse flex space-x-4">
-              <div className="w-4 h-4 bg-wedding-pink rounded-full"></div>
-              <div className="w-4 h-4 bg-wedding-pink rounded-full animation-delay-200"></div>
-              <div className="w-4 h-4 bg-wedding-pink rounded-full animation-delay-400"></div>
+              <div className="w-5 h-5 bg-quiz-teal-500 rounded-full"></div>
+              <div className="w-5 h-5 bg-quiz-coral-500 rounded-full animation-delay-200"></div>
+              <div className="w-5 h-5 bg-quiz-yellow-300 rounded-full animation-delay-400"></div>
             </div>
           </div>
         </div>
@@ -217,13 +220,13 @@ export default function PresentationPage() {
   // Showing question
   if (gameState.current_state === 'showing_question' && currentQuestion) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-pink to-wedding-white p-8">
-        <div className="bg-white rounded-2xl shadow-2xl p-12 max-w-4xl w-full">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-quiz-beige-50 to-quiz-beige-100 p-8">
+        <div className="bg-white rounded-3xl shadow-2xl p-12 max-w-5xl w-full">
           <div className="text-center">
-            <h2 className="text-5xl font-bold mb-8 text-gray-800">
+            <div className="bg-quiz-teal-500 text-white px-8 py-3 rounded-full text-2xl font-bold shadow-lg inline-block mb-8">
               第{currentQuestion.question_number}問
-            </h2>
-            <p className="text-3xl mb-8 text-gray-700">
+            </div>
+            <p className="text-4xl mb-8 text-gray-800 font-bold leading-relaxed">
               {currentQuestion.question_text}
             </p>
             {currentQuestion.image_url && (
@@ -237,18 +240,18 @@ export default function PresentationPage() {
               </div>
             )}
             {currentQuestion.question_type === 'multiple_choice' && currentQuestion.choices && (
-              <div className="mt-8 space-y-4">
+              <div className="mt-8 space-y-4 max-w-3xl mx-auto">
                 {currentQuestion.choices.map((choice, index) => (
-                  <div key={choice.id} className="bg-gray-100 rounded-lg p-4 text-left">
-                    <span className="text-xl text-gray-800">
+                  <div key={choice.id} className="bg-quiz-beige-100 rounded-2xl p-6 text-left border-2 border-gray-200">
+                    <span className="text-2xl font-semibold text-gray-800">
                       {String.fromCharCode(65 + index)}. {choice.choice_text}
                     </span>
                   </div>
                 ))}
               </div>
             )}
-            <div className="mt-8 animate-pulse">
-              <p className="text-2xl text-gray-600">まもなく回答受付開始...</p>
+            <div className="mt-10 animate-pulse">
+              <p className="text-3xl text-gray-600 font-semibold">まもなく回答受付開始...</p>
             </div>
           </div>
         </div>
@@ -259,13 +262,13 @@ export default function PresentationPage() {
   // Accepting answers
   if (gameState.current_state === 'accepting_answers' && currentQuestion) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-pink to-wedding-white p-8">
-        <div className="bg-white rounded-2xl shadow-2xl p-12 max-w-4xl w-full">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-quiz-beige-50 to-quiz-beige-100 p-8">
+        <div className="bg-white rounded-3xl shadow-2xl p-12 max-w-5xl w-full">
           <div className="text-center">
-            <h2 className="text-5xl font-bold mb-8 text-gray-800">
+            <div className="bg-quiz-teal-500 text-white px-8 py-3 rounded-full text-2xl font-bold shadow-lg inline-block mb-8">
               第{currentQuestion.question_number}問
-            </h2>
-            <p className="text-3xl mb-8 text-gray-700">
+            </div>
+            <p className="text-4xl mb-8 text-gray-800 font-bold leading-relaxed">
               {currentQuestion.question_text}
             </p>
             {currentQuestion.image_url && (
@@ -279,19 +282,19 @@ export default function PresentationPage() {
               </div>
             )}
             {currentQuestion.question_type === 'multiple_choice' && currentQuestion.choices && (
-              <div className="mt-8 space-y-4">
+              <div className="mt-8 space-y-4 max-w-3xl mx-auto">
                 {currentQuestion.choices.map((choice, index) => (
-                  <div key={choice.id} className="bg-gray-100 rounded-lg p-4 text-left">
-                    <span className="text-xl text-gray-800">
+                  <div key={choice.id} className="bg-quiz-beige-100 rounded-2xl p-6 text-left border-2 border-gray-200">
+                    <span className="text-2xl font-semibold text-gray-800">
                       {String.fromCharCode(65 + index)}. {choice.choice_text}
                     </span>
                   </div>
                 ))}
               </div>
             )}
-            <div className="mt-8 bg-wedding-pink rounded-lg p-6">
-              <p className="text-3xl font-bold text-white">
-                回答受付中
+            <div className="mt-10 bg-gradient-to-r from-quiz-teal-500 to-quiz-teal-600 rounded-2xl p-8 shadow-lg">
+              <p className="text-4xl font-bold text-white animate-pulse">
+                📝 回答受付中
               </p>
             </div>
           </div>
@@ -303,18 +306,18 @@ export default function PresentationPage() {
   // Showing results
   if (gameState.current_state === 'showing_results' && currentQuestion) {
     const correctChoice = currentQuestion.choices?.find(c => c.is_correct)
-    
+
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-pink to-wedding-white p-8">
-        <div className="bg-white rounded-2xl shadow-2xl p-12 max-w-5xl w-full">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-quiz-beige-50 to-quiz-beige-100 p-8">
+        <div className="bg-white rounded-3xl shadow-2xl p-12 max-w-6xl w-full">
           <div className="text-center">
-            <h2 className="text-5xl font-bold mb-8 text-gray-800">
+            <h2 className="text-5xl font-bold mb-8 text-gray-800 font-serif">
               第{currentQuestion.question_number}問 結果発表
             </h2>
             {correctChoice && (
-              <div className="bg-green-100 rounded-lg p-6 mb-8">
-                <p className="text-2xl text-gray-700 mb-2">正解</p>
-                <p className="text-4xl font-bold text-green-600">
+              <div className="bg-gradient-to-br from-quiz-green-100 to-quiz-green-200 rounded-2xl p-8 mb-8 border-2 border-green-400">
+                <p className="text-3xl text-gray-700 mb-2 font-semibold">✓ 正解</p>
+                <p className="text-5xl font-bold text-green-700">
                   {correctChoice.choice_text}
                 </p>
               </div>
@@ -322,8 +325,8 @@ export default function PresentationPage() {
 
             {/* エピソード表示 */}
             {(currentQuestion.explanation_text || currentQuestion.explanation_image_url) && (
-              <div className="bg-blue-50 rounded-lg p-6 mb-8 border-2 border-blue-200">
-                <h3 className="text-2xl font-bold mb-4 text-blue-800">💡 エピソード</h3>
+              <div className="bg-quiz-blue-100 rounded-2xl p-8 mb-8 border-2 border-quiz-blue-300">
+                <h3 className="text-3xl font-bold mb-4 text-blue-800">💡 エピソード</h3>
                 {currentQuestion.explanation_text && (
                   <p className="text-lg text-gray-800 mb-4 whitespace-pre-wrap text-left">
                     {currentQuestion.explanation_text}
@@ -348,26 +351,26 @@ export default function PresentationPage() {
                   const percentage = stat ? stat.percentage : 0
                   const isCorrect = choice.is_correct
                   return (
-                    <div 
-                      key={choice.id} 
-                      className={`relative rounded-lg overflow-hidden ${
-                        isCorrect ? 'bg-green-100' : 'bg-gray-200'
+                    <div
+                      key={choice.id}
+                      className={`relative rounded-2xl overflow-hidden ${
+                        isCorrect ? 'bg-quiz-green-100' : 'bg-gray-200'
                       }`}
                     >
-                      <div 
+                      <div
                         className={`absolute inset-0 ${
-                          isCorrect ? 'bg-green-500' : 'bg-gray-400'
-                        } opacity-30`}
+                          isCorrect ? 'bg-quiz-green-300' : 'bg-gray-300'
+                        } opacity-40`}
                         style={{ width: `${percentage}%` }}
                       />
-                      <div className="relative p-4 flex justify-between items-center">
-                        <span className="text-xl font-semibold text-gray-800">
+                      <div className="relative p-6 flex justify-between items-center">
+                        <span className="text-2xl font-bold text-gray-800">
                           {choice.choice_text}
                           {isCorrect && ' ✓'}
                         </span>
                         <div className="text-right">
-                          <span className="text-xl font-bold block text-gray-800">{stat?.count || 0}名</span>
-                          <span className="text-lg text-gray-700">({percentage.toFixed(1)}%)</span>
+                          <span className="text-3xl font-bold block text-gray-900">{stat?.count || 0}名</span>
+                          <span className="text-xl text-gray-700 font-semibold">({percentage.toFixed(1)}%)</span>
                         </div>
                       </div>
                     </div>
@@ -377,19 +380,32 @@ export default function PresentationPage() {
             )}
             {leaderboard.length > 0 && (
               <div className="mt-8">
-                <h3 className="text-3xl font-bold mb-4 text-gray-800">上位ランキング</h3>
-                <div className="space-y-2">
+                <h3 className="text-3xl font-bold mb-6 text-gray-800">上位ランキング</h3>
+                <div className="space-y-3">
                   {leaderboard.slice(0, 5).map((entry, index) => {
                     const rank = getRank(index, leaderboard)
                     return (
-                      <div key={entry.user_id} className="flex justify-between items-center bg-gray-100 rounded-lg p-4">
+                      <div
+                        key={entry.user_id}
+                        className={`flex justify-between items-center rounded-2xl p-6 ${
+                          rank === 1 ? 'bg-gradient-to-r from-quiz-yellow-200 to-quiz-yellow-300' :
+                          rank === 2 ? 'bg-gray-100' :
+                          rank === 3 ? 'bg-orange-100' :
+                          'bg-quiz-beige-100'
+                        }`}
+                      >
                         <div className="flex items-center">
-                          <span className="text-2xl font-bold mr-4 text-wedding-pink">
+                          <span className={`text-3xl font-bold mr-6 ${
+                            rank === 1 ? 'text-yellow-700' :
+                            rank === 2 ? 'text-gray-700' :
+                            rank === 3 ? 'text-orange-700' :
+                            'text-gray-700'
+                          }`}>
                             {rank}位
                           </span>
-                          <span className="text-xl text-gray-800">{entry.nickname || entry.name}</span>
+                          <span className="text-2xl font-semibold text-gray-800">{entry.nickname || entry.name}</span>
                         </div>
-                        <span className="text-2xl font-bold text-gray-800">{entry.total_score}点</span>
+                        <span className="text-3xl font-bold text-gray-900">{entry.total_score}点</span>
                       </div>
                     )
                   })}
@@ -405,45 +421,46 @@ export default function PresentationPage() {
   // Finished state
   if (gameState.current_state === 'finished') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-pink to-wedding-white p-8">
-        <div className="bg-white rounded-2xl shadow-2xl p-12 max-w-5xl w-full">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-quiz-beige-50 to-quiz-beige-100 p-8">
+        <div className="bg-white rounded-3xl shadow-2xl p-16 max-w-6xl w-full">
           <div className="text-center">
-            <h1 className="text-6xl font-bold mb-8 text-gray-800">
-              クイズ終了！
+            <div className="text-8xl mb-6">🎉</div>
+            <h1 className="text-7xl font-bold mb-6 text-quiz-coral-500 font-serif">
+              Great job!
             </h1>
-            <p className="text-3xl mb-8 text-gray-700">
+            <p className="text-4xl mb-12 text-gray-700 font-semibold">
               ご参加ありがとうございました
             </p>
             {leaderboard.length > 0 && (
               <div className="mt-8">
-                <h2 className="text-4xl font-bold mb-6 text-gray-800">最終ランキング</h2>
-                <div className="space-y-3">
+                <h2 className="text-5xl font-bold mb-8 text-gray-800 font-serif">最終ランキング</h2>
+                <div className="space-y-4">
                   {leaderboard.map((entry, index) => {
                     const rank = getRank(index, leaderboard)
                     return (
                       <div
                         key={entry.user_id}
-                        className={`flex justify-between items-center rounded-lg p-6 ${
-                          rank === 1 ? 'bg-yellow-100' :
-                          rank === 2 ? 'bg-gray-100' :
-                          rank === 3 ? 'bg-orange-100' :
-                          'bg-gray-50'
+                        className={`flex justify-between items-center rounded-3xl p-8 shadow-md ${
+                          rank === 1 ? 'bg-gradient-to-r from-quiz-yellow-200 to-quiz-yellow-300 border-4 border-quiz-yellow-400' :
+                          rank === 2 ? 'bg-gray-100 border-2 border-gray-300' :
+                          rank === 3 ? 'bg-orange-100 border-2 border-orange-300' :
+                          'bg-quiz-beige-100 border border-gray-200'
                         }`}
                       >
                         <div className="flex items-center">
-                          <span className={`text-3xl font-bold mr-6 ${
-                            rank === 1 ? 'text-yellow-600' :
-                            rank === 2 ? 'text-gray-600' :
-                            rank === 3 ? 'text-orange-600' :
+                          <span className={`text-5xl font-bold mr-8 ${
+                            rank === 1 ? 'text-yellow-700' :
+                            rank === 2 ? 'text-gray-700' :
+                            rank === 3 ? 'text-orange-700' :
                             'text-gray-700'
                           }`}>
                             {rank}位
                           </span>
-                          <span className="text-2xl text-gray-800">{entry.nickname || entry.name}</span>
+                          <span className="text-3xl font-semibold text-gray-800">{entry.nickname || entry.name}</span>
                         </div>
                         <div className="text-right">
-                          <span className="text-3xl font-bold block text-gray-800">{entry.total_score}点</span>
-                          <span className="text-lg text-gray-600">正解: {entry.correct_count}問</span>
+                          <span className="text-5xl font-bold block text-gray-900">{entry.total_score}点</span>
+                          <span className="text-xl text-gray-600 font-medium">正解: {entry.correct_count}問</span>
                         </div>
                       </div>
                     )

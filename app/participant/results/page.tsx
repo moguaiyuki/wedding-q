@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { getRealtimeManager } from '@/lib/supabase/realtime'
+import { Trophy } from '@/components/illustrations/Trophy'
 
 interface UserAnswer {
   question_id: string
@@ -187,9 +188,9 @@ export default function ResultsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-pink to-wedding-white">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-quiz-beige-50 to-quiz-beige-100">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-wedding-pink mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-quiz-teal-500 mx-auto mb-4"></div>
           <p className="text-gray-600">結果を集計中...</p>
         </div>
       </div>
@@ -199,19 +200,44 @@ export default function ResultsPage() {
   const isFinished = gameState?.current_state === 'finished'
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-wedding-pink to-wedding-white p-4">
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-lg shadow-xl p-8">
-          <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">
-            {isFinished ? '最終結果' : `第${gameState?.current_question_number}問 結果`}
-          </h1>
+    <div className="min-h-screen bg-gradient-to-br from-quiz-beige-50 to-quiz-beige-100 p-4 relative overflow-hidden">
+      {/* Decorative stars */}
+      <div className="absolute top-10 right-16 w-8 h-8 text-quiz-yellow-200 animate-pulse">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2 L14.5 9 L22 9.5 L16 15 L18 22 L12 18 L6 22 L8 15 L2 9.5 L9.5 9 Z" />
+        </svg>
+      </div>
+      <div className="absolute bottom-32 left-24 w-6 h-6 text-quiz-pink-200 animate-pulse animation-delay-200">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2 L14.5 9 L22 9.5 L16 15 L18 22 L12 18 L6 22 L8 15 L2 9.5 L9.5 9 Z" />
+        </svg>
+      </div>
+
+      <div className="max-w-2xl mx-auto relative z-10">
+        <div className="bg-white rounded-3xl shadow-2xl p-8">
+          {isFinished && (
+            <div className="mb-6">
+              <Trophy />
+              <h1 className="text-4xl md:text-5xl font-bold text-center mb-3 text-quiz-coral-500 font-serif leading-tight">
+                Great job!<br/>
+                The quiz is now<br/>
+                complete.
+              </h1>
+            </div>
+          )}
+
+          {!isFinished && (
+            <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">
+              第{gameState?.current_question_number}問 結果
+            </h1>
+          )}
 
           {/* 直前の回答結果表示 */}
           {lastAnswer && !isFinished && (
             <>
-              <div className={`rounded-lg p-6 mb-6 text-center ${
+              <div className={`rounded-2xl p-6 mb-6 text-center ${
                 lastAnswer.is_correct
-                  ? 'bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-300'
+                  ? 'bg-gradient-to-br from-quiz-green-100 to-quiz-green-200 border-2 border-green-300'
                   : 'bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-300'
               }`}>
                 <div className="text-5xl mb-3">
@@ -231,7 +257,7 @@ export default function ResultsPage() {
 
               {/* エピソード表示 */}
               {(lastAnswer.explanation_text || lastAnswer.explanation_image_url) && (
-                <div className="bg-blue-50 rounded-lg p-4 mb-6 border-2 border-blue-200">
+                <div className="bg-quiz-blue-100 rounded-2xl p-4 mb-6 border-2 border-quiz-blue-300">
                   <h3 className="text-base font-bold mb-2 text-blue-800">💡 エピソード</h3>
                   {lastAnswer.explanation_text && (
                     <p className="text-sm text-gray-800 mb-3 whitespace-pre-wrap text-left">
@@ -263,9 +289,9 @@ export default function ResultsPage() {
                       return (
                         <div
                           key={choice.id}
-                          className={`rounded-lg p-4 border-2 ${
+                          className={`rounded-2xl p-4 border-2 ${
                             isCorrect
-                              ? 'bg-green-50 border-green-400'
+                              ? 'bg-quiz-green-100 border-green-400'
                               : isSelected
                               ? 'bg-red-50 border-red-400'
                               : 'bg-gray-50 border-gray-200'
@@ -308,7 +334,7 @@ export default function ResultsPage() {
 
               {/* 解説表示 */}
               {(lastAnswer.explanation_text || lastAnswer.explanation_image_url) && (
-                <div className="bg-blue-50 rounded-lg p-4 mb-6 border-2 border-blue-200">
+                <div className="bg-quiz-blue-100 rounded-2xl p-4 mb-6 border-2 border-quiz-blue-300">
                   <h3 className="text-base font-bold mb-2 text-blue-800">💡 解説</h3>
                   {lastAnswer.explanation_text && (
                     <p className="text-sm text-gray-800 mb-3 whitespace-pre-wrap text-left">
@@ -331,23 +357,23 @@ export default function ResultsPage() {
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-6 text-center">
+            <div className="bg-gradient-to-br from-quiz-blue-100 to-quiz-blue-200 rounded-2xl p-6 text-center">
               <p className="text-sm text-gray-600 mb-2">現在のスコア</p>
-              <p className="text-4xl font-bold text-blue-600">{totalScore}</p>
+              <p className="text-4xl font-bold text-quiz-teal-600">{totalScore}</p>
               <p className="text-sm text-gray-600 mt-1">ポイント</p>
             </div>
 
-            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-6 text-center">
+            <div className="bg-gradient-to-br from-quiz-green-100 to-quiz-green-200 rounded-2xl p-6 text-center">
               <p className="text-sm text-gray-600 mb-2">正解数</p>
-              <p className="text-4xl font-bold text-green-600">
+              <p className="text-4xl font-bold text-green-700">
                 {correctCount}/{totalQuestions}
               </p>
               <p className="text-sm text-gray-600 mt-1">問</p>
             </div>
 
-            <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-lg p-6 text-center">
+            <div className="bg-gradient-to-br from-quiz-yellow-100 to-quiz-yellow-200 rounded-2xl p-6 text-center">
               <p className="text-sm text-gray-600 mb-2">現在の順位</p>
-              <p className="text-4xl font-bold text-yellow-600">
+              <p className="text-4xl font-bold text-yellow-700">
                 {rank !== null && rank !== undefined ? rank : '-'}
               </p>
               <p className="text-sm text-gray-600 mt-1">位</p>
@@ -358,17 +384,17 @@ export default function ResultsPage() {
           {leaderboard.length > 0 && (
             <div className="mb-6">
               <h2 className="text-xl font-bold mb-4 text-gray-800">現在のランキング</h2>
-              <div className="bg-gray-50 rounded-lg p-4">
+              <div className="bg-quiz-beige-100 rounded-2xl p-4">
                 <div className="space-y-2">
                   {leaderboard.slice(0, 10).map((entry, index) => {
                     const rank = getRank(index, leaderboard)
                     return (
                       <div
                         key={entry.user_id}
-                        className={`flex justify-between items-center p-3 rounded-lg border ${
-                          rank === 1 ? 'bg-yellow-50 border-yellow-300' :
-                          rank === 2 ? 'bg-gray-50 border-gray-300' :
-                          rank === 3 ? 'bg-orange-50 border-orange-300' :
+                        className={`flex justify-between items-center p-3 rounded-2xl border-2 ${
+                          rank === 1 ? 'bg-quiz-yellow-100 border-quiz-yellow-300' :
+                          rank === 2 ? 'bg-gray-100 border-gray-300' :
+                          rank === 3 ? 'bg-orange-100 border-orange-300' :
                           'bg-white border-gray-200'
                         }`}
                       >
@@ -401,27 +427,27 @@ export default function ResultsPage() {
             <div className="text-center">
               <p className="text-gray-600 mb-4">次の問題をお待ちください</p>
               <div className="inline-flex items-center space-x-2">
-                <div className="animate-pulse bg-wedding-pink rounded-full h-3 w-3"></div>
-                <div className="animate-pulse bg-wedding-pink rounded-full h-3 w-3 animation-delay-200"></div>
-                <div className="animate-pulse bg-wedding-pink rounded-full h-3 w-3 animation-delay-400"></div>
+                <div className="animate-pulse bg-quiz-teal-500 rounded-full h-3 w-3"></div>
+                <div className="animate-pulse bg-quiz-coral-500 rounded-full h-3 w-3 animation-delay-200"></div>
+                <div className="animate-pulse bg-quiz-yellow-300 rounded-full h-3 w-3 animation-delay-400"></div>
               </div>
             </div>
           )}
 
           {isFinished && (
-            <div className="text-center">
-              <div className="mb-6">
-                <div className="text-6xl mb-4">🎉</div>
-                <p className="text-2xl font-bold text-gray-800 mb-2">
-                  クイズ終了！
-                </p>
-                <p className="text-gray-600">
-                  ご参加ありがとうございました
-                </p>
-              </div>
+            <div className="text-center mt-6">
+              <button
+                onClick={() => window.location.href = '/participant'}
+                className="bg-quiz-teal-500 text-white py-3 px-8 rounded-full font-bold hover:bg-quiz-teal-600 transition-all transform hover:scale-105 shadow-lg inline-flex items-center gap-2"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                </svg>
+                Back to home
+              </button>
 
               {correctCount === totalQuestions && (
-                <div className="bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-lg p-4 mb-4">
+                <div className="bg-gradient-to-br from-quiz-yellow-100 to-quiz-yellow-200 rounded-2xl p-4 mt-6">
                   <p className="text-xl font-bold text-yellow-800">
                     🏆 パーフェクト達成！ 🏆
                   </p>

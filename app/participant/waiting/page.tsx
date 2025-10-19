@@ -101,11 +101,23 @@ export default function WaitingPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-pink to-wedding-white p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-quiz-beige-50 to-quiz-beige-100 p-4 relative overflow-hidden">
+      {/* Decorative stars */}
+      <div className="absolute top-10 right-16 w-8 h-8 text-quiz-yellow-200 animate-pulse">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2 L14.5 9 L22 9.5 L16 15 L18 22 L12 18 L6 22 L8 15 L2 9.5 L9.5 9 Z" />
+        </svg>
+      </div>
+      <div className="absolute top-32 left-24 w-6 h-6 text-quiz-pink-200 animate-pulse animation-delay-200">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2 L14.5 9 L22 9.5 L16 15 L18 22 L12 18 L6 22 L8 15 L2 9.5 L9.5 9 Z" />
+        </svg>
+      </div>
+
       <div className="text-center">
-        <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
+        <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full">
           {user && !user.nickname && (
-            <div className="bg-yellow-50 border border-yellow-300 rounded-lg p-4 mb-6">
+            <div className="bg-yellow-50 border border-yellow-300 rounded-2xl p-4 mb-6">
               <div className="flex items-start">
                 <svg className="w-5 h-5 text-yellow-600 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
@@ -119,7 +131,7 @@ export default function WaitingPage() {
                   </p>
                   <button
                     onClick={() => router.push('/participant/profile')}
-                    className="mt-2 px-4 py-2 bg-yellow-600 text-white text-sm font-medium rounded-lg hover:bg-yellow-700 transition-colors"
+                    className="mt-2 px-4 py-2 bg-yellow-600 text-white text-sm font-medium rounded-xl hover:bg-yellow-700 transition-colors"
                   >
                     表示名を設定する
                   </button>
@@ -134,47 +146,53 @@ export default function WaitingPage() {
               </p>
               <button
                 onClick={() => router.push('/participant/profile')}
-                className={`px-3 py-1.5 rounded-lg transition-colors ${
-                  user.nickname 
-                    ? 'text-sm text-gray-600 hover:bg-gray-100' 
-                    : 'bg-gradient-to-r from-pink-500 to-purple-500 text-white text-sm font-medium hover:from-pink-600 hover:to-purple-600 animate-pulse'
+                className={`px-3 py-1.5 rounded-xl transition-colors ${
+                  user.nickname
+                    ? 'text-sm text-gray-600 hover:bg-gray-100'
+                    : 'bg-gradient-to-r from-quiz-pink-300 to-quiz-purple-300 text-gray-800 text-sm font-medium hover:from-quiz-pink-200 hover:to-quiz-purple-200 animate-pulse'
                 }`}
               >
                 {user.nickname ? 'プロフィール' : '表示名を設定'}
               </button>
             </div>
           )}
-          <h1 className="text-3xl font-bold mb-4 text-gray-800">
-            準備完了！
-          </h1>
-          
           <div className="mb-6">
-            <p className="text-lg text-gray-600 mb-2">参加者情報</p>
-            <p className="text-2xl font-bold text-wedding-pink mb-2">
-              {user?.nickname || user?.name || '読み込み中...'}
-            </p>
-            {user?.nickname && (
-              <p className="text-xs text-gray-700 mb-1">本名: {user.name}</p>
-            )}
-            <p className="text-sm text-gray-700">ID: {user?.qr_code || '-'}</p>
+            <h2 className="text-lg font-semibold text-gray-600 mb-3">Hi, {user?.nickname || user?.name || 'ゲスト'}!</h2>
+            <h1 className="text-3xl font-bold mb-4 text-gray-800 font-serif">
+              準備完了！
+            </h1>
+            <p className="text-gray-600">まもなくクイズが始まります...</p>
           </div>
 
-          <div className="mb-6">
-            <p className="text-sm text-gray-600 mb-2">現在の参加者数</p>
-            <p className="text-4xl font-bold text-gray-800">{participantCount}名</p>
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="bg-quiz-blue-100 rounded-2xl p-4 text-center">
+              <p className="text-xs text-gray-600 mb-1">参加者数</p>
+              <p className="text-3xl font-bold text-quiz-teal-600">{participantCount}</p>
+              <p className="text-xs text-gray-600">名</p>
+            </div>
+            <div className="bg-quiz-yellow-100 rounded-2xl p-4 text-center">
+              <p className="text-xs text-gray-600 mb-1">あなたのID</p>
+              <p className="text-lg font-bold text-gray-800">{user?.qr_code || '-'}</p>
+            </div>
           </div>
 
-          <div className="space-y-2 text-gray-600">
-            <p>まもなくクイズが始まります</p>
+          {user?.nickname && (
+            <div className="bg-quiz-green-100 rounded-2xl p-3 mb-6">
+              <p className="text-xs text-gray-600">本名</p>
+              <p className="text-sm font-semibold text-gray-800">{user.name}</p>
+            </div>
+          )}
+
+          <div className="space-y-2 text-gray-600 text-sm">
             <p>この画面のままお待ちください</p>
           </div>
 
           <div className="mt-8">
             <div className="flex justify-center">
               <div className="animate-pulse flex space-x-2">
-                <div className="w-3 h-3 bg-wedding-pink rounded-full"></div>
-                <div className="w-3 h-3 bg-wedding-pink rounded-full animation-delay-200"></div>
-                <div className="w-3 h-3 bg-wedding-pink rounded-full animation-delay-400"></div>
+                <div className="w-3 h-3 bg-quiz-teal-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-quiz-coral-500 rounded-full animation-delay-200"></div>
+                <div className="w-3 h-3 bg-quiz-yellow-300 rounded-full animation-delay-400"></div>
               </div>
             </div>
           </div>

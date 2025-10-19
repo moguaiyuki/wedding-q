@@ -109,10 +109,25 @@ textarea::placeholder {
   }
 }
 
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
 .animation-delay-200 {
   animation-delay: 200ms;
 }
 
 .animation-delay-400 {
   animation-delay: 400ms;
+}
+
+/* フォント変数の設定 */
+:root {
+  --font-rounded: 'M PLUS Rounded 1c', ui-rounded, system-ui, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
 }
