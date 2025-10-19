@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { getRealtimeManager } from '@/lib/supabase/realtime'
+import { Edit, Check, Lightbulb, Sparkles } from 'lucide-react'
 
 interface GameState {
   id: string
@@ -293,8 +294,9 @@ export default function PresentationPage() {
               </div>
             )}
             <div className="mt-10 bg-gradient-to-r from-quiz-teal-500 to-quiz-teal-600 rounded-2xl p-8 shadow-lg">
-              <p className="text-4xl font-bold text-white animate-pulse">
-                📝 回答受付中
+              <p className="text-4xl font-bold text-white animate-pulse flex items-center justify-center gap-3">
+                <Edit className="w-10 h-10" strokeWidth={2.5} />
+                回答受付中
               </p>
             </div>
           </div>
@@ -316,7 +318,10 @@ export default function PresentationPage() {
             </h2>
             {correctChoice && (
               <div className="bg-gradient-to-br from-quiz-green-100 to-quiz-green-200 rounded-2xl p-8 mb-8 border-2 border-green-400">
-                <p className="text-3xl text-gray-700 mb-2 font-semibold">✓ 正解</p>
+                <p className="text-3xl text-gray-700 mb-2 font-semibold flex items-center justify-center gap-2">
+                  <Check className="w-8 h-8 text-green-700" strokeWidth={3} />
+                  正解
+                </p>
                 <p className="text-5xl font-bold text-green-700">
                   {correctChoice.choice_text}
                 </p>
@@ -326,7 +331,10 @@ export default function PresentationPage() {
             {/* エピソード表示 */}
             {(currentQuestion.explanation_text || currentQuestion.explanation_image_url) && (
               <div className="bg-quiz-blue-100 rounded-2xl p-8 mb-8 border-2 border-quiz-blue-300">
-                <h3 className="text-3xl font-bold mb-4 text-blue-800">💡 エピソード</h3>
+                <h3 className="text-3xl font-bold mb-4 text-blue-800 flex items-center justify-center gap-3">
+                  <Lightbulb className="w-8 h-8 text-blue-700" strokeWidth={2.5} />
+                  エピソード
+                </h3>
                 {currentQuestion.explanation_text && (
                   <p className="text-lg text-gray-800 mb-4 whitespace-pre-wrap text-left">
                     {currentQuestion.explanation_text}
@@ -364,9 +372,14 @@ export default function PresentationPage() {
                         style={{ width: `${percentage}%` }}
                       />
                       <div className="relative p-6 flex justify-between items-center">
-                        <span className="text-2xl font-bold text-gray-800">
+                        <span className="text-2xl font-bold text-gray-800 flex items-center gap-2">
                           {choice.choice_text}
-                          {isCorrect && ' ✓'}
+                          {isCorrect && (
+                            <span className="flex items-center gap-1 text-green-700 font-bold">
+                              <Check className="w-6 h-6" strokeWidth={3} />
+                              (正解)
+                            </span>
+                          )}
                         </span>
                         <div className="text-right">
                           <span className="text-3xl font-bold block text-gray-900">{stat?.count || 0}名</span>
@@ -424,7 +437,9 @@ export default function PresentationPage() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-quiz-beige-50 to-quiz-beige-100 p-8">
         <div className="bg-white rounded-3xl shadow-2xl p-16 max-w-6xl w-full">
           <div className="text-center">
-            <div className="text-8xl mb-6">🎉</div>
+            <div className="flex justify-center mb-6">
+              <Sparkles className="w-24 h-24 text-quiz-coral-500" strokeWidth={2} />
+            </div>
             <h1 className="text-7xl font-bold mb-6 text-quiz-coral-500 font-serif">
               Great job!
             </h1>

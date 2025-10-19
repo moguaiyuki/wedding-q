@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { X, UserCircle, Users, MapPin } from 'lucide-react'
 
 interface User {
   id: string
@@ -129,9 +130,9 @@ function ProfileContent() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-pink to-wedding-white">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-quiz-beige-50 to-quiz-beige-100">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-wedding-pink mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-quiz-teal-500 mx-auto mb-4"></div>
           <p className="text-gray-600">読み込み中...</p>
         </div>
       </div>
@@ -139,26 +140,38 @@ function ProfileContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-wedding-pink to-wedding-white p-4">
-      <div className="max-w-md mx-auto">
-        <div className="bg-white rounded-lg shadow-xl p-6">
+    <div className="min-h-screen bg-gradient-to-br from-quiz-beige-50 to-quiz-beige-100 p-4 relative overflow-hidden">
+      {/* Decorative stars */}
+      <div className="absolute top-10 right-16 w-8 h-8 text-quiz-yellow-200 animate-pulse">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2 L14.5 9 L22 9.5 L16 15 L18 22 L12 18 L6 22 L8 15 L2 9.5 L9.5 9 Z" />
+        </svg>
+      </div>
+      <div className="absolute bottom-32 left-24 w-6 h-6 text-quiz-pink-200 animate-pulse animation-delay-200">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2 L14.5 9 L22 9.5 L16 15 L18 22 L12 18 L6 22 L8 15 L2 9.5 L9.5 9 Z" />
+        </svg>
+      </div>
+
+      <div className="max-w-md mx-auto relative z-10">
+        <div className="bg-white rounded-3xl shadow-2xl p-8">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-800">
-              {isFirstSetup ? 'はじめに表示名を設定' : 'プロフィール設定'}
+            <h1 className="text-3xl font-bold text-gray-800 font-serif">
+              {isFirstSetup ? '表示名を設定' : 'プロフィール設定'}
             </h1>
             {!isFirstSetup && (
               <button
                 onClick={() => router.push('/participant/waiting')}
-                className="text-gray-600 hover:text-gray-800"
+                className="text-gray-600 hover:text-gray-800 transition-colors"
               >
-                ✕
+                <X className="w-6 h-6" strokeWidth={2.5} />
               </button>
             )}
           </div>
 
           {isFirstSetup && !user?.nickname && (
-            <div className="bg-blue-50 border border-blue-300 rounded-lg p-4 mb-6">
-              <p className="text-sm text-blue-800">
+            <div className="bg-quiz-blue-100 border-2 border-quiz-blue-300 rounded-2xl p-4 mb-6">
+              <p className="text-sm text-blue-800 font-medium">
                 クイズ中に表示される名前を設定してください。
                 あなただけのニックネームで楽しく参加しましょう！
               </p>
@@ -166,41 +179,43 @@ function ProfileContent() {
           )}
 
           {error && (
-            <div className="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg mb-4">
+            <div className="bg-red-50 border-2 border-red-300 text-red-700 px-4 py-3 rounded-2xl mb-4 font-medium">
               {error}
             </div>
           )}
 
           {success && (
-            <div className="bg-green-50 border border-green-300 text-green-700 px-4 py-3 rounded-lg mb-4">
+            <div className="bg-quiz-green-100 border-2 border-green-300 text-green-700 px-4 py-3 rounded-2xl mb-4 font-medium">
               {success}
             </div>
           )}
 
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+          <div className="space-y-6">
+            <div className="bg-quiz-beige-100 rounded-2xl p-4">
+              <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
+                <UserCircle className="w-5 h-5 text-quiz-teal-600" strokeWidth={2.5} />
                 フルネーム
               </label>
-              <p className="text-lg font-semibold text-gray-900">{user.name}</p>
+              <p className="text-lg font-semibold text-gray-900 ml-7">{user.name}</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="bg-quiz-yellow-100 rounded-2xl p-4">
+              <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
+                <UserCircle className="w-5 h-5 text-quiz-coral-600" strokeWidth={2.5} />
                 表示名
               </label>
               {isEditing ? (
-                <form onSubmit={handleSubmit} className="space-y-3">
+                <form onSubmit={handleSubmit} className="space-y-3 ml-7">
                   <input
                     type="text"
                     value={nickname}
                     onChange={(e) => setNickname(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-pink focus:border-transparent"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-quiz-teal-400 focus:border-quiz-teal-500 focus:outline-none transition-colors"
                     placeholder="ニックネームを入力（20文字以内）"
                     maxLength={20}
                     disabled={isLoading}
                   />
-                  <div className="text-xs text-gray-700">
+                  <div className="text-xs text-gray-700 bg-white rounded-xl p-3">
                     • 20文字以内で入力してください<br />
                     • 絵文字は使用できません<br />
                     • 他の参加者と重複しない名前にしてください
@@ -209,7 +224,7 @@ function ProfileContent() {
                     <button
                       type="submit"
                       disabled={isLoading || !nickname.trim()}
-                      className="px-4 py-2 bg-wedding-pink text-white rounded-lg hover:bg-pink-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                      className="px-6 py-3 bg-quiz-teal-500 text-white rounded-2xl hover:bg-quiz-teal-600 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 font-bold shadow-lg"
                     >
                       {isLoading ? '保存中...' : '保存'}
                     </button>
@@ -222,7 +237,7 @@ function ProfileContent() {
                           setError('')
                         }}
                         disabled={isLoading}
-                        className="px-4 py-2 bg-gray-100 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 font-medium"
+                        className="px-6 py-3 bg-gray-100 text-gray-700 border-2 border-gray-300 rounded-2xl hover:bg-gray-200 transition-colors disabled:opacity-50 font-bold"
                       >
                         キャンセル
                       </button>
@@ -231,7 +246,7 @@ function ProfileContent() {
                         type="button"
                         onClick={() => router.push('/participant/waiting')}
                         disabled={isLoading}
-                        className="px-4 py-2 bg-gray-200 text-gray-700 border border-gray-400 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50 font-medium"
+                        className="px-6 py-3 bg-gray-100 text-gray-700 border-2 border-gray-300 rounded-2xl hover:bg-gray-200 transition-colors disabled:opacity-50 font-bold"
                       >
                         スキップ
                       </button>
@@ -239,14 +254,14 @@ function ProfileContent() {
                   </div>
                 </form>
               ) : (
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between ml-7">
                   <p className="text-lg font-semibold text-gray-900">
                     {user.nickname || user.name}
                   </p>
                   <div className="flex gap-2">
                     <button
                       onClick={() => setIsEditing(true)}
-                      className="text-sm text-blue-600 hover:text-blue-800"
+                      className="text-sm text-quiz-teal-600 hover:text-quiz-teal-700 font-bold"
                     >
                       編集
                     </button>
@@ -254,7 +269,7 @@ function ProfileContent() {
                       <button
                         onClick={handleClearNickname}
                         disabled={isLoading}
-                        className="text-sm text-red-600 hover:text-red-800 disabled:opacity-50"
+                        className="text-sm text-red-600 hover:text-red-700 disabled:opacity-50 font-bold"
                       >
                         クリア
                       </button>
@@ -264,29 +279,31 @@ function ProfileContent() {
               )}
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="bg-quiz-pink-100 rounded-2xl p-4">
+              <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
+                <Users className="w-5 h-5 text-quiz-purple-600" strokeWidth={2.5} />
                 グループ
               </label>
-              <p className="text-lg text-gray-900">{getGroupLabel(user.group_type)}</p>
+              <p className="text-lg font-semibold text-gray-900 ml-7">{getGroupLabel(user.group_type)}</p>
             </div>
 
             {user.seat_number && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+              <div className="bg-quiz-green-100 rounded-2xl p-4">
+                <label className="flex items-center gap-2 text-sm font-bold text-gray-700 mb-2">
+                  <MapPin className="w-5 h-5 text-green-600" strokeWidth={2.5} />
                   座席番号
                 </label>
-                <p className="text-lg text-gray-900">{user.seat_number}</p>
+                <p className="text-lg font-semibold text-gray-900 ml-7">{user.seat_number}</p>
               </div>
             )}
           </div>
 
-          <div className="mt-6 pt-6 border-t">
+          <div className="mt-8 pt-6 border-t-2 border-gray-200">
             <button
               onClick={() => router.push('/participant/waiting')}
-              className="w-full bg-gray-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-700 transition-colors"
+              className="w-full bg-quiz-teal-500 text-white py-4 px-6 rounded-2xl font-bold text-lg hover:bg-quiz-teal-600 transition-all transform hover:scale-105 shadow-lg"
             >
-              {isFirstSetup && !user.nickname ? 'スキップしてクイズに進む' : 
+              {isFirstSetup && !user.nickname ? 'スキップしてクイズに進む' :
                isFirstSetup ? 'クイズに進む' : 'クイズに戻る'}
             </button>
           </div>
@@ -299,9 +316,9 @@ function ProfileContent() {
 export default function ProfilePage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-pink to-wedding-white">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-quiz-beige-50 to-quiz-beige-100">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-wedding-pink mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-quiz-teal-500 mx-auto mb-4"></div>
           <p className="text-gray-600">読み込み中...</p>
         </div>
       </div>

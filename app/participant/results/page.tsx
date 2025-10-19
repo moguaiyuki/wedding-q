@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { getRealtimeManager } from '@/lib/supabase/realtime'
 import { Trophy } from '@/components/illustrations/Trophy'
+import { CheckCircle, XCircle, Lightbulb, Check, Trophy as TrophyIcon } from 'lucide-react'
 
 interface UserAnswer {
   question_id: string
@@ -240,8 +241,12 @@ export default function ResultsPage() {
                   ? 'bg-gradient-to-br from-quiz-green-100 to-quiz-green-200 border-2 border-green-300'
                   : 'bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-300'
               }`}>
-                <div className="text-5xl mb-3">
-                  {lastAnswer.is_correct ? '⭕' : '❌'}
+                <div className="flex justify-center mb-3">
+                  {lastAnswer.is_correct ? (
+                    <CheckCircle className="w-16 h-16 text-green-600" strokeWidth={2.5} />
+                  ) : (
+                    <XCircle className="w-16 h-16 text-red-600" strokeWidth={2.5} />
+                  )}
                 </div>
                 <p className={`text-2xl font-bold mb-2 ${
                   lastAnswer.is_correct ? 'text-green-700' : 'text-red-700'
@@ -258,7 +263,10 @@ export default function ResultsPage() {
               {/* エピソード表示 */}
               {(lastAnswer.explanation_text || lastAnswer.explanation_image_url) && (
                 <div className="bg-quiz-blue-100 rounded-2xl p-4 mb-6 border-2 border-quiz-blue-300">
-                  <h3 className="text-base font-bold mb-2 text-blue-800">💡 エピソード</h3>
+                  <h3 className="text-base font-bold mb-2 text-blue-800 flex items-center gap-2">
+                    <Lightbulb className="w-5 h-5 text-blue-700" strokeWidth={2.5} />
+                    エピソード
+                  </h3>
                   {lastAnswer.explanation_text && (
                     <p className="text-sm text-gray-800 mb-3 whitespace-pre-wrap text-left">
                       {lastAnswer.explanation_text}
@@ -321,7 +329,10 @@ export default function ResultsPage() {
                                 </span>
                               )}
                               {isCorrect && (
-                                <span className="text-xl">✓</span>
+                                <span className="flex items-center gap-1 text-sm font-bold text-green-700">
+                                  <Check className="w-5 h-5" strokeWidth={3} />
+                                  正解
+                                </span>
                               )}
                             </div>
                           </div>
@@ -335,7 +346,10 @@ export default function ResultsPage() {
               {/* 解説表示 */}
               {(lastAnswer.explanation_text || lastAnswer.explanation_image_url) && (
                 <div className="bg-quiz-blue-100 rounded-2xl p-4 mb-6 border-2 border-quiz-blue-300">
-                  <h3 className="text-base font-bold mb-2 text-blue-800">💡 解説</h3>
+                  <h3 className="text-base font-bold mb-2 text-blue-800 flex items-center gap-2">
+                    <Lightbulb className="w-5 h-5 text-blue-700" strokeWidth={2.5} />
+                    解説
+                  </h3>
                   {lastAnswer.explanation_text && (
                     <p className="text-sm text-gray-800 mb-3 whitespace-pre-wrap text-left">
                       {lastAnswer.explanation_text}
@@ -448,8 +462,10 @@ export default function ResultsPage() {
 
               {correctCount === totalQuestions && (
                 <div className="bg-gradient-to-br from-quiz-yellow-100 to-quiz-yellow-200 rounded-2xl p-4 mt-6">
-                  <p className="text-xl font-bold text-yellow-800">
-                    🏆 パーフェクト達成！ 🏆
+                  <p className="text-xl font-bold text-yellow-800 flex items-center justify-center gap-2">
+                    <TrophyIcon className="w-6 h-6 text-yellow-700" strokeWidth={2.5} />
+                    パーフェクト達成！
+                    <TrophyIcon className="w-6 h-6 text-yellow-700" strokeWidth={2.5} />
                   </p>
                 </div>
               )}

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { getRealtimeManager } from '@/lib/supabase/realtime'
+import { CheckCircle } from 'lucide-react'
 
 interface Question {
   id: string
@@ -239,7 +240,9 @@ export default function QuizPage() {
 
           {hasAnswered ? (
             <div className="text-center py-8 bg-quiz-green-100 rounded-2xl">
-              <div className="text-6xl mb-4">✅</div>
+              <div className="flex justify-center mb-4">
+                <CheckCircle className="w-16 h-16 text-green-600" strokeWidth={2.5} />
+              </div>
               <p className="text-xl font-bold text-green-700">回答済みです！</p>
               <p className="text-gray-600 mt-2">結果発表をお待ちください</p>
             </div>
