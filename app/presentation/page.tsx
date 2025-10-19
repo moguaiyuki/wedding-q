@@ -411,75 +411,24 @@ export default function PresentationPage() {
 
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-rose-50 to-wedding-cream-100 p-8">
-        <div className="bg-white rounded-3xl shadow-2xl p-16 max-w-6xl w-full">
+        <div className="bg-white rounded-3xl shadow-2xl p-16 max-w-4xl w-full">
           <div className="text-center">
-            <div className="flex justify-center mb-6">
-              <Sparkles className="w-24 h-24 text-wedding-pink-500" strokeWidth={2} />
-            </div>
-            <h1 className="text-7xl font-bold mb-6 text-wedding-pink-500">
-              Great job!
-            </h1>
-            <p className="text-4xl mb-12 text-gray-700 font-semibold">
-              ご参加ありがとうございました
-            </p>
-
             {/* 優勝者発表 */}
             {winners.length > 0 && (
-              <div className="mb-12">
-                <h2 className="text-4xl font-bold mb-6 text-gray-700">優勝者は...</h2>
-                <div className="bg-gradient-to-r from-wedding-gold-200 to-wedding-gold-300 rounded-3xl p-10 mb-6 border-4 border-wedding-gold-400">
+              <div>
+                <h1 className="text-6xl font-bold mb-12 text-wedding-pink-600">優勝者は....</h1>
+                <div className="bg-gradient-to-r from-wedding-gold-200 to-wedding-gold-300 rounded-3xl p-12 mb-8 border-4 border-wedding-gold-400">
                   {winners.map((winner, index) => (
                     <div key={winner.user_id}>
-                      <p className="text-6xl font-bold text-gray-900 mb-2">
+                      <p className="text-7xl font-bold text-gray-900 mb-2">
                         {winner.nickname || winner.name}さん{winners.length > 1 && index < winners.length - 1 ? '、' : '！！'}
                       </p>
                     </div>
                   ))}
-                  <p className="text-3xl font-bold text-wedding-gold-700 mt-6">
-                    {winners[0].total_score}点
-                  </p>
                 </div>
-                <p className="text-3xl font-bold text-wedding-pink-600">
-                  おめでとうございます🎉
+                <p className="text-4xl font-bold text-gray-800">
+                  ディズニーペアチケット贈呈となります！
                 </p>
-              </div>
-            )}
-
-            {leaderboard.length > 0 && (
-              <div className="mt-8">
-                <h2 className="text-4xl font-bold mb-8 text-gray-800">最終ランキング</h2>
-                <div className="space-y-4">
-                  {leaderboard.map((entry, index) => {
-                    const rank = getRank(index, leaderboard)
-                    return (
-                      <div
-                        key={entry.user_id}
-                        className={`flex justify-between items-center rounded-3xl p-8 shadow-md ${
-                          rank === 1 ? 'bg-gradient-to-r from-wedding-gold-200 to-wedding-gold-300 border-4 border-wedding-gold-400' :
-                          rank === 2 ? 'bg-gray-100 border-2 border-gray-300' :
-                          rank === 3 ? 'bg-orange-100 border-2 border-orange-300' :
-                          'bg-wedding-cream-100 border border-gray-200'
-                        }`}
-                      >
-                        <div className="flex items-center">
-                          <span className={`text-5xl font-bold mr-8 ${
-                            rank === 1 ? 'text-gray-900' :
-                            rank === 2 ? 'text-gray-700' :
-                            rank === 3 ? 'text-orange-700' :
-                            'text-gray-700'
-                          }`}>
-                            {rank}位
-                          </span>
-                          <span className="text-3xl font-semibold text-gray-800">{entry.nickname || entry.name}</span>
-                        </div>
-                        <div className="text-right">
-                          <span className="text-5xl font-bold block text-gray-900">{entry.total_score}点</span>
-                          <span className="text-xl text-gray-600 font-medium">正解: {entry.correct_count}問</span>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
               </div>
             )}
           </div>
