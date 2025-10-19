@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { getRealtimeManager } from '@/lib/supabase/realtime'
-import { Edit, Check, Lightbulb, Sparkles } from 'lucide-react'
+import { Edit, Lightbulb, Sparkles } from 'lucide-react'
 
 interface GameState {
   id: string
@@ -229,9 +229,9 @@ export default function PresentationPage() {
             </p>
             {currentQuestion.image_url && (
               <div className="mb-8">
-                <img 
-                  src={currentQuestion.image_url} 
-                  alt="問題画像" 
+                <img
+                  src={currentQuestion.image_url}
+                  alt="問題画像"
                   className="max-w-full h-auto mx-auto rounded-lg shadow-lg"
                   style={{ maxHeight: '400px' }}
                 />
@@ -239,13 +239,15 @@ export default function PresentationPage() {
             )}
             {currentQuestion.question_type === 'multiple_choice' && currentQuestion.choices && (
               <div className="mt-8 space-y-4 max-w-3xl mx-auto">
-                {currentQuestion.choices.map((choice, index) => (
-                  <div key={choice.id} className="bg-wedding-cream-100 rounded-2xl p-6 text-left border-2 border-gray-200">
-                    <span className="text-2xl font-semibold text-gray-800">
-                      {index + 1}. {choice.choice_text}
-                    </span>
-                  </div>
-                ))}
+                {currentQuestion.choices
+                  .sort((a, b) => a.display_order - b.display_order)
+                  .map((choice) => (
+                    <div key={choice.id} className="bg-wedding-cream-100 rounded-2xl p-6 text-left border-2 border-gray-200">
+                      <span className="text-2xl font-semibold text-gray-800">
+                        {choice.choice_text}
+                      </span>
+                    </div>
+                  ))}
               </div>
             )}
             <div className="mt-10 animate-pulse">
@@ -281,13 +283,15 @@ export default function PresentationPage() {
             )}
             {currentQuestion.question_type === 'multiple_choice' && currentQuestion.choices && (
               <div className="mt-8 space-y-4 max-w-3xl mx-auto">
-                {currentQuestion.choices.map((choice, index) => (
-                  <div key={choice.id} className="bg-wedding-cream-100 rounded-2xl p-6 text-left border-2 border-gray-200">
-                    <span className="text-2xl font-semibold text-gray-800">
-                      {index + 1}. {choice.choice_text}
-                    </span>
-                  </div>
-                ))}
+                {currentQuestion.choices
+                  .sort((a, b) => a.display_order - b.display_order)
+                  .map((choice) => (
+                    <div key={choice.id} className="bg-wedding-cream-100 rounded-2xl p-6 text-left border-2 border-gray-200">
+                      <span className="text-2xl font-semibold text-gray-800">
+                        {choice.choice_text}
+                      </span>
+                    </div>
+                  ))}
               </div>
             )}
             <div className="mt-10 bg-gradient-to-r from-wedding-pink-500 to-wedding-pink-600 rounded-2xl p-8 shadow-lg">
@@ -315,8 +319,7 @@ export default function PresentationPage() {
             </h2>
             {correctChoice && (
               <div className="bg-gradient-to-br from-wedding-pink-100 to-wedding-rose-100 rounded-2xl p-8 mb-8 border-2 border-wedding-pink-400">
-                <p className="text-3xl text-gray-800 mb-2 font-semibold flex items-center justify-center gap-2">
-                  <Check className="w-8 h-8 text-wedding-pink-700" strokeWidth={3} />
+                <p className="text-3xl text-gray-800 mb-2 font-semibold text-center">
                   正解
                 </p>
                 <p className="text-5xl font-bold text-wedding-pink-700">
@@ -327,41 +330,42 @@ export default function PresentationPage() {
 
             {currentQuestion.question_type === 'multiple_choice' && answerStats.length > 0 && (
               <div className="space-y-4 mb-8">
-                {currentQuestion.choices?.map((choice) => {
-                  const stat = answerStats.find(s => s.choice_id === choice.id)
-                  const percentage = stat ? stat.percentage : 0
-                  const isCorrect = choice.is_correct
-                  return (
-                    <div
-                      key={choice.id}
-                      className={`relative rounded-2xl overflow-hidden border-2 ${
-                        isCorrect ? 'bg-wedding-pink-50 border-wedding-pink-300' : 'bg-gray-100 border-gray-300'
-                      }`}
-                    >
+                {currentQuestion.choices
+                  ?.sort((a, b) => a.display_order - b.display_order)
+                  .map((choice) => {
+                    const stat = answerStats.find(s => s.choice_id === choice.id)
+                    const percentage = stat ? stat.percentage : 0
+                    const isCorrect = choice.is_correct
+                    return (
                       <div
-                        className={`absolute inset-0 ${
-                          isCorrect ? 'bg-wedding-pink-200' : 'bg-gray-300'
-                        } opacity-30`}
-                        style={{ width: `${percentage}%` }}
-                      />
-                      <div className="relative p-6 flex justify-between items-center">
-                        <span className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                          {choice.choice_text}
-                          {isCorrect && (
-                            <span className="flex items-center gap-1 text-wedding-pink-700 font-bold">
-                              <Check className="w-6 h-6" strokeWidth={3} />
-                              (正解)
-                            </span>
-                          )}
-                        </span>
-                        <div className="text-right">
-                          <span className="text-3xl font-bold block text-gray-900">{stat?.count || 0}名</span>
-                          <span className="text-xl text-gray-700 font-semibold">({percentage.toFixed(1)}%)</span>
+                        key={choice.id}
+                        className={`relative rounded-2xl overflow-hidden border-2 ${
+                          isCorrect ? 'bg-wedding-pink-50 border-wedding-pink-300' : 'bg-gray-100 border-gray-300'
+                        }`}
+                      >
+                        <div
+                          className={`absolute inset-0 ${
+                            isCorrect ? 'bg-wedding-pink-200' : 'bg-gray-300'
+                          } opacity-30`}
+                          style={{ width: `${percentage}%` }}
+                        />
+                        <div className="relative p-6 flex justify-between items-center">
+                          <span className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                            {choice.choice_text}
+                            {isCorrect && (
+                              <span className="text-wedding-pink-700 font-bold">
+                                (正解)
+                              </span>
+                            )}
+                          </span>
+                          <div className="text-right">
+                            <span className="text-3xl font-bold block text-gray-900">{stat?.count || 0}名</span>
+                            <span className="text-xl text-gray-700 font-semibold">({percentage.toFixed(1)}%)</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )
-                })}
+                    )
+                  })}
               </div>
             )}
             {leaderboard.length > 0 && (
@@ -441,10 +445,6 @@ export default function PresentationPage() {
                     className="w-full max-w-3xl mx-auto rounded-2xl shadow-lg"
                   />
                 </div>
-
-                <p className="text-5xl font-bold text-gray-800">
-                  ディズニーペアチケット贈呈となります！
-                </p>
               </div>
             )}
           </div>

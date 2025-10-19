@@ -171,7 +171,7 @@ function ProfileContent() {
 
           {isFirstSetup && !user?.nickname && (
             <div className="bg-wedding-lavender-100 border-2 border-wedding-lavender-300 rounded-2xl p-4 mb-6">
-              <p className="text-sm text-wedding-lavender-800 font-medium">
+              <p className="text-sm text-gray-800 font-medium">
                 クイズ中に表示される名前を設定できます。本名でよければスキップしてください！
               </p>
             </div>
@@ -184,7 +184,7 @@ function ProfileContent() {
           )}
 
           {success && (
-            <div className="bg-wedding-lavender-100 border-2 border-wedding-lavender-300 text-wedding-lavender-700 px-4 py-3 rounded-2xl mb-4 font-medium">
+            <div className="bg-wedding-lavender-100 border-2 border-wedding-lavender-300 text-gray-800 px-4 py-3 rounded-2xl mb-4 font-medium">
               {success}
             </div>
           )}

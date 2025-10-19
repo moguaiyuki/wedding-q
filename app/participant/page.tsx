@@ -87,11 +87,10 @@ function ParticipantContent() {
       </div>
 
       <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full relative z-10">
-        <h1 className="text-4xl font-bold text-center mb-3 text-gray-800 font-serif">
+        <h1 className="text-4xl font-bold text-center mb-8 text-gray-800 font-serif">
           クイズに参加！
         </h1>
-        <p className="text-center text-gray-600 mb-8">Let's start your quiz now...</p>
-        
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="qrCode" className="block text-sm font-medium text-gray-700 mb-2">
