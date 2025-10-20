@@ -123,10 +123,9 @@ export default function WaitingPage() {
         {hasMessage && (
           <div className="bg-white rounded-3xl shadow-2xl p-6 mb-4">
             <div className="flex items-center justify-center mb-4">
-              <svg className="w-6 h-6 text-wedding-pink-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-              </svg>
-              <h3 className="text-lg font-semibold text-gray-800">新郎新婦からのメッセージ</h3>
+              <h3 className="text-lg font-semibold text-gray-800">
+                {user?.group_type === 'groom' ? '新郎からのメッセージ' : '新婦からのメッセージ'}
+              </h3>
             </div>
 
             {user?.message_image_url && (
@@ -141,7 +140,7 @@ export default function WaitingPage() {
             )}
 
             {user?.message && (
-              <div className="text-gray-700 leading-relaxed whitespace-pre-wrap text-left max-w-lg mx-auto bg-wedding-cream-50 p-4 rounded-2xl">
+              <div className="font-handwriting text-gray-700 text-lg leading-snug whitespace-pre-wrap text-left max-w-lg mx-auto bg-wedding-cream-50 p-4 rounded-2xl">
                 {user.message}
               </div>
             )}
