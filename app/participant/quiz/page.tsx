@@ -192,7 +192,7 @@ export default function QuizPage() {
 
   if (!question || !gameState) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-rose-50 to-wedding-cream-100">
+      <div className="min-h-[100dvh] flex items-center justify-center bg-gradient-to-br from-wedding-rose-50 to-wedding-cream-100">
         <div className="bg-white rounded-3xl shadow-2xl p-8">
           <div className="space-y-4">
             <div className="animate-pulse">
@@ -212,7 +212,7 @@ export default function QuizPage() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-wedding-rose-50 to-wedding-cream-100 p-4">
+    <div className="min-h-[100dvh] bg-gradient-to-br from-wedding-rose-50 to-wedding-cream-100 p-4">
       <div className="max-w-2xl mx-auto">
         <div className="bg-white rounded-3xl shadow-2xl p-6 mb-4 relative">
           {/* Question number badge */}

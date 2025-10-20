@@ -27,6 +27,13 @@ export const metadata: Metadata = {
   description: '新郎新婦に関するクイズで盛り上がろう！',
 }
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: 'cover' as const,
+}
+
 export default function RootLayout({
   children,
 }: {
