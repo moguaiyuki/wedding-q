@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
 
     const formData = await request.formData()
     const file = formData.get('file') as File
-    const type = formData.get('type') as string // 'question' or 'explanation'
+    const type = formData.get('type') as string // 'question', 'explanation', or 'guest_message'
 
     if (!file) {
       return NextResponse.json(
@@ -46,11 +46,12 @@ export async function POST(request: NextRequest) {
     // ファイル名を生成（タイムスタンプ付き）
     const fileExt = file.name.split('.').pop()
     const fileName = `${type}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}.${fileExt}`
-    const filePath = `quiz-images/${fileName}`
+    const directory = type === 'guest_message' ? 'guest-messages' : 'quiz-images'
+    const filePath = `${directory}/${fileName}`
 
     // Supabase Storageにアップロード
     const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('public')
+      .from('pub')
       .upload(filePath, file, {
         contentType: file.type,
         cacheControl: '3600',
@@ -63,10 +64,10 @@ export async function POST(request: NextRequest) {
       // バケットが存在しない場合は作成を試みる
       if (uploadError.message?.includes('bucket') || uploadError.message?.includes('not found')) {
         const { error: createBucketError } = await supabase.storage
-          .createBucket('public', {
+          .createBucket('pub', {
             public: true
           })
-        
+
         if (createBucketError && !createBucketError.message?.includes('already exists')) {
           return NextResponse.json(
             { error: 'ストレージの初期化に失敗しました' },
@@ -76,7 +77,7 @@ export async function POST(request: NextRequest) {
 
         // 再度アップロードを試みる
         const { data: retryData, error: retryError } = await supabase.storage
-          .from('public')
+          .from('pub')
           .upload(filePath, file, {
             contentType: file.type,
             cacheControl: '3600',
@@ -99,7 +100,7 @@ export async function POST(request: NextRequest) {
 
     // 公開URLを取得
     const { data: { publicUrl } } = supabase.storage
-      .from('public')
+      .from('pub')
       .getPublicUrl(filePath)
 
     return NextResponse.json({
@@ -140,12 +141,14 @@ export async function DELETE(request: NextRequest) {
 
     // URLからファイルパスを抽出
     const urlParts = url.split('/')
-    const filePath = `quiz-images/${urlParts[urlParts.length - 1]}`
+    const fileName = urlParts[urlParts.length - 1]
+    const directory = urlParts[urlParts.length - 2] // 'quiz-images' or 'guest-messages'
+    const filePath = `${directory}/${fileName}`
 
     const supabase = await createClient()
 
     const { error } = await supabase.storage
-      .from('public')
+      .from('pub')
       .remove([filePath])
 
     if (error) {

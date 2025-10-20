@@ -16,6 +16,8 @@ interface User {
   qr_code: string
   group_type: string
   seat_number?: string
+  message?: string | null
+  message_image_url?: string | null
 }
 
 export default function WaitingPage() {
@@ -100,6 +102,8 @@ export default function WaitingPage() {
     }
   }
 
+  const hasMessage = user?.message || user?.message_image_url
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-rose-50 to-wedding-cream-100 p-4 relative overflow-hidden">
       {/* Decorative stars */}
@@ -114,8 +118,38 @@ export default function WaitingPage() {
         </svg>
       </div>
 
-      <div className="text-center">
-        <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full">
+      <div className="text-center max-w-2xl w-full space-y-4">
+        {/* メッセージカード（ある場合のみ表示） */}
+        {hasMessage && (
+          <div className="bg-white rounded-3xl shadow-2xl p-6 mb-4">
+            <div className="flex items-center justify-center mb-4">
+              <svg className="w-6 h-6 text-wedding-pink-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+              </svg>
+              <h3 className="text-lg font-semibold text-gray-800">新郎新婦からのメッセージ</h3>
+            </div>
+
+            {user?.message_image_url && (
+              <div className="mb-4">
+                <img
+                  src={user.message_image_url}
+                  alt="メッセージ画像"
+                  className="w-full max-w-md mx-auto rounded-2xl shadow-md"
+                  loading="lazy"
+                />
+              </div>
+            )}
+
+            {user?.message && (
+              <div className="text-gray-700 leading-relaxed whitespace-pre-wrap text-left max-w-lg mx-auto bg-wedding-cream-50 p-4 rounded-2xl">
+                {user.message}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* 既存の準備完了カード */}
+        <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md mx-auto">
           {user && !user.nickname && (
             <div className="bg-yellow-50 border border-yellow-300 rounded-2xl p-4 mb-6">
               <div className="flex items-start">
