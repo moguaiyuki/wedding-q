@@ -48,6 +48,7 @@ export default function PresentationPage() {
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null)
   const [participantCount, setParticipantCount] = useState(0)
   const [answerStats, setAnswerStats] = useState<AnswerStats[]>([])
+  const [answerCount, setAnswerCount] = useState(0)
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
 
   // Helper function to calculate rank with tie handling
