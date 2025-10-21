@@ -38,11 +38,17 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// 4桁のユニークなQRコードを生成
+// 4桁のユニークなQRコードを生成（英数字: A-Z, 0-9）
 async function generateUniqueQRCode(supabase: any, maxRetries: number = 100): Promise<string> {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+
   for (let i = 0; i < maxRetries; i++) {
-    // 0000〜9999の4桁の数字をランダムに生成
-    const qrCode = Math.floor(Math.random() * 10000).toString().padStart(4, '0')
+    // 4桁の英数字をランダムに生成
+    let qrCode = ''
+    for (let j = 0; j < 4; j++) {
+      const randomIndex = Math.floor(Math.random() * characters.length)
+      qrCode += characters[randomIndex]
+    }
 
     // 既存のQRコードと重複していないかチェック
     const { data, error } = await supabase
