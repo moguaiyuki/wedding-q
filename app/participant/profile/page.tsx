@@ -130,7 +130,7 @@ function ProfileContent() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-rose-50 to-wedding-cream-100">
+      <div className="min-h-[100dvh] flex items-center justify-center bg-gradient-to-br from-wedding-rose-50 to-wedding-cream-100">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-wedding-pink-500 mx-auto mb-4"></div>
           <p className="text-gray-600">読み込み中...</p>
@@ -140,7 +140,7 @@ function ProfileContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-wedding-rose-50 to-wedding-cream-100 p-4 relative overflow-hidden">
+    <div className="min-h-[100dvh] bg-gradient-to-br from-wedding-rose-50 to-wedding-cream-100 p-4 relative overflow-hidden">
       {/* Decorative stars */}
       <div className="absolute top-10 right-16 w-8 h-8 text-wedding-gold-200 animate-pulse">
         <svg viewBox="0 0 24 24" fill="currentColor">
@@ -288,7 +288,7 @@ function ProfileContent() {
 export default function ProfilePage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-wedding-rose-50 to-wedding-cream-100">
+      <div className="min-h-[100dvh] flex items-center justify-center bg-gradient-to-br from-wedding-rose-50 to-wedding-cream-100">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-wedding-pink-500 mx-auto mb-4"></div>
           <p className="text-gray-600">読み込み中...</p>

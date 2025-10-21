@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { name, group_type, seat_number } = body
+    const { name, group_type, seat_number, message, message_image_url } = body
 
     if (!name || !group_type) {
       return NextResponse.json(
@@ -71,7 +71,9 @@ export async function POST(request: NextRequest) {
         qr_code,
         name,
         group_type,
-        seat_number: seat_number || null
+        seat_number: seat_number || null,
+        message: message || null,
+        message_image_url: message_image_url || null
       })
       .select()
       .single()
@@ -105,7 +107,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { id, name, group_type, seat_number } = body
+    const { id, name, group_type, seat_number, message, message_image_url } = body
 
     if (!id) {
       return NextResponse.json(
@@ -121,7 +123,9 @@ export async function PUT(request: NextRequest) {
       .update({
         name,
         group_type,
-        seat_number
+        seat_number,
+        message,
+        message_image_url
       })
       .eq('id', id)
       .select()

@@ -49,6 +49,7 @@ const config: Config = {
       fontFamily: {
         rounded: ['"M PLUS Rounded 1c"', 'ui-rounded', 'system-ui', 'sans-serif'],
         serif: ['"Playfair Display"', 'Georgia', 'serif'],
+        handwriting: ['var(--font-handwriting)', 'cursive'],
       },
       borderRadius: {
         '3xl': '1.5rem',

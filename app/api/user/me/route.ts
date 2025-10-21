@@ -18,7 +18,9 @@ export async function GET() {
       nickname: user.nickname,
       qr_code: user.qr_code,
       group_type: user.group_type,
-      seat_number: user.seat_number
+      seat_number: user.seat_number,
+      message: user.message,
+      message_image_url: user.message_image_url
     })
   } catch (error) {
     console.error('Get user error:', error)
