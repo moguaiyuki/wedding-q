@@ -38,6 +38,28 @@ export async function GET(request: NextRequest) {
   }
 }
 
+// 4桁のユニークなQRコードを生成
+async function generateUniqueQRCode(supabase: any, maxRetries: number = 100): Promise<string> {
+  for (let i = 0; i < maxRetries; i++) {
+    // 0000〜9999の4桁の数字をランダムに生成
+    const qrCode = Math.floor(Math.random() * 10000).toString().padStart(4, '0')
+
+    // 既存のQRコードと重複していないかチェック
+    const { data, error } = await supabase
+      .from('users')
+      .select('qr_code')
+      .eq('qr_code', qrCode)
+      .single()
+
+    // データが見つからない = 重複していない
+    if (error && error.code === 'PGRST116') {
+      return qrCode
+    }
+  }
+
+  throw new Error('ユニークなQRコードの生成に失敗しました。参加者が多すぎる可能性があります。')
+}
+
 export async function POST(request: NextRequest) {
   try {
     // 管理者認証チェック
@@ -60,9 +82,9 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = await createClient()
-    
-    // QRコードIDを生成（ユニークID）
-    const qr_code = `WQ${Date.now()}${Math.random().toString(36).substr(2, 5)}`.toUpperCase()
+
+    // QRコードIDを生成（4桁のユニークな数字）
+    const qr_code = await generateUniqueQRCode(supabase)
 
     const { data: participant, error } = await supabase
       .from('users')

@@ -94,22 +94,25 @@ function ParticipantContent() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="qrCode" className="block text-sm font-medium text-gray-700 mb-2">
-              座席カードのQRコードまたはIDを入力
+              座席カードの4桁のIDを入力
             </label>
             <input
               type="text"
+              inputMode="numeric"
+              pattern="[0-9]{4}"
+              maxLength={4}
               id="qrCode"
               value={qrCode}
-              onChange={(e) => setQrCode(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-pink-400 focus:border-transparent focus:ring-offset-2 min-h-[44px]"
-              placeholder="例: A001"
+              onChange={(e) => setQrCode(e.target.value.replace(/[^0-9]/g, ''))}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-wedding-pink-400 focus:border-transparent focus:ring-offset-2 min-h-[44px] text-center text-2xl font-bold tracking-widest"
+              placeholder="1234"
               disabled={isLoading}
-              aria-label="QRコードまたはID"
+              aria-label="4桁のID"
               aria-describedby="qr-instructions"
               aria-invalid={error ? 'true' : 'false'}
               aria-errormessage={error ? 'login-error' : undefined}
             />
-            <span id="qr-instructions" className="sr-only">席札のQRコードを読み取るか、IDを入力してください</span>
+            <span id="qr-instructions" className="sr-only">席札の4桁のIDを入力してください</span>
           </div>
 
           {error && (
@@ -138,8 +141,8 @@ function ParticipantContent() {
         </form>
 
         <div className="mt-6 text-center text-sm text-gray-500">
-          <p>座席カードのQRコードを読み取るか、</p>
-          <p>IDを入力してください</p>
+          <p>座席カードに記載された</p>
+          <p>4桁のIDを入力してください</p>
         </div>
 
         {/* Decorative star */}
