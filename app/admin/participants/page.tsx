@@ -246,7 +246,93 @@ export default function ParticipantsManagementPage() {
   }
 
   const printQRCodes = () => {
-    window.print()
+    // 新しいウィンドウでQRコードを表示して印刷
+    const printWindow = window.open('', '_blank', 'width=800,height=600')
+    if (!printWindow) {
+      alert('ポップアップがブロックされています。ポップアップを許可してください。')
+      return
+    }
+
+    // QRコード一覧のHTMLを生成
+    const qrCodesHTML = qrCodes.map((qr) => `
+      <div style="border: 1.5px solid #333; padding: 5mm; border-radius: 3mm; background: white; display: flex; flex-direction: column; align-items: center; justify-content: center; break-inside: avoid; page-break-inside: avoid;">
+        <img src="${qr.qrCodeImage}" alt="QR Code for ${qr.name}" style="width: 100%; max-width: 120px; height: auto; display: block; margin: 0 auto 3mm auto;" />
+        <p style="margin: 1mm 0; color: #000; text-align: center; line-height: 1.3; font-weight: 600; font-size: 11pt;">${qr.name} 様</p>
+        <p style="margin: 2mm 0 0 0; color: #333; text-align: center; line-height: 1.4; font-size: 8pt;">事前にQRコードを読み取って<br>お待ちください。</p>
+      </div>
+    `).join('')
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>QRコード一覧</title>
+        <style>
+          @page {
+            size: A4;
+            margin: 15mm;
+          }
+
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+          }
+
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: white;
+            padding: 0;
+            margin: 0;
+          }
+
+          .qr-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8mm;
+            padding: 0;
+            margin: 0;
+          }
+
+          @media print {
+            body {
+              background: white;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="qr-grid">
+          ${qrCodesHTML}
+        </div>
+      </body>
+      </html>
+    `)
+
+    printWindow.document.close()
+
+    // 画像の読み込みを待ってから印刷
+    const images = printWindow.document.querySelectorAll('img')
+    const imagePromises = Array.from(images).map((img: any) => {
+      if (img.complete) return Promise.resolve()
+      return new Promise((resolve) => {
+        img.onload = resolve
+        img.onerror = resolve
+      })
+    })
+
+    Promise.all(imagePromises).then(() => {
+      setTimeout(() => {
+        printWindow.print()
+        // 印刷ダイアログが閉じられた後にウィンドウを閉じる
+        setTimeout(() => {
+          printWindow.close()
+        }, 100)
+      }, 500)
+    })
   }
 
   const getGroupLabel = (groupType: string) => {
@@ -524,8 +610,8 @@ export default function ParticipantsManagementPage() {
         </div>
 
         {showQRCodes && qrCodes.length > 0 && (
-          <div className="mt-8 bg-white rounded-lg shadow-xl p-6 print:shadow-none">
-            <div className="flex justify-between items-center mb-6 print:hidden">
+          <div id="qr-codes-print-section" className="mt-8 bg-white rounded-lg shadow-xl p-6">
+            <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold">QRコード一覧</h2>
               <div className="flex gap-2">
                 <button
@@ -542,7 +628,7 @@ export default function ParticipantsManagementPage() {
                 </button>
               </div>
             </div>
-            <div className="grid grid-cols-4 gap-4 print:grid-cols-3">
+            <div className="grid grid-cols-4 gap-4">
               {qrCodes.map((qr) => (
                 <div key={qr.id} className="border border-gray-300 p-4 rounded-lg text-center">
                   <img
@@ -560,68 +646,6 @@ export default function ParticipantsManagementPage() {
         )}
       </div>
 
-      <style jsx global>{`
-        @media print {
-          @page {
-            size: A4;
-            margin: 10mm;
-          }
-          
-          body {
-            print-color-adjust: exact;
-            -webkit-print-color-adjust: exact;
-          }
-          
-          /* Hide everything except QR codes */
-          body > * {
-            display: none !important;
-          }
-          
-          /* Show only QR code container */
-          .print\\:shadow-none {
-            display: block !important;
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100% !important;
-            margin: 0 !important;
-            padding: 10mm !important;
-            background: white !important;
-            box-shadow: none !important;
-          }
-          
-          .print\\:hidden {
-            display: none !important;
-          }
-          
-          /* QR code grid layout for print */
-          .print\\:grid-cols-3 {
-            display: grid !important;
-            grid-template-columns: repeat(3, 1fr) !important;
-            gap: 10mm !important;
-          }
-          
-          /* Individual QR code styling */
-          .print\\:shadow-none .border {
-            border: 1px solid #000 !important;
-            padding: 5mm !important;
-            break-inside: avoid !important;
-            page-break-inside: avoid !important;
-          }
-          
-          .print\\:shadow-none img {
-            width: 100% !important;
-            max-width: 150px !important;
-            height: auto !important;
-            margin: 0 auto 5mm auto !important;
-          }
-          
-          .print\\:shadow-none p {
-            margin: 2mm 0 !important;
-            color: #000 !important;
-          }
-        }
-      `}</style>
     </div>
   )
 }
