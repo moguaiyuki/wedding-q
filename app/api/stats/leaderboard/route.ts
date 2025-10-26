@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
     // Create leaderboard with nickname and group info
     const leaderboard = users?.map(user => ({
       user_id: user.id,
-      name: user.name,
+      user_name: user.name,
       nickname: user.nickname,
       group_type: user.group_type,
       total_score: userScores.get(user.id)?.total_score || 0,

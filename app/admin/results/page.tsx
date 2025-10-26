@@ -207,9 +207,13 @@ export default function FinalResultsPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         <div>
-                          <div className="font-medium">{entry.nickname || entry.user_name}</div>
-                          {entry.nickname && (
-                            <div className="text-xs text-gray-700">{entry.user_name}</div>
+                          {entry.nickname ? (
+                            <>
+                              <div className="font-medium">{entry.nickname}</div>
+                              <div className="text-xs text-gray-600">本名: {entry.user_name}</div>
+                            </>
+                          ) : (
+                            <div className="font-medium">{entry.user_name}</div>
                           )}
                         </div>
                       </td>

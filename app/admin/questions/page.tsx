@@ -455,6 +455,12 @@ export default function QuestionsManagementPage() {
                   
                   <div className="mt-4 flex space-x-2">
                     <button
+                      onClick={() => router.push(`/admin/questions/${question.id}/answers`)}
+                      className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-sm"
+                    >
+                      回答詳細
+                    </button>
+                    <button
                       onClick={() => handleEdit(question)}
                       className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm"
                     >
